@@ -13,5 +13,6 @@ public class GUITest implements Constants
 		Model m = new Model(w);
 		Controller c = new Controller(w,m);	
 		w.SetCon(c);
+		// this is a new line
 	}
 }
