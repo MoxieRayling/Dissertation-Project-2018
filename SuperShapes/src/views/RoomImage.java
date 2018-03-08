@@ -55,13 +55,10 @@ public class RoomImage extends Image {
 		for (Tile t : tiles) {
 			if (t instanceof Wall) {
 				g.setColor(new Color(0x444444));
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex,
-						scaley);
+				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 			} else if (t instanceof Teleport) {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
-				g.setColor(Color.BLACK);
-				g.drawRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 
 				int[] xCoords = { 0, scalex / 4, scalex / 2, scalex / 4 };
 				int[] yCoords = { scaley / 4, 0, scaley / 4, scaley / 2 };
@@ -73,8 +70,6 @@ public class RoomImage extends Image {
 			} else if (t instanceof Slide) {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
-				g.setColor(Color.BLACK);
-				g.drawRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 				int[] xCoords = { 0, 0, 0 };
 				int[] yCoords = { 0, 0, 0 };
 				switch (((Slide) t).getDirection()) {
@@ -116,8 +111,6 @@ public class RoomImage extends Image {
 			} else {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
-				g.setColor(Color.BLACK);
-				g.drawRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 			}
 			/*
 			 * g.drawString(String.valueOf(path[j][i]), t.getX() * scalex + 10 + xPos + x,
