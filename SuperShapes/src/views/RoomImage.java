@@ -112,7 +112,7 @@ public class RoomImage extends Image {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 			}
-			/*
+			/* hiiiii
 			 * g.drawString(String.valueOf(path[j][i]), t.getX() * scalex + 10 + xPos + x,
 			 * t.getY() * scaley + 20 + yPos + y);
 			 */

@@ -1,5 +1,6 @@
 # Save file
-SuperShapes/resource/save.txt
+*.txt
+!world.txt
 
 # Compiled class file
 *.class
