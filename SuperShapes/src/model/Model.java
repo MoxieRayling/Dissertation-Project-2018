@@ -467,8 +467,19 @@ public class Model implements Constants, Subject {
 		room.moveEnemies();
 		checkShield();
 		checkForDeath();
+		checkTile();
 		clock++;
 		notifyObserver();
+	}
+
+	private void checkTile() {
+		for (Tile t : room.getTiles()) {
+			if (t.getX() == player.getX() && t.getY() == player.getY()) {
+				if(t instanceof Slide) {
+					tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
+				}
+			}
+		}
 	}
 
 	private void next() {
@@ -597,7 +608,7 @@ public class Model implements Constants, Subject {
 		if (tile != null) {
 			room.swapTile(tile);
 			System.out.println(tile.toString() + " added");
-		}else {
+		} else {
 		}
 		room.notifyObserver();
 	}
