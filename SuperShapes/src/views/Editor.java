@@ -13,6 +13,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -26,7 +27,7 @@ import model.SnakeBody;
 import model.Turret;
 
 @SuppressWarnings("serial")
-public class Editor extends JPanel implements Constants {
+public class Editor extends JPanel implements Constants, ItemListener {
 	private Timer timer;
 	private Window w;
 	private int sizex = 512;
@@ -58,6 +59,8 @@ public class Editor extends JPanel implements Constants {
 	private int selectedY = 1;
 	private List<List<Component>> entityComponents = new ArrayList<List<Component>>();
 	private List<List<Component>> tileComponents = new ArrayList<List<Component>>();
+	private JCheckBox paintEntity;
+	private JCheckBox paintTile;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -91,6 +94,11 @@ public class Editor extends JPanel implements Constants {
 			});
 			this.add(b);
 		}
+
+		paintEntity = new JCheckBox("Change Entity");
+		paintEntity.setContentAreaFilled(false);
+		paintEntity.setBounds(scalex * 13, scaley / 3, scalex * 3, 20);
+		this.add(paintEntity);
 
 		entities = new String[] { "None", "Block", "Snake", "Ghost", "Turret" };
 		entitiesBox = new JComboBox<String>(entities);
@@ -127,6 +135,11 @@ public class Editor extends JPanel implements Constants {
 			}
 		});
 		this.add(entitiesBox);
+
+		paintTile = new JCheckBox("Change Tile");
+		paintTile.setContentAreaFilled(false);
+		paintTile.setBounds(scalex * 16, scaley / 3, scalex * 3, 20);
+		this.add(paintTile);
 
 		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole" };
 		tilesBox = new JComboBox<String>(tiles);
@@ -219,41 +232,48 @@ public class Editor extends JPanel implements Constants {
 
 	private String[] generateTile() {
 		String[] result = new String[2];
-		switch (entitiesBox.getSelectedItem().toString()) {
-		case "Block":
-			result[0] = "b " + selectedX + "," + selectedY;
-			break;
-		case "Snake":
-			result[0] = "s " + selectedX + "," + selectedY + " " + snakeSize.getValue();
-			break;
-		case "Turret":
-			result[0] = "t " + selectedX + "," + selectedY + " " + turretRate.getValue() + " "
-					+ turretDirectionBox.getSelectedItem().toString() + " " + turretDelay.getValue();
-			break;
-		case "Ghost":
-			result[0] = "g " + selectedX + "," + selectedY + " " + ghostPower.getValue();
-			break;
-		default:
-			break;
+		if (paintEntity.isSelected()) {
+			switch (entitiesBox.getSelectedItem().toString()) {
+			case "Block":
+				result[0] = "b " + selectedX + "," + selectedY;
+				break;
+			case "Snake":
+				result[0] = "s " + selectedX + "," + selectedY + " " + snakeSize.getValue();
+				break;
+			case "Turret":
+				result[0] = "t " + selectedX + "," + selectedY + " " + turretRate.getValue() + " "
+						+ turretDirectionBox.getSelectedItem().toString() + " " + turretDelay.getValue();
+				break;
+			case "Ghost":
+				result[0] = "g " + selectedX + "," + selectedY + " " + ghostPower.getValue();
+				break;
+			case "None":
+				result[0] = "None";
+			default:
+				break;
+			}
 		}
-		switch (tilesBox.getSelectedItem().toString()) {
-		case "Empty":
-			result[1] = "E " + selectedX + "," + selectedY;
-			break;
-		case "Wall":
-			result[1] = "W " + selectedX + "," + selectedY;
-			break;
-		case "Slide":
-			result[1] = "S " + selectedX + "," + selectedY + " " + slideDirectionBox.getSelectedItem().toString();
-			break;
-		case "Teleport":
-			result[1] = "T " + selectedX + "," + selectedY + " " + teleportX.getValue() + "," + teleportY.getValue();
-			break;
-		case "Hole":
-			result[1] = "H " + selectedX + "," + selectedY;
-			break;
-		default:
-			break;
+		if (paintTile.isSelected()) {
+			switch (tilesBox.getSelectedItem().toString()) {
+			case "Empty":
+				result[1] = "E " + selectedX + "," + selectedY;
+				break;
+			case "Wall":
+				result[1] = "W " + selectedX + "," + selectedY;
+				break;
+			case "Slide":
+				result[1] = "S " + selectedX + "," + selectedY + " " + slideDirectionBox.getSelectedItem().toString();
+				break;
+			case "Teleport":
+				result[1] = "T " + selectedX + "," + selectedY + " " + teleportX.getValue() + ","
+						+ teleportY.getValue();
+				break;
+			case "Hole":
+				result[1] = "H " + selectedX + "," + selectedY;
+				break;
+			default:
+				break;
+			}
 		}
 		return result;
 	}
@@ -356,5 +376,10 @@ public class Editor extends JPanel implements Constants {
 		g.drawRect((selectedX + 1) * scalex, (selectedY + 1) * scaley, scalex, scaley);
 
 		timer.start();
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent arg0) {
+
 	}
 }

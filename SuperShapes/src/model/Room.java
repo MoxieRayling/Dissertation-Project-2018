@@ -19,7 +19,9 @@ public class Room implements Subject {
 	private String id;
 	private Boolean checkpoint;
 	private List<Entity> remove = new ArrayList<Entity>();
-	List<Entity> add = new ArrayList<Entity>();
+	private List<Entity> add = new ArrayList<Entity>();
+	private String text = "";
+
 
 	public Room(int x, int y, char[] exits, Player player, Boolean checkpoint) {
 		this.x = x;
@@ -30,6 +32,14 @@ public class Room implements Subject {
 		this.checkpoint = checkpoint;
 	}
 
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+	
 	public Boolean getCheckpoint() {
 		return checkpoint;
 	}

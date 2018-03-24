@@ -159,6 +159,58 @@ public class Model implements Constants, Subject {
 		return lines;
 	}
 
+	public void updateWorldFile(String room, String oldLine, String newLine) {
+		String fileName = "resource/world.txt";
+		String line = null;
+		List<String> lines = new ArrayList<String>();
+		try {
+			FileReader fileReader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			while ((line = bufferedReader.readLine()) != null) {
+				lines.add(line);
+			}
+			bufferedReader.close();
+		} catch (
+
+		FileNotFoundException ex) {
+		} catch (IOException ex) {
+		}
+
+		Boolean inRoom = false;
+		for (String l : lines) {
+			if (l.startsWith("r")) {
+				if (l.split(" ")[1].contains(room)) {
+					inRoom = true;
+				}
+			}
+			if (l.contains(oldLine) && inRoom) {
+				lines.set(lines.indexOf(l), newLine);
+				System.out.println("yes");
+				break;
+			}
+			if (l.startsWith(";") && inRoom) {
+				lines.add(lines.indexOf(l), newLine);
+				System.out.println("no");
+				break;
+			}
+		}
+		writeToFile(lines, fileName);
+	}
+
+	private void writeToFile(List<String> lines, String fileName) {
+		try {
+			FileWriter fileWriter = new FileWriter(fileName);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			for (String l : lines) {
+				bufferedWriter.write(l);
+				bufferedWriter.newLine();
+			}
+			bufferedWriter.close();
+		} catch (IOException ex) {
+			System.out.println("file no work " + fileName);
+		}
+	}
+
 	private void checkAdjacentRoom(int x, int y, String params) {
 		String[] coords = params.split(",");
 		int rx = 0;
@@ -221,6 +273,9 @@ public class Model implements Constants, Subject {
 				enemies.add(parseTurret(params, x, y, r));
 			} else if (params[0].startsWith("s")) {
 				enemies.add(parseSnake(params, x, y, r));
+			}
+			if (l.startsWith("x")) {
+				r.setText(l.split(":")[1]);
 			}
 		}
 		r.setEnemies(enemies);
@@ -475,7 +530,7 @@ public class Model implements Constants, Subject {
 	private void checkTile() {
 		for (Tile t : room.getTiles()) {
 			if (t.getX() == player.getX() && t.getY() == player.getY()) {
-				if(t instanceof Slide) {
+				if (t instanceof Slide) {
 					tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
 				}
 			}
@@ -600,32 +655,36 @@ public class Model implements Constants, Subject {
 			}
 		}
 		room.printEnemies();
-		room.removeEntity(x, y);
+		if (lines[0] == "None")
+			room.removeEntity(x, y);
 		Entity e = parseEntity(lines[0]);
-		if (e != null)
+		if (e != null) {
+			room.removeEntity(x, y);
 			room.addEntity(e);
+		}
 		Tile tile = parseTile(lines[1]);
 		if (tile != null) {
 			room.swapTile(tile);
-			System.out.println(tile.toString() + " added");
 		} else {
 		}
 		room.notifyObserver();
 	}
 
 	private Tile parseTile(String line) {
-		String[] params = line.split(" ");
-		if (params[0].startsWith("E")) {
-			return parseEmptyTile(params);
-		} else if (params[0].startsWith("W")) {
-			return parseWall(params);
-		} else if (params[0].startsWith("S")) {
-			System.out.println("making slide");
-			return parseSlide(params);
-		} else if (params[0].startsWith("T")) {
-			return parseTeleport(params);
-		} else if (params[0].startsWith("H")) {
-			return parseHole(params);
+		if (line != null) {
+			String[] params = line.split(" ");
+			if (params[0].startsWith("E")) {
+				return parseEmptyTile(params);
+			} else if (params[0].startsWith("W")) {
+				return parseWall(params);
+			} else if (params[0].startsWith("S")) {
+				System.out.println("making slide");
+				return parseSlide(params);
+			} else if (params[0].startsWith("T")) {
+				return parseTeleport(params);
+			} else if (params[0].startsWith("H")) {
+				return parseHole(params);
+			}
 		}
 		return null;
 	}
