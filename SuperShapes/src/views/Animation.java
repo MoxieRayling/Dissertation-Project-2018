@@ -43,6 +43,7 @@ public class Animation extends JPanel implements Constants {
 	private int pause = 0;
 	private Boolean shield = false;
 	private Window w;
+	private String text = "";
 
 	public Animation(Window w) {
 		this.w = w;
@@ -114,6 +115,7 @@ public class Animation extends JPanel implements Constants {
 
 	public void modelUpdate(Model model) {
 		clock = model.getClock();
+		text = model.getText();
 	}
 
 	public void entityUpdate(Entity e) {
@@ -249,12 +251,9 @@ public class Animation extends JPanel implements Constants {
 		timer.stop();
 		Graphics2D g = (Graphics2D) g1;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		int topRow = 20;
-		int bottomRow = scaley * 13;
-		int column1 = scalex;
-		int column2 = scalex * 4;
-		int column3 = scalex * 7;
-		int column4 = scalex * 10;
+
+		int[] columns = { scalex, scalex * 4, scalex * 7, scalex * 10 };
+		int[] rows = { 20, scaley * 13 };
 
 		super.paintComponent(g);
 		renderOrder();
@@ -271,49 +270,63 @@ public class Animation extends JPanel implements Constants {
 		g.fillRect(scalex * 12, 0, scalex, scaley * 6);
 		g.fillRect(scalex * 12, scaley * 7, scalex, scaley * 6);
 
-		g.setColor(Color.WHITE);
-		g.drawString(String.valueOf("Lives: " + lives), column1, topRow);
-		g.drawString(String.valueOf("Steps: " + clock), column2, topRow);
-		if (flyCooldown > 0) {
-			g.setColor(Color.RED);
-			g.drawString(String.valueOf("Fly " + flyCooldown), column2, bottomRow);
-		} else if (fly == 0) {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("'F' to Fly"), column2, bottomRow);
-
-		} else {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("Fly " + fly), column2, bottomRow);
-		}
-		if (pauseCooldown > 0) {
-			g.setColor(Color.RED);
-			g.drawString(String.valueOf("Pause " + pauseCooldown), column1, bottomRow);
-		} else if (pause == 0) {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("'P' to Pause"), column1, bottomRow);
-
-		} else {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("Pause " + pause), column1, bottomRow);
-		}
-		if (rewindCooldown > 0) {
-			g.setColor(Color.RED);
-			g.drawString(String.valueOf("Rewind " + rewindCooldown), column3, bottomRow);
-		} else {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("'R' to Rewind "), column3, bottomRow);
-		}
-		if (shieldCooldown > 0) {
-			g.setColor(Color.RED);
-			g.drawString(String.valueOf("Shield " + shieldCooldown), column4, bottomRow);
-		} else if (shield) {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("Shield is active"), column4, bottomRow);
-		} else {
-			g.setColor(Color.GREEN);
-			g.drawString(String.valueOf("'S' to Shield "), column4, bottomRow);
+		drawHUD(g, columns, rows);
+		if (text != "") {
+			g.setColor(new Color(0,0,0,100));
+			g.fillRect(scalex, scaley * 11, scalex *11, scaley );
+			g.setColor(Color.WHITE);
+			g.drawString(text,scalex+20, scaley * 11+20);
 		}
 
 		timer.start();
+	}
+
+	public void drawHUD(Graphics2D g, int[] columns, int[] rows) {
+		g.setColor(Color.WHITE);
+		g.drawString(String.valueOf("Lives: " + lives), columns[0], rows[0]);
+		g.drawString(String.valueOf("Steps: " + clock), columns[1], rows[0]);
+		if (flyCooldown > 0) {
+			g.setColor(Color.RED);
+			g.drawString(String.valueOf("Fly " + flyCooldown), columns[1], rows[1]);
+		} else if (fly == 0) {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("'F' to Fly"), columns[1], rows[1]);
+
+		} else {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("Fly " + fly), columns[1], rows[1]);
+		}
+		if (pauseCooldown > 0) {
+			g.setColor(Color.RED);
+			g.drawString(String.valueOf("Pause " + pauseCooldown), columns[0], rows[1]);
+		} else if (pause == 0) {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("'P' to Pause"), columns[0], rows[1]);
+
+		} else {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("Pause " + pause), columns[0], rows[1]);
+		}
+		if (rewindCooldown > 0) {
+			g.setColor(Color.RED);
+			g.drawString(String.valueOf("Rewind " + rewindCooldown), columns[2], rows[1]);
+		} else {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("'R' to Rewind "), columns[2], rows[1]);
+		}
+		if (shieldCooldown > 0) {
+			g.setColor(Color.RED);
+			g.drawString(String.valueOf("Shield " + shieldCooldown), columns[3], rows[1]);
+		} else if (shield) {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("Shield is active"), columns[3], rows[1]);
+		} else {
+			g.setColor(Color.GREEN);
+			g.drawString(String.valueOf("'S' to Shield "), columns[3], rows[1]);
+		}
+	}
+
+	public void nextText() {
+
 	}
 }

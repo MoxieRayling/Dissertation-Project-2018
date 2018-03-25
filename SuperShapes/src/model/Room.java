@@ -21,7 +21,7 @@ public class Room implements Subject {
 	private List<Entity> remove = new ArrayList<Entity>();
 	private List<Entity> add = new ArrayList<Entity>();
 	private String text = "";
-
+	private Boolean textRead = false;
 
 	public Room(int x, int y, char[] exits, Player player, Boolean checkpoint) {
 		this.x = x;
@@ -32,6 +32,14 @@ public class Room implements Subject {
 		this.checkpoint = checkpoint;
 	}
 
+	public Boolean getTextRead() {
+		return textRead;
+	}
+
+	public void setTextRead(Boolean textRead) {
+		this.textRead = textRead;
+	}
+
 	public String getText() {
 		return text;
 	}
@@ -39,7 +47,7 @@ public class Room implements Subject {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	public Boolean getCheckpoint() {
 		return checkpoint;
 	}
@@ -81,7 +89,7 @@ public class Room implements Subject {
 		for (Entity e : enemies) {
 			if (e.getX() == x && e.getY() == y) {
 				e.delete();
-				//System.out.println("deleted " + e.toString());
+				// System.out.println("deleted " + e.toString());
 				removeEntity(e);
 			}
 		}
@@ -111,13 +119,13 @@ public class Room implements Subject {
 		for (Tile t : tiles) {
 			if (t.getX() == tile.getX() && t.getY() == tile.getY()) {
 				tiles.set(tiles.indexOf(t), tile);
-				//System.out.println(tile.toString() + " added");
+				// System.out.println(tile.toString() + " added");
 			}
 		}
 		notifyObserver();
 	}
 
-	public List<Tile> getTiles() {	 
+	public List<Tile> getTiles() {
 		return tiles;
 	}
 

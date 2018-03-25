@@ -19,6 +19,9 @@ public class Model implements Constants, Subject {
 	private String checkpointId = "0,0";
 	private Boolean next = false;
 	private String exits = "";
+	private String text = "";
+	private String textToShow = "";
+	private String mode = "";
 
 	public Model(Observer v) {
 		this.v = v;
@@ -28,6 +31,14 @@ public class Model implements Constants, Subject {
 		room.addObserver(v);
 		room.updatePath(player.getX(), player.getY());
 		room.notifyObserver();
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
 	public Boolean getInput() {
@@ -247,8 +258,12 @@ public class Model implements Constants, Subject {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-
-		return makeRoom(getRoomData(x, y));
+		Room result = makeRoom(getRoomData(x, y));
+		if (!result.getTextRead() && result.getText() != "") {
+			textToShow = result.getText();
+			mode = "text";
+		}
+		return result;
 	}
 
 	private Room makeRoom(List<String> lines) {
@@ -775,5 +790,63 @@ public class Model implements Constants, Subject {
 			}
 		}
 		return null;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+		setMode("text");
+		notifyObserver();
+	}
+
+	public void input(int i) {
+		if (mode == "game") {
+			switch (i) {
+			case 37:
+				step('W');
+				break;
+			case 38:
+				step('N');
+				break;
+			case 39:
+				step('E');
+				break;
+			case 40:
+				step('S');
+				break;
+			case 70:
+				fly();
+				break;
+			case 82:
+				rewind();
+				break;
+			case 80:
+				pauseTime();
+				break;
+			case 83:
+				shield();
+				break;
+			default:
+				break;
+			}
+		} else if (mode == "text") {
+			if (textToShow == "") {
+				setText("");
+				mode = "game";
+				return;
+			}
+			if (textToShow.length() < 20) {
+				setText(textToShow);
+				textToShow = "";
+			} else {
+				setText(textToShow.substring(0, 20));
+				textToShow = textToShow.substring(20);
+			}
+			System.out.println(text);
+
+		}
 	}
 }

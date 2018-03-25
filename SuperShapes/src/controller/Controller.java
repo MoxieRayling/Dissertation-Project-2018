@@ -20,35 +20,7 @@ public class Controller implements Constants
 
 	public void Input(int i) 
 	{
-		switch(i) 
-		{
-		case 37:
-			m.step('W');
-			break;
-		case 38:
-			m.step('N');
-			break;
-		case 39:
-			m.step('E');
-			break;
-		case 40:
-			m.step('S');
-			break;
-		case 70:
-			m.fly();
-			break;
-		case 82:
-			m.rewind();
-			break;
-		case 80:
-			m.pauseTime();
-			break;
-		case 83:
-			m.shield();
-			break;
-		default:
-			break;
-		}
+		m.input(i);
 	}
 
 	public void newGame() {
@@ -73,5 +45,9 @@ public class Controller implements Constants
 
 	public void addToRoom(String[] lines, int x, int y) {
 		m.addToRoom(lines,x,y);
+	}
+
+	public void setMode(String mode) {
+		m.setMode(mode);
 	}
 }

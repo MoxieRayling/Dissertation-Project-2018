@@ -119,6 +119,7 @@ public class Window extends JFrame implements View, Constants {
 
 	public void newGame() {
 		c.newGame();
+		//c.setMode("game");
 		this.setSize(512,512);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(game);
@@ -129,6 +130,7 @@ public class Window extends JFrame implements View, Constants {
 
 	public void loadGame() {
 		c.loadGame();
+		c.setMode("game");
 		this.setSize(512,512);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(game);
@@ -139,6 +141,7 @@ public class Window extends JFrame implements View, Constants {
 
 	public void editor() {
 		c.newGame();
+		c.setMode("editor");
 		this.setSize(770, 600);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
