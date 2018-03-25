@@ -11,6 +11,8 @@ public class Snake extends Entity {
 	private Observer o;
 	private Room room;
 	private int length;
+	private int startX = 0;
+	private int startY = 0;
 
 	public Snake(String roomId, int count, int x, int y, int length, Room room, Observer o) {
 		super(roomId, count, x, y);
@@ -18,24 +20,22 @@ public class Snake extends Entity {
 		this.room = room;
 		this.length = length;
 		this.o = o;
-		for (int i = 0; i <= length - 1; i++) {
+		startX = x;
+		startY = y;
+		for (int i = 0; i < 2; i++) {
 			addSegment(x, y);
-			segments.get(i).addObserver(o);
-			segments.get(i).notifyObserver();
-			
 		}
 	}
-	
+
 	public SnakeBody getSegment(int index) {
-		return segments.get(index%length);
+		return segments.get(index % length);
 	}
 
 	public void move(int x, int y) {
-
 		setLoc(x, y);
 
-		for (int i = length - 1; i >= 0; i--) {
-			if(i == length-1) {
+		for (int i = segments.size() - 1; i >= 0; i--) {
+			if (i == segments.size() - 1) {
 				room.getTile(segments.get(i).getX(), segments.get(i).getY()).setOccupied(false);
 			}
 			if (i == 0) {
@@ -45,6 +45,8 @@ public class Snake extends Entity {
 				room.getTile(segments.get(i - 1).getX(), segments.get(i - 1).getY()).setOccupied(true);
 			}
 		}
+		if (segments.size() < length)
+			addSegment(startX, startY);
 	}
 
 	public Boolean checkOccupied(int x, int y) {
@@ -57,30 +59,31 @@ public class Snake extends Entity {
 	}
 
 	private void addSegment(int x, int y) {
-		SnakeBody segment = new SnakeBody(getRoomId(), getCount(), getX(), getY());
+		SnakeBody segment = new SnakeBody(getRoomId(), getCount(), x, y);
 		segments.add(segment);
-		room.addEntity(segment);
+		room.concurrentAdd(segment);
+		segment.addObserver(o);
+		segment.notifyObserver();
 	}
-	
+
 	@Override
-	public void notifyObserver() 
-	{
+	public void notifyObserver() {
 		for (Observer o : observers) {
 			o.Update(new ActionEvent(this, 0, null));
 		}
-		for(Entity e: segments) {
+		for (Entity e : segments) {
 			e.notifyObserver();
 		}
 	}
 
 	@Override
 	public String toString() {
-		return new String("s " + getX() + "," + getY() + " " + length +  "\n");
+		return new String("s " + getX() + "," + getY() + " " + length + "\n");
 	}
-	
+
 	@Override
 	public void delete() {
-		for(Entity e : segments) {
+		for (Entity e : segments) {
 			e.delete();
 		}
 		setDelete(true);
