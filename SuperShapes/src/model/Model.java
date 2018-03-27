@@ -9,9 +9,9 @@ import observers.Observer;
 import observers.Subject;
 
 public class Model implements Constants, Subject {
-	private Room room;
+	protected Room room;
 	private Observer v;
-	private Player player;
+	protected Player player;
 	private String roomId;
 	private int clock = 0;
 	private Boolean input = true;
@@ -25,12 +25,6 @@ public class Model implements Constants, Subject {
 
 	public Model(Observer v) {
 		this.v = v;
-		player = new Player("0,0", 5, 10, 5);
-		player.addObserver(v);
-		room = loadRoom("0,0");
-		room.addObserver(v);
-		room.updatePath(player.getX(), player.getY());
-		room.notifyObserver();
 	}
 
 	public String getMode() {
@@ -208,7 +202,7 @@ public class Model implements Constants, Subject {
 		writeToFile(lines, fileName);
 	}
 
-	private void writeToFile(List<String> lines, String fileName) {
+	protected void writeToFile(List<String> lines, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -248,7 +242,7 @@ public class Model implements Constants, Subject {
 		}
 	}
 
-	private Room loadRoom(String roomId) {
+	protected Room loadRoom(String roomId) {
 		String[] roomCoords = roomId.split(",");
 		int x = 0;
 		int y = 0;
@@ -259,10 +253,13 @@ public class Model implements Constants, Subject {
 			System.out.println("rip ints");
 		}
 		Room result = makeRoom(getRoomData(x, y));
-		if (!result.getTextRead() && result.getText() != "") {
+		if (result == null)
+			result = new Room(x, y, exits.toCharArray(), player, false);
+		else if (!result.getTextRead() && result.getText() != "") {
 			textToShow = result.getText();
 			mode = "text";
 		}
+
 		return result;
 	}
 
@@ -271,30 +268,32 @@ public class Model implements Constants, Subject {
 		int x = 0;
 		int y = 0;
 		Room r = null;
-		for (String l : lines) {
-			String[] params = l.split(" ");
-			if (params[0].equalsIgnoreCase("r")) {
-				r = parseRoom(params);
-				r.addObserver(v);
-				x = r.getX();
-				y = r.getY();
-			} else if (params[0].startsWith("T")) {
-				r.setTiles(parseTiles(params));
-			} else if (params[0].startsWith("b")) {
-				enemies.add(parseBlock(params, x, y));
-			} else if (params[0].startsWith("g")) {
-				enemies.add(parseGhost(params, x, y));
-			} else if (params[0].startsWith("t")) {
-				enemies.add(parseTurret(params, x, y, r));
-			} else if (params[0].startsWith("s")) {
-				enemies.add(parseSnake(params, x, y, r));
+		if (!lines.isEmpty()) {
+			for (String l : lines) {
+				String[] params = l.split(" ");
+				if (params[0].equalsIgnoreCase("r")) {
+					r = parseRoom(params);
+					r.addObserver(v);
+					x = r.getX();
+					y = r.getY();
+				} else if (params[0].startsWith("T")) {
+					r.setTiles(parseTiles(params));
+				} else if (params[0].startsWith("b")) {
+					enemies.add(parseBlock(params, x, y));
+				} else if (params[0].startsWith("g")) {
+					enemies.add(parseGhost(params, x, y));
+				} else if (params[0].startsWith("t")) {
+					enemies.add(parseTurret(params, x, y, r));
+				} else if (params[0].startsWith("s")) {
+					enemies.add(parseSnake(params, x, y, r));
+				}
+				if (l.startsWith("x")) {
+					r.setText(l.split(":")[1]);
+				}
 			}
-			if (l.startsWith("x")) {
-				r.setText(l.split(":")[1]);
-			}
+			r.setEnemies(enemies);
+			exits = "";
 		}
-		r.setEnemies(enemies);
-		exits = "";
 		return r;
 	}
 

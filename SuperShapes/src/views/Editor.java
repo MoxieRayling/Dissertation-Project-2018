@@ -61,6 +61,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private List<List<Component>> tileComponents = new ArrayList<List<Component>>();
 	private JCheckBox paintEntity;
 	private JCheckBox paintTile;
+	private JButton addToList;
+	private JSlider xRoomSlider;
+	private JSlider yRoomSlider;
+	private JButton loadRoom;
+	private JButton export;
+	private JComboBox<String> roomList;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -71,11 +77,71 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	private void initUI() {
+		
+		loadRoom = new JButton("Load Room");
+		loadRoom.setBounds(scalex * 13, scaley*10, scalex*3, scaley);
+		loadRoom.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.changeRoom(xRoomSlider.getValue(),yRoomSlider.getValue());
+			}
+		});
+		this.add(loadRoom);
+		
+		xRoomSlider = new JSlider(-10, 10, 0);
+		xRoomSlider.setBounds(scalex * 13, scaley*8, scalex*3, scaley);
+		this.add(xRoomSlider);
+		
+		yRoomSlider = new JSlider(-10, 10, 0);
+		yRoomSlider.setBounds(scalex * 13, scaley*9, scalex*3, scaley);
+		this.add(yRoomSlider);
+
+		addToList = new JButton("Add to List");
+		addToList.setBounds(scalex * 13, scaley*11, scalex*3, scaley);
+		addToList.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.addRoom();
+				roomList.removeAllItems();
+				String[] roomIds = w.getRooms();
+				for(int i = 0; i < roomIds.length;i++) {
+					roomList.addItem(roomIds[i]);
+				}
+			}
+		});
+		this.add(addToList);
+		
+		export = new JButton("export");
+		export.setBounds(scalex * 13, scaley*12, scalex*3, scaley);
+		export.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.export();
+			}
+		});
+		this.add(export);
+		
+		roomList = new JComboBox<String>();
+		roomList.setBounds(scalex * 16, scaley*10, scalex * 2, 20);
+		roomList.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					w.changeRoom(e.getItem().toString());
+				}
+			}
+		});
+		this.add(roomList);
+		
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
 				buttons.add(new JButton());
 			}
 		}
+		
 		for (JButton b : buttons) {
 			int x = buttons.indexOf(b) % 11;
 			int y = buttons.indexOf(b) / 11;

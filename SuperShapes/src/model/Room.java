@@ -30,6 +30,37 @@ public class Room implements Subject {
 		this.player = player;
 		this.exits = exits;
 		this.checkpoint = checkpoint;
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				tiles.add(new Tile(j, i));
+			}
+		}
+		System.out.println(id);
+	}
+
+	public List<String> exportRoom() {
+		List<String> result = new ArrayList<String>();
+		result.add("r " + id + " 0");
+		String tiles = "T: ";
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				Tile t = this.tiles.get(j + i * 11);
+				if (t instanceof Wall) {
+					tiles += "1";
+				} else
+					tiles += "0";
+				if (!(j == 10)) {
+					tiles += ",";
+				}
+			}
+			tiles += " ";
+		}
+		result.add(tiles);
+		for(Entity e : enemies) {
+			result.add(e.toString());
+		}
+		result.add(";");
+		return result;
 	}
 
 	public Boolean getTextRead() {

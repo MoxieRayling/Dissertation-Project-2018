@@ -140,7 +140,7 @@ public class Window extends JFrame implements View, Constants {
 	}
 
 	public void editor() {
-		c.newGame();
+		c.runEditor();
 		c.setMode("editor");
 		this.setSize(770, 600);
 		this.setResizable(false);
@@ -153,6 +153,26 @@ public class Window extends JFrame implements View, Constants {
 
 	public void addToRoom(String[] lines, int x, int y) {
 		c.addToRoom(lines,x,y);
+	}
+
+	public void changeRoom(int x, int y) {
+		c.changeRoom(x,y);
+		
+	}
+
+	public String[] getRooms() {
+		return c.getRooms();
+	}
+
+	public void changeRoom(String id) {
+		c.changeRoom(id);
+	}
+	public void addRoom() {
+		c.addRoom();
+	}
+
+	public void export() {
+		c.export();
 	}
 
 }

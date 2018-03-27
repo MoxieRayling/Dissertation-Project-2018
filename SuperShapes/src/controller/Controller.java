@@ -1,29 +1,29 @@
 package controller;
+
+import model.EditorModel;
+import model.GameModel;
 import model.Model;
 import views.View;
 
-public class Controller implements Constants
-{
+public class Controller implements Constants {
 	private View v;
 	private Model m;
-	
-	public Controller(View v,Model m) 
-	{
+
+	public Controller(View v, Model m) {
 		this.m = m;
 		this.v = v;
 	}
-	
-	public View GetV() 
-	{
+
+	public View GetV() {
 		return v;
 	}
 
-	public void Input(int i) 
-	{
+	public void Input(int i) {
 		m.input(i);
 	}
 
 	public void newGame() {
+		m = new GameModel(v);
 		m.eraseSaveData();
 	}
 
@@ -32,6 +32,7 @@ public class Controller implements Constants
 	}
 
 	public void loadGame() {
+		m = new GameModel(v);
 		m.loadGame();
 	}
 
@@ -44,10 +45,35 @@ public class Controller implements Constants
 	}
 
 	public void addToRoom(String[] lines, int x, int y) {
-		m.addToRoom(lines,x,y);
+		m.addToRoom(lines, x, y);
 	}
 
 	public void setMode(String mode) {
 		m.setMode(mode);
+	}
+
+	public void changeRoom(int x, int y) {
+		m.changeRoom(x + "," + y, false);
+	}
+
+	public void changeRoom(String id) {
+		if (id != null)
+			m.changeRoom(id, false);
+	}
+
+	public void runEditor() {
+		m = new EditorModel(v);
+	}
+
+	public String[] getRooms() {
+		return ((EditorModel) m).getRoomIds();
+	}
+
+	public void addRoom() {
+		((EditorModel) m).addRoom();
+	}
+
+	public void export() {
+		((EditorModel) m).exportRooms();
 	}
 }
