@@ -14,9 +14,9 @@ import model.Wall;
 
 public class RoomImage extends Image {
 	private List<Tile> tiles = new ArrayList<Tile>();
-	private char[] exits;
+	private String exits;
 
-	public RoomImage(List<Tile> tiles, int scalex, int scaley, String room, char[] exits) {
+	public RoomImage(List<Tile> tiles, int scalex, int scaley, String room, String exits) {
 		super(0, 0, scalex, scaley, room);
 		this.tiles = tiles;
 		this.exits = exits;
@@ -24,8 +24,8 @@ public class RoomImage extends Image {
 
 	private Boolean checkExit(char exit) {
 		Boolean result = false;
-		for (int i = 0; i < exits.length; i++) {
-			if (exits[i] == exit) {
+		for (int i = 0; i < exits.length(); i++) {
+			if (exits.charAt(i) == exit) {
 				result = true;
 			}
 		}
@@ -112,7 +112,7 @@ public class RoomImage extends Image {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
 			}
-			/* hiiiii
+			/* 
 			 * g.drawString(String.valueOf(path[j][i]), t.getX() * scalex + 10 + xPos + x,
 			 * t.getY() * scaley + 20 + yPos + y);
 			 */

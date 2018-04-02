@@ -24,25 +24,16 @@ public class EditorModel extends Model {
 
 	public void addRoom() {
 		int index = searchRooms(room.getX(), room.getY());
-		if (index == -1)
+		if (index == -1) {
 			rooms.add(room);
-		else
+		} else {
 			rooms.set(index, room);
+		}
 	}
 
 	private int searchRooms(int x, int y) {
 		for (Room r : rooms) {
 			if (r.getX() == x && r.getY() == y) {
-				return rooms.indexOf(r);
-			}
-		}
-		return -1;
-	}
-
-	private int searchRooms(String id) {
-		for (Room r : rooms) {
-			System.out.println(id + "!=" + r.getId());
-			if (r.getId() == id) {
 				return rooms.indexOf(r);
 			}
 		}
@@ -77,14 +68,13 @@ public class EditorModel extends Model {
 		for (String l : lines) {
 			if (l.startsWith("r")) {
 				String id = l.split(" ")[1];
-				int i = searchRooms(id);
-				if (i != -1) {
-					inRoom = true;
-					System.out.println("yes");
+				for (Room r : rooms) {
+					if (r.getId().equals(id)) {
+						inRoom = true;
+					}
 				}
 			}
 			if (inRoom) {
-				System.out.println("yes");
 				lines.set(lines.indexOf(l), "xxxxxx");
 			}
 			if (l.startsWith(";")) {
@@ -99,7 +89,7 @@ public class EditorModel extends Model {
 				lines.add(s);
 			}
 		}
-		writeToFile(lines, fileName);
+		fileManager.writeToFile(lines, fileName);
 	}
 
 }

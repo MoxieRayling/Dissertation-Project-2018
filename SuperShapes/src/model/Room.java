@@ -14,16 +14,14 @@ public class Room implements Subject {
 	private List<Entity> enemies = new ArrayList<Entity>();
 	private int x;
 	private int y;
-	private char[] exits;
+	private String exits;
 	private Player player;
 	private String id;
 	private Boolean checkpoint;
 	private List<Entity> remove = new ArrayList<Entity>();
 	private List<Entity> add = new ArrayList<Entity>();
-	private String text = "";
-	private Boolean textRead = false;
 
-	public Room(int x, int y, char[] exits, Player player, Boolean checkpoint) {
+	public Room(int x, int y, String exits, Player player, Boolean checkpoint) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
@@ -35,7 +33,21 @@ public class Room implements Subject {
 				tiles.add(new Tile(j, i));
 			}
 		}
-		System.out.println(id);
+	}
+
+	public Room(int x, int y, String exits, Player player, Boolean checkpoint, Observer o) {
+		this.x = x;
+		this.y = y;
+		id = String.valueOf(x) + "," + String.valueOf(y);
+		this.player = player;
+		this.exits = exits;
+		this.checkpoint = checkpoint;
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				tiles.add(new Tile(j, i));
+			}
+		}
+		this.addObserver(o);
 	}
 
 	public List<String> exportRoom() {
@@ -56,27 +68,11 @@ public class Room implements Subject {
 			tiles += " ";
 		}
 		result.add(tiles);
-		for(Entity e : enemies) {
+		for (Entity e : enemies) {
 			result.add(e.toString());
 		}
 		result.add(";");
 		return result;
-	}
-
-	public Boolean getTextRead() {
-		return textRead;
-	}
-
-	public void setTextRead(Boolean textRead) {
-		this.textRead = textRead;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
 	}
 
 	public Boolean getCheckpoint() {
@@ -99,7 +95,7 @@ public class Room implements Subject {
 		return y;
 	}
 
-	public char[] getExits() {
+	public String getExits() {
 		return exits;
 	}
 
@@ -108,12 +104,13 @@ public class Room implements Subject {
 	}
 
 	public void setEnemies(List<Entity> enemies) {
-		this.enemies = enemies;
 		for (Entity e : enemies) {
+			e.addObserver(observers.get(0));
 			if (e instanceof Turret) {
 				getTile(e).setTrav(false);
 			}
 		}
+		this.enemies = enemies;
 	}
 
 	public void removeEntity(int x, int y) {
@@ -246,8 +243,8 @@ public class Room implements Subject {
 	}
 
 	public Boolean checkExits(char direction) {
-		for (int i = 0; i < exits.length; i++) {
-			if (exits[i] == direction) {
+		for (int i = 0; i < exits.length(); i++) {
+			if (exits.charAt(i) == direction) {
 				return true;
 			}
 		}
@@ -476,5 +473,9 @@ public class Room implements Subject {
 		for (Entity e : enemies) {
 			e.notifyObserver();
 		}
+	}
+
+	public List<Observer> getObservers() {
+		return observers;
 	}
 }

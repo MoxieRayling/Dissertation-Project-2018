@@ -9,8 +9,7 @@ public class Turret extends Entity {
 	private Room room;
 	private int delay;
 
-	public Turret(String roomId, int enemyCount, int x, int y, int ratio, int delay, char direction, Room room,
-			Observer o) {
+	public Turret(String roomId, int enemyCount, int x, int y, int ratio, int delay, char direction, Room room) {
 		super(roomId, enemyCount, x, y);
 		id += "t";
 		this.ratio = ratio;
@@ -19,7 +18,6 @@ public class Turret extends Entity {
 		this.direction = direction;
 		this.room = room;
 		this.deadly = false;
-		addObserver(o);
 	}
 
 	public void next() {

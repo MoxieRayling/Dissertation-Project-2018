@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.event.ActionEvent;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import controller.Constants;
@@ -22,9 +21,13 @@ public class Model implements Constants, Subject {
 	private String text = "";
 	private String textToShow = "";
 	private String mode = "";
+	private int textLength = 50;
+	protected FileManager fileManager;
 
 	public Model(Observer v) {
 		this.v = v;
+		fileManager = new FileManager();
+		mode = "game";
 	}
 
 	public String getMode() {
@@ -53,28 +56,8 @@ public class Model implements Constants, Subject {
 		return clock;
 	}
 
-	public List<String> getSaveData() {
-		String fileName = "resource/save.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (FileNotFoundException ex) {
-			System.out.println("file no work " + fileName);
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-		return lines;
-	}
-
 	public void loadGame() {
-		List<String> lines = getSaveData();
+		List<String> lines = fileManager.getSaveData();
 		changeRoom(lines.get(0), false);
 		int x = 0;
 		int y = 0;
@@ -91,157 +74,6 @@ public class Model implements Constants, Subject {
 		player.setLives(5);
 	}
 
-	public void saveGame() {
-		String fileName = "resource/save.txt";
-		try {
-			FileWriter fileWriter = new FileWriter(fileName);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			bufferedWriter.write(checkpointId);
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(player.getX()));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(player.getY()));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(clock));
-			bufferedWriter.close();
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-	}
-
-	public void eraseSaveData() {
-		String fileName = "resource/save.txt";
-		try {
-			FileWriter fileWriter = new FileWriter(fileName);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			bufferedWriter.write("0,0");
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(5));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(10));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(0));
-			bufferedWriter.close();
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-	}
-
-	private List<String> getRoomData(int x, int y) {
-		String fileName = "resource/world.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-			while ((line = bufferedReader.readLine()) != null) {
-				String[] rParams = line.split(" ");
-				if (rParams[0].equalsIgnoreCase("r")) {
-					checkAdjacentRoom(x, y, rParams[1]);
-					if (rParams[1].equalsIgnoreCase(String.valueOf(x) + "," + String.valueOf(y))) {
-						lines.add(line);
-						while ((line = bufferedReader.readLine()) != null) {
-							String[] params = line.split(" ");
-							if (!params[0].startsWith(";")) {
-								lines.add(line);
-							} else {
-								break;
-							}
-						}
-					}
-				} else {
-
-					continue;
-				}
-			}
-			bufferedReader.close();
-		} catch (
-
-		FileNotFoundException ex) {
-		} catch (IOException ex) {
-		}
-		return lines;
-	}
-
-	public void updateWorldFile(String room, String oldLine, String newLine) {
-		String fileName = "resource/world.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (
-
-		FileNotFoundException ex) {
-		} catch (IOException ex) {
-		}
-
-		Boolean inRoom = false;
-		for (String l : lines) {
-			if (l.startsWith("r")) {
-				if (l.split(" ")[1].contains(room)) {
-					inRoom = true;
-				}
-			}
-			if (l.contains(oldLine) && inRoom) {
-				lines.set(lines.indexOf(l), newLine);
-				System.out.println("yes");
-				break;
-			}
-			if (l.startsWith(";") && inRoom) {
-				lines.add(lines.indexOf(l), newLine);
-				System.out.println("no");
-				break;
-			}
-		}
-		writeToFile(lines, fileName);
-	}
-
-	protected void writeToFile(List<String> lines, String fileName) {
-		try {
-			FileWriter fileWriter = new FileWriter(fileName);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			for (String l : lines) {
-				bufferedWriter.write(l);
-				bufferedWriter.newLine();
-			}
-			bufferedWriter.close();
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-	}
-
-	private void checkAdjacentRoom(int x, int y, String params) {
-		String[] coords = params.split(",");
-		int rx = 0;
-		int ry = 0;
-		try {
-			rx = Integer.parseInt(coords[0]);
-			ry = Integer.parseInt(coords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		if (x == rx) {
-			if (ry == y - 1) {
-				exits += 'N';
-			} else if (ry == y + 1) {
-				exits += 'S';
-			}
-		}
-		if (y == ry) {
-			if (rx == x - 1) {
-				exits += 'W';
-			} else if (rx == x + 1) {
-				exits += 'E';
-			}
-		}
-	}
-
 	protected Room loadRoom(String roomId) {
 		String[] roomCoords = roomId.split(",");
 		int x = 0;
@@ -252,14 +84,9 @@ public class Model implements Constants, Subject {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		Room result = makeRoom(getRoomData(x, y));
+		Room result = makeRoom(fileManager.getRoomData(x, y));
 		if (result == null)
-			result = new Room(x, y, exits.toCharArray(), player, false);
-		else if (!result.getTextRead() && result.getText() != "") {
-			textToShow = result.getText();
-			mode = "text";
-		}
-
+			result = new Room(x, y, exits, player, false, v);
 		return result;
 	}
 
@@ -271,128 +98,27 @@ public class Model implements Constants, Subject {
 		if (!lines.isEmpty()) {
 			for (String l : lines) {
 				String[] params = l.split(" ");
-				if (params[0].equalsIgnoreCase("r")) {
-					r = parseRoom(params);
+				if (params[0].equalsIgnoreCase("room")) {
+					r = fileManager.parseRoom(params, player);
 					r.addObserver(v);
 					x = r.getX();
 					y = r.getY();
-				} else if (params[0].startsWith("T")) {
-					r.setTiles(parseTiles(params));
-				} else if (params[0].startsWith("b")) {
-					enemies.add(parseBlock(params, x, y));
-				} else if (params[0].startsWith("g")) {
-					enemies.add(parseGhost(params, x, y));
-				} else if (params[0].startsWith("t")) {
-					enemies.add(parseTurret(params, x, y, r));
-				} else if (params[0].startsWith("s")) {
-					enemies.add(parseSnake(params, x, y, r));
-				}
-				if (l.startsWith("x")) {
-					r.setText(l.split(":")[1]);
+				} else if (params[0].startsWith("tiles")) {
+					r.setTiles(fileManager.parseTiles(params));
+				} else if (params[0].startsWith("block")) {
+					enemies.add(fileManager.parseBlock(params, x, y, getEnemyCount()));
+				} else if (params[0].startsWith("ghost")) {
+					enemies.add(fileManager.parseGhost(params, x, y, getEnemyCount()));
+				} else if (params[0].startsWith("turret")) {
+					enemies.add(fileManager.parseTurret(params, x, y, r, getEnemyCount()));
+				} else if (params[0].startsWith("snake")) {
+					enemies.add(fileManager.parseSnake(params, x, y, r, getEnemyCount(), v));
 				}
 			}
 			r.setEnemies(enemies);
-			exits = "";
+			exits = fileManager.getExits(r.getX(), r.getY());
 		}
 		return r;
-	}
-
-	private Room parseRoom(String[] params) {
-		int x = 0;
-		int y = 0;
-		try {
-			x = Integer.parseInt(params[1].split(",")[0]);
-			y = Integer.parseInt(params[1].split(",")[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		Boolean checkpoint = false;
-		if (params[2].startsWith("1"))
-			checkpoint = true;
-		return new Room(x, y, exits.toCharArray(), player, checkpoint);
-	}
-
-	private List<Tile> parseTiles(String[] params) {
-		List<Tile> tiles = new ArrayList<Tile>();
-		for (int i = 0; i < params.length - 1; i++) {
-			String[] cells = params[i + 1].split(",");
-
-			for (int j = 0; j < cells.length; j++) {
-
-				if (cells[j].startsWith("1")) {
-					tiles.add(new Wall(j, i));
-				} else {
-					tiles.add(new Tile(j, i));
-				}
-			}
-		}
-		return tiles;
-	}
-
-	private Block parseBlock(String[] params, int x, int y) {
-		enemyCount++;
-		String[] loc = params[1].split(",");
-		int bx = 0;
-		int by = 0;
-		try {
-			bx = Integer.parseInt(loc[0]);
-			by = Integer.parseInt(loc[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Block(x + "," + y, enemyCount, bx, by);
-	}
-
-	private Ghost parseGhost(String[] params, int x, int y) {
-		enemyCount++;
-		String[] loc = params[1].split(",");
-		int bx = 0;
-		int by = 0;
-		int pause = 3;
-		try {
-			bx = Integer.parseInt(loc[0]);
-			by = Integer.parseInt(loc[1]);
-			pause = Integer.parseInt(params[2]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Ghost(x + "," + y, enemyCount, bx, by, pause);
-	}
-
-	private Turret parseTurret(String[] params, int x, int y, Room r) {
-		enemyCount++;
-		String[] loc = params[1].split(",");
-		int delay = 0;
-		int ratio = 1;
-		int tx = 0;
-		int ty = 0;
-		try {
-			tx = Integer.parseInt(loc[0]);
-			ty = Integer.parseInt(loc[1]);
-			ratio = Integer.parseInt(params[2]);
-			delay = Integer.parseInt(params[4]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		char direction = params[3].charAt(0);
-		r.getTile(tx, ty).setTrav(false);
-		return new Turret(x + "," + y, enemyCount, tx, ty, ratio, delay, direction, r, v);
-	}
-
-	private Snake parseSnake(String[] params, int x, int y, Room r) {
-		enemyCount++;
-		String[] loc = params[1].split(",");
-		int length = 1;
-		int sx = 0;
-		int sy = 0;
-		try {
-			sx = Integer.parseInt(loc[0]);
-			sy = Integer.parseInt(loc[1]);
-			length = Integer.parseInt(params[2]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Snake(x + "," + y, enemyCount, sx, sy, length, r, v);
 	}
 
 	public boolean ghostCheck() {
@@ -477,7 +203,6 @@ public class Model implements Constants, Subject {
 				endTurn();
 			player.step();
 		}
-		System.out.println(room.getEnemies().size());
 	}
 
 	private Boolean tryExit(char direction, int x, int y) {
@@ -538,6 +263,7 @@ public class Model implements Constants, Subject {
 		checkForDeath();
 		checkTile();
 		clock++;
+		this.setText(room.getTile(player).getText());
 		notifyObserver();
 	}
 
@@ -602,7 +328,7 @@ public class Model implements Constants, Subject {
 		if (room.getCheckpoint()) {
 			player.setCheckpoint(room.getId());
 			checkpointId = room.getId();
-			saveGame();
+			fileManager.saveGame(checkpointId, player, clock);
 		}
 		room.updatePath(player.getX(), player.getY());
 		notifyObserver();
@@ -671,12 +397,12 @@ public class Model implements Constants, Subject {
 		room.printEnemies();
 		if (lines[0] == "None")
 			room.removeEntity(x, y);
-		Entity e = parseEntity(lines[0]);
+		Entity e = fileManager.parseEntity(lines[0], room, getEnemyCount(), v);
 		if (e != null) {
 			room.removeEntity(x, y);
 			room.addEntity(e);
 		}
-		Tile tile = parseTile(lines[1]);
+		Tile tile = fileManager.parseTile(lines[1]);
 		if (tile != null) {
 			room.swapTile(tile);
 		} else {
@@ -684,121 +410,16 @@ public class Model implements Constants, Subject {
 		room.notifyObserver();
 	}
 
-	private Tile parseTile(String line) {
-		if (line != null) {
-			String[] params = line.split(" ");
-			if (params[0].startsWith("E")) {
-				return parseEmptyTile(params);
-			} else if (params[0].startsWith("W")) {
-				return parseWall(params);
-			} else if (params[0].startsWith("S")) {
-				System.out.println("making slide");
-				return parseSlide(params);
-			} else if (params[0].startsWith("T")) {
-				return parseTeleport(params);
-			} else if (params[0].startsWith("H")) {
-				return parseHole(params);
-			}
-		}
-		return null;
-	}
-
-	private Tile parseHole(String[] params) {
-		int x = 0;
-		int y = 0;
-		String[] coords = params[1].split(",");
-		try {
-			x = Integer.parseInt(coords[0]);
-			y = Integer.parseInt(coords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Hole(x, y);
-	}
-
-	private Tile parseTeleport(String[] params) {
-		int x = 0;
-		int y = 0;
-		int tx = 0;
-		int ty = 0;
-		String[] coords = params[1].split(",");
-		String[] tCoords = params[2].split(",");
-		try {
-			System.out.println(params[2]);
-			x = Integer.parseInt(coords[0]);
-			y = Integer.parseInt(coords[1]);
-			tx = Integer.parseInt(tCoords[0]);
-			ty = Integer.parseInt(tCoords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Teleport(x, y, tx, ty);
-	}
-
-	private Tile parseSlide(String[] params) {
-		int x = 0;
-		int y = 0;
-		String[] coords = params[1].split(",");
-		try {
-			x = Integer.parseInt(coords[0]);
-			y = Integer.parseInt(coords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Slide(x, y, params[2].charAt(0));
-	}
-
-	private Tile parseWall(String[] params) {
-		int x = 0;
-		int y = 0;
-		String[] coords = params[1].split(",");
-		try {
-			x = Integer.parseInt(coords[0]);
-			y = Integer.parseInt(coords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Wall(x, y);
-	}
-
-	private Tile parseEmptyTile(String[] params) {
-		int x = 0;
-		int y = 0;
-		String[] coords = params[1].split(",");
-		try {
-			x = Integer.parseInt(coords[0]);
-			y = Integer.parseInt(coords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		return new Tile(x, y);
-	}
-
-	private Entity parseEntity(String line) {
-		if (line != null) {
-			String[] params = line.split(" ");
-
-			if (params[0].startsWith("b")) {
-				return parseBlock(params, room.getX(), room.getY());
-			} else if (params[0].startsWith("g")) {
-				return parseGhost(params, room.getX(), room.getY());
-			} else if (params[0].startsWith("t")) {
-				return parseTurret(params, room.getX(), room.getY(), room);
-			} else if (params[0].startsWith("s")) {
-				return parseSnake(params, room.getX(), room.getY(), room);
-			}
-		}
-		return null;
-	}
-
 	public String getText() {
 		return text;
 	}
 
 	public void setText(String text) {
-		this.text = text;
-		setMode("text");
-		notifyObserver();
+		if (text != "") {
+			this.text = text;
+			setMode("text");
+			notifyObserver();
+		}
 	}
 
 	public void input(int i) {
@@ -834,18 +455,29 @@ public class Model implements Constants, Subject {
 		} else if (mode == "text") {
 			if (textToShow == "") {
 				setText("");
+				room.getTile(player).setTextRead(true);
 				mode = "game";
 				return;
 			}
-			if (textToShow.length() < 20) {
+			if (textToShow.length() < textLength) {
 				setText(textToShow);
 				textToShow = "";
 			} else {
-				setText(textToShow.substring(0, 20));
-				textToShow = textToShow.substring(20);
+				String text = textToShow.substring(0, textLength);
+				setText(textToShow.substring(0, text.lastIndexOf(" ")));
+				textToShow = textToShow.substring(text.lastIndexOf(" ") + 1);
 			}
 			System.out.println(text);
 
 		}
+	}
+
+	private int getEnemyCount() {
+		enemyCount++;
+		return enemyCount;
+	}
+
+	public void eraseSaveData() {
+		fileManager.eraseSaveData();
 	}
 }

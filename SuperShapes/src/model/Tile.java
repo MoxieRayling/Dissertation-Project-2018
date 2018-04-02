@@ -8,6 +8,8 @@ public class Tile {
 	protected int y;
 	private Boolean pathed = false;
 	private Boolean occupied = false;
+	private String text = "";
+	private Boolean textRead = false;
 
 	public Tile(int x, int y) {
 		this.x = x;
@@ -15,6 +17,23 @@ public class Tile {
 		loc[0] = x;
 		loc[1] = y;
 		this.trav = true;
+		text = "hi";
+	}
+
+	public Boolean getTextRead() {
+		return textRead;
+	}
+
+	public void setTextRead(Boolean textRead) {
+		this.textRead = textRead;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	public int getX() {

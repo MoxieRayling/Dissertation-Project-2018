@@ -17,11 +17,12 @@ public class Snake extends Entity {
 	public Snake(String roomId, int count, int x, int y, int length, Room room, Observer o) {
 		super(roomId, count, x, y);
 		id += "s";
+		System.out.println(id);
 		this.room = room;
 		this.length = length;
-		this.o = o;
 		startX = x;
 		startY = y;
+		this.o = o;
 		for (int i = 0; i < 2; i++) {
 			addSegment(x, y);
 		}

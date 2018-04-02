@@ -157,7 +157,6 @@ public class Window extends JFrame implements View, Constants {
 
 	public void changeRoom(int x, int y) {
 		c.changeRoom(x,y);
-		
 	}
 
 	public String[] getRooms() {
