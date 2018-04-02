@@ -17,7 +17,8 @@ public class Tile {
 		loc[0] = x;
 		loc[1] = y;
 		this.trav = true;
-		text = "hi";
+		//text = "hi";
+		textRead = true;
 	}
 
 	public Boolean getTextRead() {

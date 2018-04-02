@@ -17,17 +17,15 @@ public class Room implements Subject {
 	private String exits;
 	private Player player;
 	private String id;
-	private Boolean checkpoint;
 	private List<Entity> remove = new ArrayList<Entity>();
 	private List<Entity> add = new ArrayList<Entity>();
 
-	public Room(int x, int y, String exits, Player player, Boolean checkpoint) {
+	public Room(int x, int y, String exits, Player player) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		this.checkpoint = checkpoint;
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
 				tiles.add(new Tile(j, i));
@@ -35,13 +33,12 @@ public class Room implements Subject {
 		}
 	}
 
-	public Room(int x, int y, String exits, Player player, Boolean checkpoint, Observer o) {
+	public Room(int x, int y, String exits, Player player, Observer o) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		this.checkpoint = checkpoint;
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
 				tiles.add(new Tile(j, i));
@@ -74,13 +71,23 @@ public class Room implements Subject {
 		result.add(";");
 		return result;
 	}
-
-	public Boolean getCheckpoint() {
-		return checkpoint;
+	
+	public Boolean containsKey() {
+		for(Tile t : tiles) {
+			if(t instanceof Key) {
+				return true;
+			}
+		}
+		return false;
 	}
-
-	public void setCheckpoint(Boolean checkpoint) {
-		this.checkpoint = checkpoint;
+	
+	public Boolean containsSave() {
+		for(Tile t : tiles) {
+			if(t instanceof Save) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getId() {

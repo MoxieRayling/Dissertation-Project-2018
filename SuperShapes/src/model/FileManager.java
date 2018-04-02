@@ -224,10 +224,7 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		Boolean checkpoint = false;
-		if (params[2].startsWith("1"))
-			checkpoint = true;
-		return new Room(x, y, getExits(x, y), player, checkpoint);
+		return new Room(x, y, getExits(x, y), player);
 	}
 
 	public List<Tile> parseTiles(String[] params) {
@@ -415,11 +412,25 @@ public class FileManager {
 		return null;
 	}
 
-	public List<Integer> getMap(int x, int y){
+	public int[][] getMap(int x, int y) {
 		List<String> rooms = this.getWorldData();
-		List<Integer> map = new ArrayList<Integer>();
-		for(String line : rooms) {
-			
+		List<String> lines = new ArrayList<String>();
+		int[][] map = new int[11][11];
+		Player p = new Player("", x, y, 0);
+		for (String line : rooms) {
+			if (line.startsWith("room")) {
+				lines.clear();
+				if (!map.equals(new int[11][11])) {
+					Room r = parseRoom((String[]) lines.toArray(), p);
+					map[r.getX()][r.getY()] = 1;
+					if (r.containsKey()) {
+						map[r.getX()][r.getY()] = 2;
+					} else if (r.containsSave()) {
+						map[r.getX()][r.getY()] = 3;
+					}
+				}
+			}
+			lines.add(line);
 		}
 		return map;
 	}

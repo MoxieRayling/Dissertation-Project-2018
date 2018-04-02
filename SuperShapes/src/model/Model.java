@@ -15,7 +15,6 @@ public class Model implements Constants, Subject {
 	private int clock = 0;
 	private Boolean input = true;
 	private int enemyCount = 0;
-	private String checkpointId = "0,0";
 	private Boolean next = false;
 	private String exits = "";
 	private String text = "";
@@ -85,8 +84,9 @@ public class Model implements Constants, Subject {
 			System.out.println("rip ints");
 		}
 		Room result = makeRoom(fileManager.getRoomData(x, y));
+		exits = fileManager.getExits(x, y);
 		if (result == null)
-			result = new Room(x, y, exits, player, false, v);
+			result = new Room(x, y, exits, player, v);
 		return result;
 	}
 
@@ -116,7 +116,6 @@ public class Model implements Constants, Subject {
 				}
 			}
 			r.setEnemies(enemies);
-			exits = fileManager.getExits(r.getX(), r.getY());
 		}
 		return r;
 	}
@@ -263,7 +262,8 @@ public class Model implements Constants, Subject {
 		checkForDeath();
 		checkTile();
 		clock++;
-		this.setText(room.getTile(player).getText());
+		if (!room.getTile(player).getTextRead())
+			this.setText(room.getTile(player).getText());
 		notifyObserver();
 	}
 
@@ -325,14 +325,8 @@ public class Model implements Constants, Subject {
 		}
 		room.addObserver(v);
 		player.setRoomId(room.getId());
-		if (room.getCheckpoint()) {
-			player.setCheckpoint(room.getId());
-			checkpointId = room.getId();
-			fileManager.saveGame(checkpointId, player, clock);
-		}
 		room.updatePath(player.getX(), player.getY());
 		notifyObserver();
-
 	}
 
 	public String getRoomId() {
@@ -415,11 +409,9 @@ public class Model implements Constants, Subject {
 	}
 
 	public void setText(String text) {
-		if (text != "") {
-			this.text = text;
-			setMode("text");
-			notifyObserver();
-		}
+		this.text = text;
+		setMode("text");
+		notifyObserver();
 	}
 
 	public void input(int i) {
