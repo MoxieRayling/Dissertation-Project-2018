@@ -473,7 +473,15 @@ public class Model implements Constants, Subject {
 		fileManager.eraseSaveData();
 	}
 
-	public int[][] getMap(int x, int y) {
+	public String[][] getMap(int x, int y) {
 		return fileManager.getMap(x, y);
+	}
+
+	public int getX() {
+		return room.getX();
+	}
+
+	public int getY() {
+		return room.getY();
 	}
 }

@@ -6,37 +6,45 @@ import java.awt.Polygon;
 
 public class MapImage extends Image {
 
-	private int[][] map = new int[11][11];
+	private String[][] map = new String[11][11];
 
-	public MapImage(int[][] map, int x, int y, int scalex, int scaley, String room) {
-		super(x, y, scalex, scaley, room);
+	public MapImage(String[][] map, int x, int y, int scalex, int scaley) {
+		super(x, y, scalex, scaley, null);
+		this.map = map;
+		String line = "";
+		for (int i = 10; i >= 0; i--) {
+			for (int j = 10; j >= 0; j--) {
+				line += map[i][j] + ",";
+			}
+			System.out.println(line);
+			line = "";
+		}
 	}
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
 
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				if (map[i][j] == 0) {
+		String tile = "";
+		for (int i = 10; i >= 0; i--) {
+			for (int j = 10; j >= 0; j--) {
+				if (map[i][j] == null) {
 					g.setColor(new Color(0x000000));
 					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
-				} else if (map[i][j] == 1) {
-					g.setColor(new Color(0x444444));
+				} else if (map[i][j].startsWith("R")) {
+					g.setColor(new Color(0x999999));
 					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
 					g.setColor(new Color(0x000000));
 					g.drawRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
-				} else if (map[i][j] == 2) {
-					g.setColor(new Color(0x444444));
-					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
-					g.setColor(new Color(0x000000));
-					g.drawOval(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
-				} else if (map[i][j] == 3) {
-					g.setColor(new Color(0x444444));
-					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
-					g.setColor(new Color(0x000000));
-					g.fillOval(i * scalex + getXPos() + x + x / 2, j * scaley + getYPos() + y + y / 4, scalex / 4,
-							scaley / 4);
+					if (map[i][j].contains("K")) {
+						tile += "K";
+					}
+					if (map[i][j].contains("S")) {
+						tile += "S";
+					}
 				}
+				g.drawString(tile, i * scalex + getXPos() + x + scalex / 4,
+						j * scaley + getYPos() + y + scaley * 3 / 2);
+				tile = "";
 			}
 		}
 		int[] xCoords = { 0, 0, 0 };

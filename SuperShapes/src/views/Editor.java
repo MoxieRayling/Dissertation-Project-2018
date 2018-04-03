@@ -59,70 +59,102 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private JComboBox<String> tilesBox;
 	private int selectedX = 0;
 	private int selectedY = 0;
-	private int selectedRoomX = 0;
-	private int selectedRoomY = 0;
+	private int selectedRoomX = 5;
+	private int selectedRoomY = 5;
+	private int mapCentreX = 0;
+	private int mapCentreY = 0;
+	private JButton mapUp;
+	private JButton mapLeft;
+	private JButton mapRight;
+	private JButton mapDown;
 	private List<List<Component>> entityComponents = new ArrayList<List<Component>>();
 	private List<List<Component>> tileComponents = new ArrayList<List<Component>>();
 	private JCheckBox paintEntity;
 	private JCheckBox paintTile;
-	private JButton addToList;
-	private JSlider xRoomSlider;
-	private JSlider yRoomSlider;
-	private JButton loadRoom;
 	private JButton export;
-	private JComboBox<String> roomList;
 
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
 		initUI();
-		this.setBackground(new Color(0x222222));
+		this.setBackground(new Color(0x888888));
 		start();
 	}
 
 	public void setMap() {
-		int x = 0;
-		int y = 0;
-		map = new MapImage(w.getMap(x, y), 0, 0, scalex, scaley, null);
+		map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
 		images.add(map);
 	}
 
 	private void initUI() {
 
-		loadRoom = new JButton("Load Room");
-		loadRoom.setBounds(scalex * 13, scaley * 10, scalex * 3, scaley);
-		loadRoom.addActionListener(new ActionListener() {
+		mapUp = new JButton();
+		mapUp.setBounds(scalex * 6, 0, scalex, scaley);
+		mapUp.setOpaque(false);
+		mapUp.setContentAreaFilled(false);
+		mapUp.setBorderPainted(false);
+		mapUp.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.changeRoom(xRoomSlider.getValue(), yRoomSlider.getValue());
+				mapCentreY -= 1;
+				images.remove(map);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				images.add(map);
 			}
 		});
-		this.add(loadRoom);
+		this.add(mapUp);
 
-		xRoomSlider = new JSlider(-10, 10, 0);
-		xRoomSlider.setBounds(scalex * 13, scaley * 8, scalex * 3, scaley);
-		this.add(xRoomSlider);
-
-		yRoomSlider = new JSlider(-10, 10, 0);
-		yRoomSlider.setBounds(scalex * 13, scaley * 9, scalex * 3, scaley);
-		this.add(yRoomSlider);
-
-		addToList = new JButton("Add to List");
-		addToList.setBounds(scalex * 13, scaley * 11, scalex * 3, scaley);
-		addToList.addActionListener(new ActionListener() {
+		mapLeft = new JButton();
+		mapLeft.setBounds(0, scaley * 6, scalex, scaley);
+		mapLeft.setOpaque(false);
+		mapLeft.setContentAreaFilled(false);
+		mapLeft.setBorderPainted(false);
+		mapLeft.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.addRoom();
-				roomList.removeAllItems();
-				String[] roomIds = w.getRooms();
-				for (int i = 0; i < roomIds.length; i++) {
-					roomList.addItem(roomIds[i]);
+				mapCentreX -= 1;
+				images.remove(map);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				images.add(map);
 				}
-			}
 		});
-		this.add(addToList);
+		this.add(mapLeft);
+
+		mapDown = new JButton();
+		mapDown.setBounds(scalex * 6, scaley * 12, scalex, scaley);
+		mapDown.setOpaque(false);
+		mapDown.setContentAreaFilled(false);
+		mapDown.setBorderPainted(false);
+		mapDown.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				mapCentreY += 1;
+				images.remove(map);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				images.add(map);
+				}
+		});
+		this.add(mapDown);
+
+		mapRight = new JButton();
+		mapRight.setBounds(scalex * 12, scaley * 6, scalex, scaley);
+		mapRight.setOpaque(false);
+		mapRight.setContentAreaFilled(false);
+		mapRight.setBorderPainted(false);
+		mapRight.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				mapCentreX += 1;
+				images.remove(map);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				images.add(map);
+				}
+		});
+		this.add(mapRight);
 
 		export = new JButton("export");
 		export.setBounds(scalex * 13, scaley * 12, scalex * 3, scaley);
@@ -134,18 +166,6 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		});
 		this.add(export);
-
-		roomList = new JComboBox<String>();
-		roomList.setBounds(scalex * 16, scaley * 10, scalex * 2, 20);
-		roomList.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					w.changeRoom(e.getItem().toString());
-				}
-			}
-		});
-		this.add(roomList);
 
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
@@ -185,7 +205,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				public void actionPerformed(ActionEvent arg0) {
 					selectedRoomX = x;
 					selectedRoomY = y;
-					w.changeRoom(x, y);
+					w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 				}
 			});
 			this.add(b);

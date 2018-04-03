@@ -21,6 +21,7 @@ public class Window extends JFrame implements View, Constants {
 	private StartMenu start;
 	private Animation game;
 	private Editor editor;
+	private MapView map;
 	private JFrame frame;
 	private Boolean input = true;
 
@@ -42,9 +43,32 @@ public class Window extends JFrame implements View, Constants {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (input) {
-					c.Input(e.getKeyCode());
+					if (getContentPane().contains(game.getLocation())) {
+						if (e.getKeyChar() == 'm') {
+							map();
+						} else {
+							c.Input(e.getKeyCode());
+						}
+					}
+					else if (getContentPane().contains(map.getLocation())) {
+						if (e.getKeyCode() == 27 || e.getKeyCode() == 77 || e.getKeyCode() == 13) {
+							returnToGame();
+						}
+						else if (e.getKeyCode() == 38) {
+							map.moveMap('N');
+						}
+						else if (e.getKeyCode() == 37) {
+							map.moveMap('W');
+						}
+						else if (e.getKeyCode() == 39) {
+							map.moveMap('E');
+						}
+						else if (e.getKeyCode() == 40) {
+							map.moveMap('S');
+						}	
+					}
 				}
-				input = false;
+				//input = false;
 			}
 
 			@Override
@@ -119,24 +143,14 @@ public class Window extends JFrame implements View, Constants {
 
 	public void newGame() {
 		c.newGame();
-		//c.setMode("game");
-		this.setSize(512,512);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(game);
-		this.validate();
-		this.repaint();
-		game.requestFocusInWindow();
+		// c.setMode("game");
+		returnToGame();
 	}
 
 	public void loadGame() {
 		c.loadGame();
 		c.setMode("game");
-		this.setSize(512,512);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(game);
-		this.validate();
-		this.repaint();
-		game.requestFocusInWindow();
+		returnToGame();
 	}
 
 	public void editor() {
@@ -152,12 +166,32 @@ public class Window extends JFrame implements View, Constants {
 		editor.requestFocusInWindow();
 	}
 
+	public void map() {
+		this.map = new MapView(this, c.getX(), c.getY());
+		this.setSize(512, 512);
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(map);
+		this.validate();
+		this.repaint();
+		map.requestFocusInWindow();
+	}
+	
+	public void returnToGame() {
+		this.setSize(512, 512);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(game);
+		this.validate();
+		this.repaint();
+		game.requestFocusInWindow();
+	}
+
 	public void addToRoom(String[] lines, int x, int y) {
-		c.addToRoom(lines,x,y);
+		c.addToRoom(lines, x, y);
 	}
 
 	public void changeRoom(int x, int y) {
-		c.changeRoom(x,y);
+		c.changeRoom(x, y);
 	}
 
 	public String[] getRooms() {
@@ -167,6 +201,7 @@ public class Window extends JFrame implements View, Constants {
 	public void changeRoom(String id) {
 		c.changeRoom(id);
 	}
+
 	public void addRoom() {
 		c.addRoom();
 	}
@@ -175,8 +210,8 @@ public class Window extends JFrame implements View, Constants {
 		c.export();
 	}
 
-	public int[][] getMap(int x, int y) {
-		return c.getMap(x,y);
+	public String[][] getMap(int x, int y) {
+		return c.getMap(x, y);
 	}
 
 }

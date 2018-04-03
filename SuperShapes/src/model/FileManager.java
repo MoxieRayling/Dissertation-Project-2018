@@ -433,23 +433,24 @@ public class FileManager {
 		return false;
 	}
 
-	public int[][] getMap(int x, int y) {
+	public String[][] getMap(int x, int y) {
 		List<String> rooms = this.getWorldData();
 		List<String> lines = new ArrayList<String>();
-		int[][] map = new int[11][11];
+		String[][] map = new String[11][11];
 		for (String line : rooms) {
 			if (line.startsWith("room")) {
-				if (!map.equals(new int[11][11])) {
+				if (!map.equals(new String[11][11])) {
 					int[] coords = idToCoords(line.split(" ")[1]);
-					if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5)
-						System.out.println(coords[0] + " " + coords[1]);
-					map[coords[0] + 5][coords[1] + 5] = 1;
-					if (searchList("key", lines)) {
-						map[coords[0] + 5][coords[1] + 5] = 2;
-					} else if (searchList("save", lines)) {
-						map[coords[0] + 5][coords[1] + 5] = 3;
+					if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
+						if (searchList("key", lines)) {
+							map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
+						}
+						if (searchList("save", lines)) {
+							map[coords[0] + 5 - x][coords[1] + 5 - y] += "S";
+						}
+						System.out.println(map[coords[0] + 5][coords[1] + 5]);
 					}
-					System.out.println(map[coords[0]+5][coords[1]+5]);
 				}
 				lines.clear();
 			}
