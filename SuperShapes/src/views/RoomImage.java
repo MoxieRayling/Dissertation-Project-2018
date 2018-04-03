@@ -40,16 +40,16 @@ public class RoomImage extends Image {
 	public void drawThis(Graphics2D g, int x, int y) {
 		g.setColor(Color.WHITE);
 		if (checkExit('N')) {
-			g.fillOval(scalex * 6, scaley / 2, scalex, scaley);
+			g.fillOval(scalex * 5 + x, scaley / 2, scalex, scaley);
 		}
 		if (checkExit('S')) {
-			g.fillOval(scalex * 6, scaley * 23 / 2, scalex, scaley);
+			g.fillOval(scalex * 5 + x, scaley * 23 / 2, scalex, scaley);
 		}
 		if (checkExit('W')) {
-			g.fillOval(scalex / 2, scaley * 6, scalex, scaley);
+			g.fillOval(-scalex / 2 + x, scaley * 6, scalex, scaley);
 		}
 		if (checkExit('E')) {
-			g.fillOval(scalex * 23 / 2, scaley * 6, scalex, scaley);
+			g.fillOval(scalex * 21 / 2 + x, scaley * 6, scalex, scaley);
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {

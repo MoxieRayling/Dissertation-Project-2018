@@ -36,7 +36,9 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private int scaley = sizey / 13;
 	private List<Image> images = new ArrayList<Image>();
 	private RoomImage room = null;
-	private List<JButton> buttons = new ArrayList<JButton>();
+	private MapImage map = null;
+	private List<JButton> tileButtons = new ArrayList<JButton>();
+	private List<JButton> roomButtons = new ArrayList<JButton>();
 	private List<Component> snakeOptions = new ArrayList<Component>();
 	private JSlider snakeSize;
 	private List<Component> ghostOptions = new ArrayList<Component>();
@@ -55,8 +57,10 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private JComboBox<String> slideDirectionBox;
 	private List<Component> slideOptions = new ArrayList<Component>();
 	private JComboBox<String> tilesBox;
-	private int selectedX = 1;
-	private int selectedY = 1;
+	private int selectedX = 0;
+	private int selectedY = 0;
+	private int selectedRoomX = 0;
+	private int selectedRoomY = 0;
 	private List<List<Component>> entityComponents = new ArrayList<List<Component>>();
 	private List<List<Component>> tileComponents = new ArrayList<List<Component>>();
 	private JCheckBox paintEntity;
@@ -76,29 +80,36 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		start();
 	}
 
+	public void setMap() {
+		int x = 0;
+		int y = 0;
+		map = new MapImage(w.getMap(x, y), 0, 0, scalex, scaley, null);
+		images.add(map);
+	}
+
 	private void initUI() {
-		
+
 		loadRoom = new JButton("Load Room");
-		loadRoom.setBounds(scalex * 13, scaley*10, scalex*3, scaley);
+		loadRoom.setBounds(scalex * 13, scaley * 10, scalex * 3, scaley);
 		loadRoom.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.changeRoom(xRoomSlider.getValue(),yRoomSlider.getValue());
+				w.changeRoom(xRoomSlider.getValue(), yRoomSlider.getValue());
 			}
 		});
 		this.add(loadRoom);
-		
+
 		xRoomSlider = new JSlider(-10, 10, 0);
-		xRoomSlider.setBounds(scalex * 13, scaley*8, scalex*3, scaley);
+		xRoomSlider.setBounds(scalex * 13, scaley * 8, scalex * 3, scaley);
 		this.add(xRoomSlider);
-		
+
 		yRoomSlider = new JSlider(-10, 10, 0);
-		yRoomSlider.setBounds(scalex * 13, scaley*9, scalex*3, scaley);
+		yRoomSlider.setBounds(scalex * 13, scaley * 9, scalex * 3, scaley);
 		this.add(yRoomSlider);
 
 		addToList = new JButton("Add to List");
-		addToList.setBounds(scalex * 13, scaley*11, scalex*3, scaley);
+		addToList.setBounds(scalex * 13, scaley * 11, scalex * 3, scaley);
 		addToList.addActionListener(new ActionListener() {
 
 			@Override
@@ -106,15 +117,15 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				w.addRoom();
 				roomList.removeAllItems();
 				String[] roomIds = w.getRooms();
-				for(int i = 0; i < roomIds.length;i++) {
+				for (int i = 0; i < roomIds.length; i++) {
 					roomList.addItem(roomIds[i]);
 				}
 			}
 		});
 		this.add(addToList);
-		
+
 		export = new JButton("export");
-		export.setBounds(scalex * 13, scaley*12, scalex*3, scaley);
+		export.setBounds(scalex * 13, scaley * 12, scalex * 3, scaley);
 		export.addActionListener(new ActionListener() {
 
 			@Override
@@ -123,9 +134,9 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		});
 		this.add(export);
-		
+
 		roomList = new JComboBox<String>();
-		roomList.setBounds(scalex * 16, scaley*10, scalex * 2, 20);
+		roomList.setBounds(scalex * 16, scaley * 10, scalex * 2, 20);
 		roomList.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -135,17 +146,18 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		});
 		this.add(roomList);
-		
+
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
-				buttons.add(new JButton());
+				tileButtons.add(new JButton());
+				roomButtons.add(new JButton());
 			}
 		}
-		
-		for (JButton b : buttons) {
-			int x = buttons.indexOf(b) % 11;
-			int y = buttons.indexOf(b) / 11;
-			b.setBounds(scalex * (x + 1), scaley * (y + 1), scalex, scaley);
+
+		for (JButton b : tileButtons) {
+			int x = tileButtons.indexOf(b) % 11;
+			int y = tileButtons.indexOf(b) / 11;
+			b.setBounds(scalex * (x + 1) + 700, scaley * (y + 1), scalex, scaley);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -156,6 +168,24 @@ public class Editor extends JPanel implements Constants, ItemListener {
 					selectedX = x;
 					selectedY = y;
 					w.addToRoom(generateTile(), x, y);
+				}
+			});
+			this.add(b);
+		}
+		for (JButton b : roomButtons) {
+			int x = roomButtons.indexOf(b) % 11;
+			int y = roomButtons.indexOf(b) / 11;
+			b.setBounds(scalex * (x + 1), scaley * (y + 1), scalex, scaley);
+			b.setOpaque(false);
+			b.setContentAreaFilled(false);
+			b.setBorderPainted(false);
+			b.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					selectedRoomX = x;
+					selectedRoomY = y;
+					w.changeRoom(x, y);
 				}
 			});
 			this.add(b);
@@ -418,6 +448,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				render.add(i);
 			}
 		}
+		render.add(map);
 		images = render;
 	}
 
@@ -435,11 +466,18 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		super.paintComponent(g);
 		for (Image i : images) {
 			if (i != null) {
-				i.drawThis(g, scalex, scaley);
+				if (i instanceof MapImage) {
+					g.setColor(new Color(0x000000));
+					g.drawRect(scalex, scaley, scalex * 11, scaley * 11);
+					i.drawThis(g, scalex, scaley);
+				} else {
+					i.drawThis(g, scalex + 700, scaley);
+				}
 			}
 		}
 		g.setColor(Color.RED);
-		g.drawRect((selectedX + 1) * scalex, (selectedY + 1) * scaley, scalex, scaley);
+		g.drawRect((selectedX + 1) * scalex + 700, (selectedY + 1) * scaley, scalex, scaley);
+		g.drawRect((selectedRoomX + 1) * scalex, (selectedRoomY + 1) * scaley, scalex, scaley);
 
 		timer.start();
 	}

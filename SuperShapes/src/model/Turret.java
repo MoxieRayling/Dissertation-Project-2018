@@ -1,7 +1,5 @@
 package model;
 
-import observers.Observer;
-
 public class Turret extends Entity {
 	private int ratio;
 	private int count;

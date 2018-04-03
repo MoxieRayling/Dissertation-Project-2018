@@ -76,4 +76,8 @@ public class Controller implements Constants {
 	public void export() {
 		((EditorModel) m).exportRooms();
 	}
+
+	public int[][] getMap(int x, int y) {
+		return m.getMap(x,y);
+	}
 }

@@ -272,10 +272,10 @@ public class Animation extends JPanel implements Constants {
 
 		drawHUD(g, columns, rows);
 		if (text != "") {
-			g.setColor(new Color(0,0,0,100));
-			g.fillRect(scalex, scaley * 11, scalex *11, scaley );
+			g.setColor(new Color(0, 0, 0, 100));
+			g.fillRect(scalex, scaley * 11, scalex * 11, scaley);
 			g.setColor(Color.WHITE);
-			g.drawString(text,scalex+20, scaley * 11+20);
+			g.drawString(text, scalex + 20, scaley * 11 + 20);
 		}
 
 		timer.start();

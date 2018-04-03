@@ -412,23 +412,46 @@ public class FileManager {
 		return null;
 	}
 
+	private int[] idToCoords(String id) {
+		int[] result = new int[2];
+		String[] coords = id.split(",");
+		try {
+			result[0] = Integer.parseInt(coords[0]);
+			result[1] = Integer.parseInt(coords[1]);
+		} catch (NumberFormatException e) {
+			System.out.println("rip ints");
+		}
+		return result;
+	}
+
+	private Boolean searchList(String search, List<String> lines) {
+		for (String line : lines) {
+			if (line.contains(search)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public int[][] getMap(int x, int y) {
 		List<String> rooms = this.getWorldData();
 		List<String> lines = new ArrayList<String>();
 		int[][] map = new int[11][11];
-		Player p = new Player("", x, y, 0);
 		for (String line : rooms) {
 			if (line.startsWith("room")) {
-				lines.clear();
 				if (!map.equals(new int[11][11])) {
-					Room r = parseRoom((String[]) lines.toArray(), p);
-					map[r.getX()][r.getY()] = 1;
-					if (r.containsKey()) {
-						map[r.getX()][r.getY()] = 2;
-					} else if (r.containsSave()) {
-						map[r.getX()][r.getY()] = 3;
+					int[] coords = idToCoords(line.split(" ")[1]);
+					if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5)
+						System.out.println(coords[0] + " " + coords[1]);
+					map[coords[0] + 5][coords[1] + 5] = 1;
+					if (searchList("key", lines)) {
+						map[coords[0] + 5][coords[1] + 5] = 2;
+					} else if (searchList("save", lines)) {
+						map[coords[0] + 5][coords[1] + 5] = 3;
 					}
+					System.out.println(map[coords[0]+5][coords[1]+5]);
 				}
+				lines.clear();
 			}
 			lines.add(line);
 		}

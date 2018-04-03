@@ -142,12 +142,13 @@ public class Window extends JFrame implements View, Constants {
 	public void editor() {
 		c.runEditor();
 		c.setMode("editor");
-		this.setSize(770, 600);
+		this.setSize(1200, 600);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(editor);
 		this.validate();
 		this.repaint();
+		editor.setMap();
 		editor.requestFocusInWindow();
 	}
 
@@ -172,6 +173,10 @@ public class Window extends JFrame implements View, Constants {
 
 	public void export() {
 		c.export();
+	}
+
+	public int[][] getMap(int x, int y) {
+		return c.getMap(x,y);
 	}
 
 }
