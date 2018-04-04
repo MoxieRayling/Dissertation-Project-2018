@@ -13,4 +13,12 @@ public class Teleport extends Tile {
 	public String toString() {
 		return "T " + x + "," + y + " " + xTele + " " + yTele;
 	}
+
+	public int getXTele() {
+		return xTele;
+	}
+
+	public int getYTele() {
+		return yTele;
+	}
 }

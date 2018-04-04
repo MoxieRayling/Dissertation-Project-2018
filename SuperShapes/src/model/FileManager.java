@@ -13,8 +13,15 @@ import observers.Observer;
 
 public class FileManager {
 
+	private int enemyCount = 0;
+
 	public FileManager() {
 
+	}
+
+	private int getEnemyCount() {
+		enemyCount++;
+		return enemyCount;
 	}
 
 	public List<String> getSaveData() {
@@ -129,6 +136,45 @@ public class FileManager {
 		return lines;
 	}
 
+	public Room makeRoom(List<String> lines, Player player, Observer o) {
+		List<Entity> enemies = new ArrayList<Entity>();
+		enemyCount = 0;
+		int x = 0;
+		int y = 0;
+		Room r = null;
+		if (!lines.isEmpty()) {
+			for (String l : lines) {
+				String[] params = l.split(" ");
+				if (params[0].equalsIgnoreCase("room")) {
+					r = parseRoom(params, player);
+					r.addObserver(o);
+					x = r.getX();
+					y = r.getY();
+				} else if (params[0].startsWith("block")) {
+					enemies.add(parseBlock(params, x, y, getEnemyCount()));
+				} else if (params[0].startsWith("ghost")) {
+					enemies.add(parseGhost(params, x, y, getEnemyCount()));
+				} else if (params[0].startsWith("turret")) {
+					enemies.add(parseTurret(params, x, y, r, getEnemyCount()));
+				} else if (params[0].startsWith("snake")) {
+					enemies.add(parseSnake(params, x, y, r, getEnemyCount(), o));
+				} else if (params[0].startsWith("empty")) {
+					r.swapTile(parseEmptyTile(params));
+				} else if (params[0].startsWith("wall")) {
+					r.swapTile(parseWall(params));
+				} else if (params[0].startsWith("slide")) {
+					r.swapTile(parseSlide(params));
+				} else if (params[0].startsWith("tele")) {
+					r.swapTile(parseTeleport(params));
+				} else if (params[0].startsWith("hole")) {
+					r.swapTile(parseHole(params));
+				}
+			}
+			r.setEnemies(enemies);
+		}
+		return r;
+	}
+
 	public void updateWorldFile(String room, String oldLine, String newLine) {
 		String fileName = "resource/world.txt";
 		String line = null;
@@ -227,23 +273,6 @@ public class FileManager {
 		return new Room(x, y, getExits(x, y), player);
 	}
 
-	public List<Tile> parseTiles(String[] params) {
-		List<Tile> tiles = new ArrayList<Tile>();
-		for (int i = 0; i < params.length - 1; i++) {
-			String[] cells = params[i + 1].split(",");
-
-			for (int j = 0; j < cells.length; j++) {
-
-				if (cells[j].startsWith("1")) {
-					tiles.add(new Wall(j, i));
-				} else {
-					tiles.add(new Tile(j, i));
-				}
-			}
-		}
-		return tiles;
-	}
-
 	public Block parseBlock(String[] params, int x, int y, int enemyCount) {
 		String[] loc = params[1].split(",");
 		int bx = 0;
@@ -309,15 +338,15 @@ public class FileManager {
 	public Tile parseTile(String line) {
 		if (line != null) {
 			String[] params = line.split(" ");
-			if (params[0].startsWith("E")) {
+			if (params[0].startsWith("empty")) {
 				return parseEmptyTile(params);
-			} else if (params[0].startsWith("W")) {
+			} else if (params[0].startsWith("wall")) {
 				return parseWall(params);
-			} else if (params[0].startsWith("S")) {
+			} else if (params[0].startsWith("slide")) {
 				return parseSlide(params);
-			} else if (params[0].startsWith("T")) {
+			} else if (params[0].startsWith("tele")) {
 				return parseTeleport(params);
-			} else if (params[0].startsWith("H")) {
+			} else if (params[0].startsWith("hole")) {
 				return parseHole(params);
 			}
 		}
@@ -395,18 +424,18 @@ public class FileManager {
 		return new Tile(x, y);
 	}
 
-	public Entity parseEntity(String line, Room room, int enemyCount, Observer o) {
+	public Entity parseEntity(String line, Room room, Observer o) {
 		if (line != null) {
 			String[] params = line.split(" ");
 
 			if (params[0].startsWith("block")) {
-				return parseBlock(params, room.getX(), room.getY(), enemyCount);
+				return parseBlock(params, room.getX(), room.getY(), getEnemyCount());
 			} else if (params[0].startsWith("ghost")) {
-				return parseGhost(params, room.getX(), room.getY(), enemyCount);
+				return parseGhost(params, room.getX(), room.getY(), getEnemyCount());
 			} else if (params[0].startsWith("turret")) {
-				return parseTurret(params, room.getX(), room.getY(), room, enemyCount);
+				return parseTurret(params, room.getX(), room.getY(), room, getEnemyCount());
 			} else if (params[0].startsWith("snake")) {
-				return parseSnake(params, room.getX(), room.getY(), room, enemyCount, o);
+				return parseSnake(params, room.getX(), room.getY(), room, getEnemyCount(), o);
 			}
 		}
 		return null;

@@ -21,6 +21,28 @@ public class EditorModel extends Model {
 		super.room.addObserver(v);
 		super.room.notifyObserver();
 	}
+	
+	public void addToRoom(String[] lines, int x, int y) {
+		for (Tile t : room.getTiles()) {
+			if (t.getX() == x && t.getY() == y) {
+				System.out.println(t.toString());
+			}
+		}
+		room.printEnemies();
+		if (lines[0] == "None")
+			room.removeEntity(x, y);
+		Entity e = fileManager.parseEntity(lines[0], room, v);
+		if (e != null) {
+			room.removeEntity(x, y);
+			room.addEntity(e);
+		}
+		Tile tile = fileManager.parseTile(lines[1]);
+		if (tile != null) {
+			room.swapTile(tile);
+		} else {
+		}
+		room.notifyObserver();
+	}
 
 	public void addRoom() {
 		int index = searchRooms(room.getX(), room.getY());

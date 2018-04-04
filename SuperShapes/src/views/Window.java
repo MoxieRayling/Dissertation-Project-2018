@@ -111,8 +111,6 @@ public class Window extends JFrame implements View, Constants {
 
 	public void setInput(Boolean input) {
 		this.input = input;
-		if (c != null)
-			c.setNext(input);
 	}
 
 	@Override

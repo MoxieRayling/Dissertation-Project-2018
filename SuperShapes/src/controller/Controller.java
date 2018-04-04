@@ -40,12 +40,8 @@ public class Controller implements Constants {
 		m.notifyAllObservers();
 	}
 
-	public void setNext(Boolean next) {
-		m.setNext(next);
-	}
-
 	public void addToRoom(String[] lines, int x, int y) {
-		m.addToRoom(lines, x, y);
+		((EditorModel) m).addToRoom(lines, x, y);
 	}
 
 	public void setMode(String mode) {

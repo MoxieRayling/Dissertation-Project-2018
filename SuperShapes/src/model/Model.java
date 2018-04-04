@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import controller.Constants;
 import observers.Observer;
@@ -9,13 +8,11 @@ import observers.Subject;
 
 public class Model implements Constants, Subject {
 	protected Room room;
-	private Observer v;
+	protected Observer v;
 	protected Player player;
 	private String roomId;
 	private int clock = 0;
 	private Boolean input = true;
-	private int enemyCount = 0;
-	private Boolean next = false;
 	private String exits = "";
 	private String text = "";
 	private String textToShow = "";
@@ -83,41 +80,11 @@ public class Model implements Constants, Subject {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		Room result = makeRoom(fileManager.getRoomData(x, y));
+		Room result = fileManager.makeRoom(fileManager.getRoomData(x, y), player, v);
 		exits = fileManager.getExits(x, y);
 		if (result == null)
 			result = new Room(x, y, exits, player, v);
 		return result;
-	}
-
-	private Room makeRoom(List<String> lines) {
-		List<Entity> enemies = new ArrayList<Entity>();
-		int x = 0;
-		int y = 0;
-		Room r = null;
-		if (!lines.isEmpty()) {
-			for (String l : lines) {
-				String[] params = l.split(" ");
-				if (params[0].equalsIgnoreCase("room")) {
-					r = fileManager.parseRoom(params, player);
-					r.addObserver(v);
-					x = r.getX();
-					y = r.getY();
-				} else if (params[0].startsWith("tiles")) {
-					r.setTiles(fileManager.parseTiles(params));
-				} else if (params[0].startsWith("block")) {
-					enemies.add(fileManager.parseBlock(params, x, y, getEnemyCount()));
-				} else if (params[0].startsWith("ghost")) {
-					enemies.add(fileManager.parseGhost(params, x, y, getEnemyCount()));
-				} else if (params[0].startsWith("turret")) {
-					enemies.add(fileManager.parseTurret(params, x, y, r, getEnemyCount()));
-				} else if (params[0].startsWith("snake")) {
-					enemies.add(fileManager.parseSnake(params, x, y, r, getEnemyCount(), v));
-				}
-			}
-			r.setEnemies(enemies);
-		}
-		return r;
 	}
 
 	public boolean ghostCheck() {
@@ -151,7 +118,6 @@ public class Model implements Constants, Subject {
 									&& player.getPY() == e.getY())) {
 
 				player.die();
-				player.setDead(true);
 				break;
 			}
 		}
@@ -260,24 +226,35 @@ public class Model implements Constants, Subject {
 		room.moveEnemies();
 		checkShield();
 		checkForDeath();
-		checkTile();
+		checkTile(room.getTile(player));
 		clock++;
 		if (!room.getTile(player).getTextRead())
 			this.setText(room.getTile(player).getText());
 		notifyObserver();
 	}
 
-	private void checkTile() {
-		for (Tile t : room.getTiles()) {
-			if (t.getX() == player.getX() && t.getY() == player.getY()) {
-				if (t instanceof Slide) {
-					tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
-				}
-			}
+	private void checkTile(Tile t) {
+		if (t instanceof Slide) {
+			tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
 		}
-	}
+		else if(t instanceof Teleport) {
+			player.setTeleport(true);
+			player.setLoc(((Teleport)t).getXTele(), ((Teleport)t).getYTele());
+			player.setTeleport(false);
+		}
+		else if(t instanceof Hole) {
+			player.die();
+		}
+		else if(t instanceof Key) {
+			
+		}
+		else if(t instanceof Save) {
+			
+		}
+		else if(t instanceof Coin) {
+			
+		}
 
-	private void next() {
 	}
 
 	public void resetRoom() {
@@ -374,35 +351,7 @@ public class Model implements Constants, Subject {
 		player.shield();
 	}
 
-	public void setNext(Boolean next) {
-		if (this.next != next) {
-			this.next = next;
-			if (next)
-				next();
-		}
-	}
-
-	public void addToRoom(String[] lines, int x, int y) {
-		for (Tile t : room.getTiles()) {
-			if (t.getX() == x && t.getY() == y) {
-				System.out.println(t.toString());
-			}
-		}
-		room.printEnemies();
-		if (lines[0] == "None")
-			room.removeEntity(x, y);
-		Entity e = fileManager.parseEntity(lines[0], room, getEnemyCount(), v);
-		if (e != null) {
-			room.removeEntity(x, y);
-			room.addEntity(e);
-		}
-		Tile tile = fileManager.parseTile(lines[1]);
-		if (tile != null) {
-			room.swapTile(tile);
-		} else {
-		}
-		room.notifyObserver();
-	}
+	
 
 	public String getText() {
 		return text;
@@ -462,11 +411,6 @@ public class Model implements Constants, Subject {
 			System.out.println(text);
 
 		}
-	}
-
-	private int getEnemyCount() {
-		enemyCount++;
-		return enemyCount;
 	}
 
 	public void eraseSaveData() {
