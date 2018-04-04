@@ -1,6 +1,5 @@
 # Save file
 *.txt
-!world.txt
 
 # Compiled class file
 *.class
