@@ -4,12 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 
-public class MapImage extends Image {
+import controller.Constants;
+
+public class MapImage extends Image implements Constants {
 
 	private String[][] map = new String[11][11];
 
-	public MapImage(String[][] map, int x, int y, int scalex, int scaley) {
-		super(x, y, scalex, scaley, null);
+	public MapImage(String[][] map, int x, int y, int scale) {
+		super(x, y, scale, null);
 		this.map = map;
 		String line = "";
 		for (int i = 10; i >= 0; i--) {
@@ -29,12 +31,12 @@ public class MapImage extends Image {
 			for (int j = 10; j >= 0; j--) {
 				if (map[i][j] == null) {
 					g.setColor(new Color(0x000000));
-					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
+					g.fillRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
 				} else if (map[i][j].startsWith("R")) {
 					g.setColor(new Color(0x999999));
-					g.fillRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
+					g.fillRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
 					g.setColor(new Color(0x000000));
-					g.drawRect(i * scalex + getXPos() + x, j * scaley + getYPos() + y, scalex, scaley);
+					g.drawRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
 					if (map[i][j].contains("K")) {
 						tile += "K";
 					}
@@ -42,20 +44,20 @@ public class MapImage extends Image {
 						tile += "S";
 					}
 				}
-				g.drawString(tile, i * scalex + getXPos() + x + scalex / 4,
-						j * scaley + getYPos() + y + scaley * 3 / 2);
+				g.drawString(tile, i * scale + getXPos() + x + scale / 4,
+						j * scale + getYPos() + y + scale * 3 / 2);
 				tile = "";
 			}
 		}
 		int[] xCoords = { 0, 0, 0 };
 		int[] yCoords = { 0, 0, 0 };
 
-		xCoords[1] = scalex / 2;
-		xCoords[2] = scalex;
-		yCoords[0] = scaley;
-		yCoords[2] = scaley;
+		xCoords[1] = scale / 2;
+		xCoords[2] = scale;
+		yCoords[0] = scale;
+		yCoords[2] = scale;
 		Polygon p = new Polygon(xCoords, yCoords, 3);
-		p.translate(getXPos() + x + scalex * 5, getYPos() + y - scaley);
+		p.translate(getXPos() + x + scale * 5, getYPos() + y - scale);
 		g.setColor(new Color(255, 255, 255));
 		g.fillPolygon(p);
 		g.setColor(Color.BLACK);
@@ -64,11 +66,11 @@ public class MapImage extends Image {
 		xCoords[2] = 0;
 		yCoords[0] = 0;
 
-		xCoords[1] = scalex;
-		yCoords[1] = scaley / 2;
-		yCoords[2] = scaley;
+		xCoords[1] = scale;
+		yCoords[1] = scale / 2;
+		yCoords[2] = scale;
 		p = new Polygon(xCoords, yCoords, 3);
-		p.translate(getXPos() + x + scalex * 11, getYPos() + y + scaley * 5);
+		p.translate(getXPos() + x + scale * 11, getYPos() + y + scale * 5);
 		g.setColor(new Color(255, 255, 255));
 		g.fillPolygon(p);
 		g.setColor(Color.BLACK);
@@ -76,11 +78,11 @@ public class MapImage extends Image {
 
 		yCoords[2] = 0;
 
-		xCoords[1] = scalex / 2;
-		xCoords[2] = scalex;
-		yCoords[1] = scaley;
+		xCoords[1] = scale / 2;
+		xCoords[2] = scale;
+		yCoords[1] = scale;
 		p = new Polygon(xCoords, yCoords, 3);
-		p.translate(getXPos() + x + scalex * 5, getYPos() + y + scaley * 11);
+		p.translate(getXPos() + x + scale * 5, getYPos() + y + scale * 11);
 		g.setColor(new Color(255, 255, 255));
 		g.fillPolygon(p);
 		g.setColor(Color.BLACK);
@@ -88,12 +90,12 @@ public class MapImage extends Image {
 
 		xCoords[1] = 0;
 
-		xCoords[0] = scalex;
-		xCoords[2] = scalex;
-		yCoords[1] = scaley / 2;
-		yCoords[2] = scaley;
+		xCoords[0] = scale;
+		xCoords[2] = scale;
+		yCoords[1] = scale / 2;
+		yCoords[2] = scale;
 		p = new Polygon(xCoords, yCoords, 3);
-		p.translate(getXPos() + x - scalex, getYPos() + y + scaley * 5);
+		p.translate(getXPos() + x - scale, getYPos() + y + scale * 5);
 		g.setColor(new Color(255, 255, 255));
 		g.fillPolygon(p);
 		g.setColor(Color.BLACK);

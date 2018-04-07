@@ -6,15 +6,15 @@ import java.awt.Polygon;
 
 public class GhostImage extends Image {
 
-	public GhostImage(String id, int x, int y, int scalex, int scaley, String room) {
-		super(x, y, scalex, scaley, room);
+	public GhostImage(String id, int x, int y, int scale, String room) {
+		super(x, y, scale, room);
 		setId(id);
 	}
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
-		int[] xCoords = { 0, xSize / 2, xSize, xSize / 4 * 3, xSize, xSize / 2, 0, xSize / 4 };
-		int[] yCoords = { 0, ySize / 4, 0, ySize / 2, ySize, ySize * 3 / 4, ySize, ySize / 2 };
+		int[] xCoords = { 0, size / 2, size, size / 4 * 3, size, size / 2, 0, size / 4 };
+		int[] yCoords = { 0, size / 4, 0, size / 2, size, size * 3 / 4, size, size / 2 };
 		Polygon p = new Polygon(xCoords, yCoords, 8);
 		p.translate(getXPos() + x, getYPos() + y);
 		g.setColor(new Color(50, 0, 100));

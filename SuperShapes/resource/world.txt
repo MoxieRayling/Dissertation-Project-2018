@@ -1,7 +1,6 @@
 room 0,0
-ghost 7,10 3
 block 0,7
-hole 5,5
+slide 6,10 W
 ;
 room 0,-1
 turret 4,0 3 S 0

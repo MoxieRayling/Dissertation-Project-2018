@@ -21,8 +21,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 	private Window w;
 	private int sizex = 512;
 	private int sizey = 512;
-	private int scalex = sizex / 13;
-	private int scaley = sizey / 13;
+	private int scale = sizex / 13;
 	private MapImage map = null;
 	private int selectedRoomX = 5;
 	private int selectedRoomY = 5;
@@ -34,7 +33,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 	private JButton mapDown;
 
 	public MapView(Window w, int x, int y) {
-		map = new MapImage(w.getMap(x, y), 0, 0, scalex, scaley);
+		map = new MapImage(w.getMap(x, y), 0, 0, scale);
 		this.w = w;
 		this.setLayout(null);
 		initUI();
@@ -45,7 +44,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 	private void initUI() {
 
 		mapUp = new JButton();
-		mapUp.setBounds(scalex * 6, 0, scalex, scaley);
+		mapUp.setBounds(scale * 6, 0, scale, scale);
 		mapUp.setOpaque(false);
 		mapUp.setContentAreaFilled(false);
 		mapUp.setBorderPainted(false);
@@ -59,7 +58,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 		this.add(mapUp);
 
 		mapLeft = new JButton();
-		mapLeft.setBounds(0, scaley * 6, scalex, scaley);
+		mapLeft.setBounds(0, scale * 6, scale, scale);
 		mapLeft.setOpaque(false);
 		mapLeft.setContentAreaFilled(false);
 		mapLeft.setBorderPainted(false);
@@ -73,7 +72,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 		this.add(mapLeft);
 
 		mapDown = new JButton();
-		mapDown.setBounds(scalex * 6, scaley * 12, scalex, scaley);
+		mapDown.setBounds(scale * 6, scale * 12, scale, scale);
 		mapDown.setOpaque(false);
 		mapDown.setContentAreaFilled(false);
 		mapDown.setBorderPainted(false);
@@ -86,7 +85,7 @@ public class MapView extends JPanel implements Constants, ItemListener {
 		this.add(mapDown);
 
 		mapRight = new JButton();
-		mapRight.setBounds(scalex * 12, scaley * 6, scalex, scaley);
+		mapRight.setBounds(scale * 12, scale * 6, scale, scale);
 		mapRight.setOpaque(false);
 		mapRight.setContentAreaFilled(false);
 		mapRight.setBorderPainted(false);
@@ -115,19 +114,19 @@ public class MapView extends JPanel implements Constants, ItemListener {
 		switch (direction) {
 		case 'N':
 			mapCentreY -= 1;
-			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 			break;
 		case 'E':
 			mapCentreX += 1;
-			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 			break;
 		case 'S':
 			mapCentreY += 1;
-			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 			break;
 		case 'W':
 			mapCentreX -= 1;
-			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+			map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 			break;
 		default:
 			break;
@@ -146,10 +145,10 @@ public class MapView extends JPanel implements Constants, ItemListener {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		super.paintComponent(g);
 		g.setColor(new Color(0x000000));
-		g.drawRect(scalex, scaley, scalex * 11, scaley * 11);
-		map.drawThis(g, scalex, scaley);
+		g.drawRect(scale, scale, scale * 11, scale * 11);
+		map.drawThis(g, scale, scale);
 		g.setColor(Color.RED);
-		g.drawRect((selectedRoomX + 1) * scalex, (selectedRoomY + 1) * scaley, scalex, scaley);
+		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();
 

@@ -32,8 +32,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private Window w;
 	private int sizex = 512;
 	private int sizey = 512;
-	private int scalex = sizex / 13;
-	private int scaley = sizey / 13;
+	private int scale = sizex / 13;
 	private List<Image> images = new ArrayList<Image>();
 	private RoomImage room = null;
 	private MapImage map = null;
@@ -82,14 +81,14 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	public void setMap() {
-		map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+		map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 		images.add(map);
 	}
 
 	private void initUI() {
 
 		mapUp = new JButton();
-		mapUp.setBounds(scalex * 6, 0, scalex, scaley);
+		mapUp.setBounds(scale * 6, 0, scale, scale);
 		mapUp.setOpaque(false);
 		mapUp.setContentAreaFilled(false);
 		mapUp.setBorderPainted(false);
@@ -99,14 +98,14 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreY -= 1;
 				images.remove(map);
-				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
 			}
 		});
 		this.add(mapUp);
 
 		mapLeft = new JButton();
-		mapLeft.setBounds(0, scaley * 6, scalex, scaley);
+		mapLeft.setBounds(0, scale * 6, scale, scale);
 		mapLeft.setOpaque(false);
 		mapLeft.setContentAreaFilled(false);
 		mapLeft.setBorderPainted(false);
@@ -116,14 +115,14 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreX -= 1;
 				images.remove(map);
-				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
 				}
 		});
 		this.add(mapLeft);
 
 		mapDown = new JButton();
-		mapDown.setBounds(scalex * 6, scaley * 12, scalex, scaley);
+		mapDown.setBounds(scale * 6, scale * 12, scale, scale);
 		mapDown.setOpaque(false);
 		mapDown.setContentAreaFilled(false);
 		mapDown.setBorderPainted(false);
@@ -133,14 +132,14 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreY += 1;
 				images.remove(map);
-				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
 				}
 		});
 		this.add(mapDown);
 
 		mapRight = new JButton();
-		mapRight.setBounds(scalex * 12, scaley * 6, scalex, scaley);
+		mapRight.setBounds(scale * 12, scale * 6, scale, scale);
 		mapRight.setOpaque(false);
 		mapRight.setContentAreaFilled(false);
 		mapRight.setBorderPainted(false);
@@ -150,14 +149,14 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreX += 1;
 				images.remove(map);
-				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scalex, scaley);
+				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
 				}
 		});
 		this.add(mapRight);
 
 		export = new JButton("export");
-		export.setBounds(scalex * 13, scaley * 12, scalex * 3, scaley);
+		export.setBounds(scale * 13, scale * 12, scale * 3, scale);
 		export.addActionListener(new ActionListener() {
 
 			@Override
@@ -177,7 +176,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		for (JButton b : tileButtons) {
 			int x = tileButtons.indexOf(b) % 11;
 			int y = tileButtons.indexOf(b) / 11;
-			b.setBounds(scalex * (x + 1) + 700, scaley * (y + 1), scalex, scaley);
+			b.setBounds(scale * (x + 1) + 700, scale * (y + 1), scale, scale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -195,7 +194,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		for (JButton b : roomButtons) {
 			int x = roomButtons.indexOf(b) % 11;
 			int y = roomButtons.indexOf(b) / 11;
-			b.setBounds(scalex * (x + 1), scaley * (y + 1), scalex, scaley);
+			b.setBounds(scale * (x + 1), scale * (y + 1), scale, scale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -213,12 +212,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 		paintEntity = new JCheckBox("Change Entity");
 		paintEntity.setContentAreaFilled(false);
-		paintEntity.setBounds(scalex * 13, scaley / 3, scalex * 3, 20);
+		paintEntity.setBounds(scale * 13, scale / 3, scale * 3, 20);
 		this.add(paintEntity);
 
 		entities = new String[] { "None", "Block", "Snake", "Ghost", "Turret" };
 		entitiesBox = new JComboBox<String>(entities);
-		entitiesBox.setBounds(scalex * 13, scaley, scalex * 2, 20);
+		entitiesBox.setBounds(scale * 13, scale, scale * 2, 20);
 		entitiesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -254,12 +253,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 		paintTile = new JCheckBox("Change Tile");
 		paintTile.setContentAreaFilled(false);
-		paintTile.setBounds(scalex * 16, scaley / 3, scalex * 3, 20);
+		paintTile.setBounds(scale * 16, scale / 3, scale * 3, 20);
 		this.add(paintTile);
 
 		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole" };
 		tilesBox = new JComboBox<String>(tiles);
-		tilesBox.setBounds(scalex * 16, scaley, scalex * 2, 20);
+		tilesBox.setBounds(scale * 16, scale, scale * 2, 20);
 		tilesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -306,7 +305,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		entityComponents.add(ghostOptions);
 		for (List<Component> l : entityComponents) {
 			for (Component c : l) {
-				c.setBounds(scalex * 13, scaley * (l.indexOf(c) + 2), scalex * 2, 20);
+				c.setBounds(scale * 13, scale * (l.indexOf(c) + 2), scale * 2, 20);
 				c.setVisible(false);
 				this.add(c);
 			}
@@ -322,7 +321,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		tileComponents.add(slideOptions);
 		for (List<Component> l : tileComponents) {
 			for (Component c : l) {
-				c.setBounds(scalex * 16, scaley * (l.indexOf(c) + 2), scalex * 2, 20);
+				c.setBounds(scale * 16, scale * (l.indexOf(c) + 2), scale * 2, 20);
 				c.setVisible(false);
 				this.add(c);
 			}
@@ -414,23 +413,23 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		}
 
 		removeRooms();
-		room = new RoomImage(r.getTiles(), scalex, scaley, r.getId(), r.getExits());
+		room = new RoomImage(r.getTiles(), scale, r.getId(), r.getExits());
 		images.add(room);
 	}
 
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scalex, scaley, b.getRoomId()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId()));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
-			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scalex, scaley, t.getRoomId(), t.getDirection()));
+			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection()));
 		} else if (e instanceof SnakeBody) {
 			SnakeBody sb = (SnakeBody) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scalex, scaley, sb.getRoomId()));
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId()));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scalex, scaley, g.getRoomId()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId()));
 		}
 	}
 
@@ -488,16 +487,16 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			if (i != null) {
 				if (i instanceof MapImage) {
 					g.setColor(new Color(0x000000));
-					g.drawRect(scalex, scaley, scalex * 11, scaley * 11);
-					i.drawThis(g, scalex, scaley);
+					g.drawRect(scale, scale, scale * 11, scale * 11);
+					i.drawThis(g, scale, scale);
 				} else {
-					i.drawThis(g, scalex + 700, scaley);
+					i.drawThis(g, scale + 700, scale);
 				}
 			}
 		}
 		g.setColor(Color.RED);
-		g.drawRect((selectedX + 1) * scalex + 700, (selectedY + 1) * scaley, scalex, scaley);
-		g.drawRect((selectedRoomX + 1) * scalex, (selectedRoomY + 1) * scaley, scalex, scaley);
+		g.drawRect((selectedX + 1) * scale + 700, (selectedY + 1) * scale, scale, scale);
+		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();
 	}

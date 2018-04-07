@@ -7,8 +7,8 @@ import java.awt.Polygon;
 public class TurretImage extends Image {
 	private char direction;
 
-	public TurretImage(String id, int x, int y, int scalex, int scaley, String room, char direction) {
-		super(x, y, scalex, scaley, room);
+	public TurretImage(String id, int x, int y, int scale, String room, char direction) {
+		super(x, y, scale, room);
 		setId(id);
 		this.direction = direction;
 	}
@@ -19,26 +19,26 @@ public class TurretImage extends Image {
 		int[] yCoords = { 0, 0, 0 };
 		switch (direction) {
 		case 'N':
-			xCoords[1] = scalex / 2;
-			xCoords[2] = scalex;
-			yCoords[0] = scaley;
-			yCoords[2] = scaley;
+			xCoords[1] = scale / 2;
+			xCoords[2] = scale;
+			yCoords[0] = scale;
+			yCoords[2] = scale;
 			break;
 		case 'E':
-			xCoords[1] = scalex;
-			yCoords[1] = scaley / 2;
-			yCoords[2] = scaley;
+			xCoords[1] = scale;
+			yCoords[1] = scale / 2;
+			yCoords[2] = scale;
 			break;
 		case 'S':
-			xCoords[1] = scalex / 2;
-			xCoords[2] = scalex;
-			yCoords[1] = scaley;
+			xCoords[1] = scale / 2;
+			xCoords[2] = scale;
+			yCoords[1] = scale;
 			break;
 		case 'W':
-			xCoords[0] = scalex;
-			xCoords[2] = scalex;
-			yCoords[1] = scaley / 2;
-			yCoords[2] = scaley;
+			xCoords[0] = scale;
+			xCoords[2] = scale;
+			yCoords[1] = scale / 2;
+			yCoords[2] = scale;
 			break;
 		default:
 			break;

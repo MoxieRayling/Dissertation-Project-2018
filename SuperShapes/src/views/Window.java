@@ -48,6 +48,7 @@ public class Window extends JFrame implements View, Constants {
 							map();
 						} else {
 							c.Input(e.getKeyCode());
+							input = false;
 						}
 					}
 					else if (getContentPane().contains(map.getLocation())) {
@@ -68,7 +69,6 @@ public class Window extends JFrame implements View, Constants {
 						}	
 					}
 				}
-				//input = false;
 			}
 
 			@Override

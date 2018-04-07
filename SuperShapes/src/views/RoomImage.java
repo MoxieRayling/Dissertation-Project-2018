@@ -16,8 +16,8 @@ public class RoomImage extends Image {
 	private List<Tile> tiles = new ArrayList<Tile>();
 	private String exits;
 
-	public RoomImage(List<Tile> tiles, int scalex, int scaley, String room, String exits) {
-		super(0, 0, scalex, scaley, room);
+	public RoomImage(List<Tile> tiles, int scale, String room, String exits) {
+		super(0, 0, scale, room);
 		this.tiles = tiles;
 		this.exits = exits;
 	}
@@ -32,6 +32,19 @@ public class RoomImage extends Image {
 		return result;
 	}
 
+	public int getSize() {
+		int result = 0;
+		for (Tile t : tiles) {
+			if (t.getX() > result) {
+				result = t.getX();
+			}
+			if (t.getY() > result) {
+				result = t.getY();
+			}
+		}
+		return result;
+	}
+
 	public void setTiles(List<Tile> tiles) {
 		this.tiles = tiles;
 	}
@@ -40,86 +53,83 @@ public class RoomImage extends Image {
 	public void drawThis(Graphics2D g, int x, int y) {
 		g.setColor(Color.WHITE);
 		if (checkExit('N')) {
-			g.fillOval(scalex * 5 + x, scaley / 2, scalex, scaley);
+			g.fillOval(scale * 5 + x, scale / 2, scale, scale);
 		}
 		if (checkExit('S')) {
-			g.fillOval(scalex * 5 + x, scaley * 23 / 2, scalex, scaley);
+			g.fillOval(scale * 5 + x, scale * Y_LENGTH + scale / 2, scale, scale);
 		}
 		if (checkExit('W')) {
-			g.fillOval(-scalex / 2 + x, scaley * 6, scalex, scaley);
+			g.fillOval(-scale / 2 + x, scale * 6, scale, scale);
 		}
 		if (checkExit('E')) {
-			g.fillOval(scalex * 21 / 2 + x, scaley * 6, scalex, scaley);
+			g.fillOval(scale * X_LENGTH + scale / 2, scale * 6, scale, scale);
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
 			if (t instanceof Wall) {
 				g.setColor(new Color(0x444444));
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 			} else if (t instanceof Teleport) {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 
-				int[] xCoords = { 0, scalex / 4, scalex / 2, scalex / 4 };
-				int[] yCoords = { scaley / 4, 0, scaley / 4, scaley / 2 };
+				int[] xCoords = { 0, scale / 4, scale / 2, scale / 4 };
+				int[] yCoords = { scale / 4, 0, scale / 4, scale / 2 };
 				Polygon p = new Polygon(xCoords, yCoords, 4);
-				p.translate((t.getX() + 1) * scalex + getXPos() + x / 4, (t.getY() + 1) * scaley + getYPos() + y / 4);
+				p.translate((t.getX() + 1) * scale + getXPos() + x / 4, (t.getY() + 1) * scale + getYPos() + y / 4);
 				g.setColor(Color.BLACK);
 				g.drawPolygon(p);
 
 			} else if (t instanceof Slide) {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 				int[] xCoords = { 0, 0, 0 };
 				int[] yCoords = { 0, 0, 0 };
 				switch (((Slide) t).getDirection()) {
 				case 'N':
-					xCoords[1] = scalex / 4;
-					xCoords[2] = scalex / 2;
-					yCoords[0] = scaley / 2;
-					yCoords[2] = scaley / 2;
+					xCoords[1] = scale / 4;
+					xCoords[2] = scale / 2;
+					yCoords[0] = scale / 2;
+					yCoords[2] = scale / 2;
 					break;
 				case 'E':
-					xCoords[1] = scalex / 2;
-					yCoords[1] = scaley / 4;
-					yCoords[2] = scaley / 2;
+					xCoords[1] = scale / 2;
+					yCoords[1] = scale / 4;
+					yCoords[2] = scale / 2;
 					break;
 				case 'S':
-					xCoords[1] = scalex / 4;
-					xCoords[2] = scalex / 2;
-					yCoords[1] = scaley / 2;
+					xCoords[1] = scale / 4;
+					xCoords[2] = scale / 2;
+					yCoords[1] = scale / 2;
 					break;
 				case 'W':
-					xCoords[0] = scalex / 2;
-					xCoords[2] = scalex / 2;
-					yCoords[1] = scaley / 4;
-					yCoords[2] = scaley / 2;
+					xCoords[0] = scale / 2;
+					xCoords[2] = scale / 2;
+					yCoords[1] = scale / 4;
+					yCoords[2] = scale / 2;
 					break;
 				default:
 					break;
 				}
 				Polygon p = new Polygon(xCoords, yCoords, 3);
-				p.translate((t.getX() + 1) * scalex + getXPos() + x / 4, (t.getY() + 1) * scaley + getYPos() + y / 4);
+				p.translate((t.getX() + 1) * scale + getXPos() + x / 4, (t.getY() + 1) * scale + getYPos() + y / 4);
 				g.setColor(Color.BLACK);
 				g.drawPolygon(p);
 
 			} else if (t instanceof Hole) {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 				g.setColor(Color.BLACK);
-				g.fillOval(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillOval(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 			} else {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scalex + getXPos() + x, t.getY() * scaley + getYPos() + y, scalex, scaley);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 			}
-			/* 
-			 * g.drawString(String.valueOf(path[j][i]), t.getX() * scalex + 10 + xPos + x,
-			 * t.getY() * scaley + 20 + yPos + y);
-			 */
+			g.setColor(Color.BLACK);
+			g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + xPos + x,
+					t.getY() * scale + 20 + yPos + y);
 		}
-		g.drawRect(scalex +
-
-				getXPos(), scaley + getYPos(), scalex * 11, scaley * 11);
+		g.drawRect(scale + getXPos(), scale + getYPos(), scale * X_LENGTH, scale * Y_LENGTH);
 
 	}
 

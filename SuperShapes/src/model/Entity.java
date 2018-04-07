@@ -21,6 +21,7 @@ public abstract class Entity implements Subject {
 	private Boolean teleport = false;
 	private Boolean delete = false;
 	protected Boolean deadly = true;
+	protected String image = "";
 
 	public Entity(String roomId, int count, int x, int y) {
 		this.roomId = roomId;
@@ -29,6 +30,14 @@ public abstract class Entity implements Subject {
 		this.px = x;
 		this.py = y;
 		id = roomId + count;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public Boolean getTeleport() {
@@ -139,12 +148,13 @@ public abstract class Entity implements Subject {
 			o.Update(new ActionEvent(this, 0, null));
 		}
 	}
-	
+
 	public abstract String toString();
 
 	public boolean getDeadly() {
 		return deadly;
 	}
+
 	public void delete() {
 		setDelete(true);
 	}

@@ -4,10 +4,11 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import controller.Constants;
 import observers.Observer;
 import observers.Subject;
 
-public class Room implements Subject {
+public class Room implements Subject, Constants {
 	private List<Tile> tiles = new ArrayList<Tile>();
 	private List<Observer> observers = new ArrayList<Observer>();
 	private List<Tile> pathTiles = new ArrayList<Tile>();
@@ -26,8 +27,8 @@ public class Room implements Subject {
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
+		for (int i = 0; i < Y_LENGTH; i++) {
+			for (int j = 0; j < X_LENGTH; j++) {
 				tiles.add(new Tile(j, i));
 			}
 		}
@@ -39,8 +40,8 @@ public class Room implements Subject {
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
+		for (int i = 0; i < Y_LENGTH; i++) {
+			for (int j = 0; j < X_LENGTH; j++) {
 				tiles.add(new Tile(j, i));
 			}
 		}
@@ -50,40 +51,26 @@ public class Room implements Subject {
 	public List<String> exportRoom() {
 		List<String> result = new ArrayList<String>();
 		result.add("r " + id + " 0");
-		String tiles = "T: ";
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				Tile t = this.tiles.get(j + i * 11);
-				if (t instanceof Wall) {
-					tiles += "1";
-				} else
-					tiles += "0";
-				if (!(j == 10)) {
-					tiles += ",";
-				}
-			}
-			tiles += " ";
-		}
-		result.add(tiles);
+
 		for (Entity e : enemies) {
 			result.add(e.toString());
 		}
 		result.add(";");
 		return result;
 	}
-	
+
 	public Boolean containsKey() {
-		for(Tile t : tiles) {
-			if(t instanceof Key) {
+		for (Tile t : tiles) {
+			if (t instanceof Key) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public Boolean containsSave() {
-		for(Tile t : tiles) {
-			if(t instanceof Save) {
+		for (Tile t : tiles) {
+			if (t instanceof Save) {
 				return true;
 			}
 		}
@@ -154,7 +141,6 @@ public class Room implements Subject {
 		for (Tile t : tiles) {
 			if (t.getX() == tile.getX() && t.getY() == tile.getY()) {
 				tiles.set(tiles.indexOf(t), tile);
-				// System.out.println(tile.toString() + " added");
 			}
 		}
 		notifyObserver();
@@ -169,10 +155,10 @@ public class Room implements Subject {
 	}
 
 	public int[][] getPath() {
-		int[][] path = new int[11][11];
-		path[10][10] = 1;
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
+		int[][] path = new int[Y_LENGTH][X_LENGTH];
+		path[Y_LENGTH - 1][X_LENGTH - 1] = 1;
+		for (int i = 0; i < Y_LENGTH; i++) {
+			for (int j = 0; j < X_LENGTH; j++) {
 				path[j][i] = getTile(j, i).getPath();
 			}
 		}
@@ -187,7 +173,7 @@ public class Room implements Subject {
 		tile.setPath(1);
 		findPath(1);
 		if (!tile.getTrav()) {
-			tile.setPath(122);
+			tile.setPath(Y_LENGTH * X_LENGTH + 1);
 		}
 		getTile(x, y).setPathed(false);
 		notifyObserver();
@@ -201,8 +187,8 @@ public class Room implements Subject {
 		if (this.pathTiles.size() > 0) {
 			findPath(val + 1);
 		} else {
-			for (int i = 0; i < 11; i++) {
-				for (int j = 0; j < 11; j++) {
+			for (int i = 0; i < Y_LENGTH; i++) {
+				for (int j = 0; j < X_LENGTH; j++) {
 					getTile(j, i).setPathed(false);
 				}
 			}
@@ -406,9 +392,9 @@ public class Room implements Subject {
 	public void print() {
 		int[][] path = getPath();
 		String result = "";
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				if (path[j][i] == 122) {
+		for (int i = 0; i < Y_LENGTH; i++) {
+			for (int j = 0; j < X_LENGTH; j++) {
+				if (path[j][i] == Y_LENGTH * X_LENGTH + 1) {
 					result += 1;
 				} else {
 					result += 0;
@@ -425,7 +411,7 @@ public class Room implements Subject {
 			} else {
 				result += "0";
 			}
-			if ((tiles.indexOf(t) + 1) % 11 == 0) {
+			if ((tiles.indexOf(t) + 1) % X_LENGTH == 0) {
 				result += "\n";
 			}
 		}

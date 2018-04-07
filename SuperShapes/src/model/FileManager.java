@@ -283,7 +283,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Block(x + "," + y, enemyCount, bx, by);
+		Block b = new Block(x + "," + y, enemyCount, bx, by);
+		if (params.length == 3) {
+			b.setImage(params[2]);
+		}
+		return b;
 	}
 
 	public Ghost parseGhost(String[] params, int x, int y, int enemyCount) {
@@ -298,7 +302,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Ghost(x + "," + y, enemyCount, bx, by, pause);
+		Ghost g = new Ghost(x + "," + y, enemyCount, bx, by, pause);
+		if (params.length == 4) {
+			g.setImage(params[3]);
+		}
+		return g;
 	}
 
 	public Turret parseTurret(String[] params, int x, int y, Room r, int enemyCount) {
@@ -317,7 +325,11 @@ public class FileManager {
 		}
 		char direction = params[3].charAt(0);
 		r.getTile(tx, ty).setTrav(false);
-		return new Turret(x + "," + y, enemyCount, tx, ty, ratio, delay, direction, r);
+		Turret t = new Turret(x + "," + y, enemyCount, tx, ty, ratio, delay, direction, r);
+		if (params.length == 6) {
+			t.setImage(params[5]);
+		}
+		return t;
 	}
 
 	public Snake parseSnake(String[] params, int x, int y, Room r, int enemyCount, Observer o) {
@@ -332,7 +344,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Snake(x + "," + y, enemyCount, sx, sy, length, r, o);
+		Snake s = new Snake(x + "," + y, enemyCount, sx, sy, length, r, o);
+		if (params.length == 4) {
+			s.setImage(params[3]);
+		}
+		return s;
 	}
 
 	public Tile parseTile(String line) {
@@ -363,7 +379,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Hole(x, y);
+		Hole h = new Hole(x, y);
+		if (params.length == 3) {
+			h.setImage(params[2]);
+		}
+		return h;
 	}
 
 	public Tile parseTeleport(String[] params) {
@@ -382,7 +402,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Teleport(x, y, tx, ty);
+		Teleport t = new Teleport(x, y, tx, ty);
+		if (params.length == 4) {
+			t.setImage(params[3]);
+		}
+		return t;
 	}
 
 	public Tile parseSlide(String[] params) {
@@ -395,7 +419,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Slide(x, y, params[2].charAt(0));
+		Slide s = new Slide(x, y, params[2].charAt(0));
+		if (params.length == 4) {
+			s.setImage(params[3]);
+		}
+		return s;
 	}
 
 	public Tile parseWall(String[] params) {
@@ -408,7 +436,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Wall(x, y);
+		Wall w = new Wall(x, y);
+		if (params.length == 3) {
+			w.setImage(params[2]);
+		}
+		return w;
 	}
 
 	public Tile parseEmptyTile(String[] params) {
@@ -421,7 +453,11 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Tile(x, y);
+		Tile t = new Tile(x, y);
+		if (params.length == 3) {
+			t.setImage(params[2]);
+		}
+		return t;
 	}
 
 	public Entity parseEntity(String line, Room room, Observer o) {

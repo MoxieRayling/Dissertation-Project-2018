@@ -5,15 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 
 public class SnakeImage extends Image {
-	public SnakeImage(String id, int x, int y, int scalex, int scaley, String room) {
-		super(x, y, scalex, scaley, room);
+	public SnakeImage(String id, int x, int y, int scale, String room) {
+		super(x, y, scale, room);
 		setId(id);
 	}
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
-		int[] xCoords = { 0, scalex / 2, scalex, scalex / 2 };
-		int[] yCoords = { scaley / 2, 0, scaley / 2, scaley };
+		int[] xCoords = { 0, scale / 2, scale, scale / 2 };
+		int[] yCoords = { scale / 2, 0, scale / 2, scale };
 		Polygon p = new Polygon(xCoords, yCoords, 4);
 		p.translate(getXPos() + x, getYPos() + y);
 		g.setColor(new Color(0, 100	, 0));

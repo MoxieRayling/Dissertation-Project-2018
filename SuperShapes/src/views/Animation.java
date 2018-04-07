@@ -27,8 +27,7 @@ public class Animation extends JPanel implements Constants {
 	private Timer timer;
 	private int sizex = 512;
 	private int sizey = 512;
-	private int scalex = sizex / 13;
-	private int scaley = sizey / 13;
+	private int scale = sizex / 13;
 	private List<Image> images = new ArrayList<Image>();
 	private PlayerImage player = null;
 	private RoomImage room = null;
@@ -54,10 +53,13 @@ public class Animation extends JPanel implements Constants {
 	public void setSize(int sizex, int sizey) {
 		this.sizex = sizex;
 		this.sizey = sizey;
-		scalex = sizex / 13;
-		scaley = sizey / 16;
+		int divisor = 16;
+		if (room != null) {
+			divisor = room.getSize() + 4;
+		}
+		scale = Math.min(sizex, sizey) / divisor;
 		for (Image i : images) {
-			i.setScale(scalex, scaley);
+			i.setScale(scale);
 			i.update();
 		}
 	}
@@ -90,7 +92,7 @@ public class Animation extends JPanel implements Constants {
 			roomId = r.getId();
 		}
 		removeRooms();
-		room = new RoomImage(r.getTiles(), scalex, scaley, r.getId(), r.getExits());
+		room = new RoomImage(r.getTiles(), scale, r.getId(), r.getExits());
 		images.add(room);
 	}
 
@@ -104,7 +106,7 @@ public class Animation extends JPanel implements Constants {
 		shield = play.getShield();
 		shieldCooldown = play.getShieldCooldown();
 		if (player == null) {
-			player = new PlayerImage(play.getX(), play.getY(), scalex, scaley, play.getRoomId());
+			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId());
 			images.add(player);
 		}
 		player.setShield(play.getShield());
@@ -139,21 +141,21 @@ public class Animation extends JPanel implements Constants {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scalex, scaley, b.getRoomId()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId()));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
-			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scalex, scaley, t.getRoomId(), t.getDirection()));
+			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection()));
 		} else if (e instanceof Shot) {
 			Shot s = (Shot) e;
-			images.add(new ShotImage(s.getId(), s.getX(), s.getY(), scalex, scaley, s.getRoomId(), s.getDirection()));
+			images.add(new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection()));
 		} else if (e instanceof SnakeBody) {
 			SnakeBody sb = (SnakeBody) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scalex, scaley, sb.getRoomId()));
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId()));
 		} else if (e instanceof Snake) {
 
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scalex, scaley, g.getRoomId()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId()));
 		}
 	}
 
@@ -252,30 +254,22 @@ public class Animation extends JPanel implements Constants {
 		Graphics2D g = (Graphics2D) g1;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		int[] columns = { scalex, scalex * 4, scalex * 7, scalex * 10 };
-		int[] rows = { 20, scaley * 13 };
+		int[] columns = { scale, scale * 4, scale * 7, scale * 10 };
+		int[] rows = { 20, scale * 13 };
 
 		super.paintComponent(g);
 		renderOrder();
 		for (Image i : images) {
-			i.drawThis(g, scalex, scaley);
+			i.drawThis(g, scale, scale);
 		}
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, scalex * 6, scaley);
-		g.fillRect(scalex * 7, 0, scalex * 6, scaley);
-		g.fillRect(0, scaley * 12, scalex * 6, scaley);
-		g.fillRect(scalex * 7, scaley * 12, scalex * 6, scaley);
-		g.fillRect(0, 0, scalex, scaley * 6);
-		g.fillRect(0, scaley * 7, scalex, scaley * 6);
-		g.fillRect(scalex * 12, 0, scalex, scaley * 6);
-		g.fillRect(scalex * 12, scaley * 7, scalex, scaley * 6);
 
 		drawHUD(g, columns, rows);
 		if (text != "") {
 			g.setColor(new Color(0, 0, 0, 100));
-			g.fillRect(scalex, scaley * 11, scalex * 11, scaley);
+			g.fillRect(scale, scale * Y_LENGTH, scale * X_LENGTH, scale);
 			g.setColor(Color.WHITE);
-			g.drawString(text, scalex + 20, scaley * 11 + 20);
+			g.drawString(text, scale + 20, scale * 11 + 20);
 		}
 
 		timer.start();

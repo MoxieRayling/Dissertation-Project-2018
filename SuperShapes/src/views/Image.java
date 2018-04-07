@@ -2,7 +2,9 @@ package views;
 
 import java.awt.Graphics2D;
 
-public abstract class Image {
+import controller.Constants;
+
+public abstract class Image implements Constants {
 
 	protected String id;
 	protected int xPos;
@@ -11,29 +13,25 @@ public abstract class Image {
 	protected int yDest;
 	protected int xSpeed;
 	protected int ySpeed;
-	protected int scalex = 0;
-	protected int scaley = 0;
-	protected int xSize = 0;
-	protected int ySize = 0;
+	protected int scale = 0;
+	protected int size = 0;
 	protected int xCoord = 0;
 	protected int yCoord = 0;
 	protected String room;
 	protected Boolean stationary = true;
 	private Boolean noCollide = false;
 
-	public Image(int x, int y, int scalex, int scaley, String room) {
+	public Image(int x, int y, int scale, String room) {
 		this.xSpeed = 1;
 		this.ySpeed = 1;
-		this.scalex = scalex;
-		this.scaley = scaley;
-		this.xSize = scalex;
-		this.ySize = scaley;
+		this.scale = scale;
+		this.size = scale;
 		this.room = room;
 
-		xPos = x * scalex;
-		yPos = y * scaley;
-		xDest = x * scalex;
-		yDest = y * scaley;
+		xPos = x * scale;
+		yPos = y * scale;
+		xDest = x * scale;
+		yDest = y * scale;
 
 	}
 
@@ -45,12 +43,8 @@ public abstract class Image {
 		this.noCollide = noCollide;
 	}
 
-	protected void setYSize(int y) {
-		this.ySize = y;
-	}
-
 	protected void setXSize(int x) {
-		this.xSize = x;
+		this.size = x;
 	}
 
 	public Boolean getStationary() {
@@ -81,11 +75,9 @@ public abstract class Image {
 		this.yCoord = y;
 	}
 
-	public void setScale(int x, int y) {
-		this.scalex = x;
-		this.scaley = y;
-		this.xSize = x;
-		this.ySize = y;
+	public void setScale(int x) {
+		this.scale = x;
+		this.size = x;
 	}
 
 	public String getId() {
@@ -145,30 +137,30 @@ public abstract class Image {
 	}
 
 	public void update() {
-		setYPos(yCoord * scaley);
-		setXPos(xCoord * scalex);
+		setYPos(yCoord * scale);
+		setXPos(xCoord * scale);
 		setYDest(yPos);
 		setXDest(xPos);
 	}
 
 	public void Move() {
 		double speed = 40.0;
-		if (this.getXPos() < this.getXDest() + (int) Math.ceil(scalex / speed)
-				&& this.getXPos() > this.getXDest() - (int) Math.ceil(scalex / speed)) {
+		if (this.getXPos() < this.getXDest() + (int) Math.ceil(scale / speed)
+				&& this.getXPos() > this.getXDest() - (int) Math.ceil(scale / speed)) {
 			this.setXPos(this.getXDest());
 		} else if (this.getXPos() > this.getXDest()) {
-			this.setXPos(this.getXPos() - (int) Math.ceil(scalex / speed));
+			this.setXPos(this.getXPos() - (int) Math.ceil(scale / speed));
 		} else if (this.getXPos() < this.getXDest()) {
-			this.setXPos(this.getXPos() + (int) Math.ceil(scalex / speed));
+			this.setXPos(this.getXPos() + (int) Math.ceil(scale / speed));
 		}
 
-		if (this.getYPos() < this.getYDest() + (int) Math.ceil(scaley / speed)
-				&& this.getYPos() > this.getYDest() - (int) Math.ceil(scaley / speed)) {
+		if (this.getYPos() < this.getYDest() + (int) Math.ceil(scale / speed)
+				&& this.getYPos() > this.getYDest() - (int) Math.ceil(scale / speed)) {
 			this.setYPos(this.getYDest());
 		} else if (this.getYPos() > this.getYDest()) {
-			this.setYPos(this.getYPos() - (int) Math.ceil(scaley / speed));
+			this.setYPos(this.getYPos() - (int) Math.ceil(scale / speed));
 		} else if (this.getYPos() < this.getYDest()) {
-			this.setYPos(this.getYPos() + (int) Math.ceil(scaley / speed));
+			this.setYPos(this.getYPos() + (int) Math.ceil(scale / speed));
 		}
 		if (getXPos() == getXDest() && getYPos() == getYDest()) {
 			stationary = true;
@@ -181,15 +173,15 @@ public abstract class Image {
 		if (teleport) {
 			setX(x);
 			setY(y);
-			setXDest(this.xCoord * scalex);
-			setYDest(this.yCoord * scaley);
-			setXPos(this.xCoord * scalex);
-			setYPos(this.yCoord * scaley);
+			setXDest(this.xCoord * scale);
+			setYDest(this.yCoord * scale);
+			setXPos(this.xCoord * scale);
+			setYPos(this.yCoord * scale);
 		} else {
 			setX(x);
 			setY(y);
-			setXDest(this.xCoord * scalex);
-			setYDest(this.yCoord * scaley);
+			setXDest(this.xCoord * scale);
+			setYDest(this.yCoord * scale);
 		}
 	}
 

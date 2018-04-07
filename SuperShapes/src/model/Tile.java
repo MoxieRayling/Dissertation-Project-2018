@@ -10,6 +10,7 @@ public class Tile {
 	private Boolean occupied = false;
 	private String text = "";
 	private Boolean textRead = false;
+	protected String image = "";
 
 	public Tile(int x, int y) {
 		this.x = x;
@@ -19,6 +20,14 @@ public class Tile {
 		this.trav = true;
 		//text = "hi";
 		textRead = true;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public Boolean getTextRead() {
