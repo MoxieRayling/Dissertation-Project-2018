@@ -23,6 +23,7 @@ import model.Block;
 import model.Entity;
 import model.Ghost;
 import model.Room;
+import model.Snake;
 import model.SnakeBody;
 import model.Turret;
 
@@ -33,6 +34,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private int sizex = 512;
 	private int sizey = 512;
 	private int scale = sizex / 13;
+	private int roomScale = sizex / 13;
 	private List<Image> images = new ArrayList<Image>();
 	private RoomImage room = null;
 	private MapImage map = null;
@@ -117,7 +119,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
-				}
+			}
 		});
 		this.add(mapLeft);
 
@@ -134,7 +136,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
-				}
+			}
 		});
 		this.add(mapDown);
 
@@ -151,7 +153,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
-				}
+			}
 		});
 		this.add(mapRight);
 
@@ -326,7 +328,16 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				this.add(c);
 			}
 		}
+	}
 
+	public void setRoomScale(int size) {
+		roomScale = Math.min(sizex, sizey) / (size + 3);
+		for (Image i : images) {
+			if (i != null && !(i instanceof MapImage)) {
+				i.setScale(scale);
+				i.update();
+			}
+		}
 	}
 
 	private void hideEntityMenu() {
@@ -350,17 +361,17 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		if (paintEntity.isSelected()) {
 			switch (entitiesBox.getSelectedItem().toString()) {
 			case "Block":
-				result[0] = "b " + selectedX + "," + selectedY;
+				result[0] = "block " + selectedX + "," + selectedY;
 				break;
 			case "Snake":
-				result[0] = "s " + selectedX + "," + selectedY + " " + snakeSize.getValue();
+				result[0] = "snake " + selectedX + "," + selectedY + " " + snakeSize.getValue();
 				break;
 			case "Turret":
-				result[0] = "t " + selectedX + "," + selectedY + " " + turretRate.getValue() + " "
+				result[0] = "turret " + selectedX + "," + selectedY + " " + turretRate.getValue() + " "
 						+ turretDirectionBox.getSelectedItem().toString() + " " + turretDelay.getValue();
 				break;
 			case "Ghost":
-				result[0] = "g " + selectedX + "," + selectedY + " " + ghostPower.getValue();
+				result[0] = "ghost " + selectedX + "," + selectedY + " " + ghostPower.getValue();
 				break;
 			case "None":
 				result[0] = "None";
@@ -371,20 +382,20 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		if (paintTile.isSelected()) {
 			switch (tilesBox.getSelectedItem().toString()) {
 			case "Empty":
-				result[1] = "E " + selectedX + "," + selectedY;
+				result[1] = "empty " + selectedX + "," + selectedY;
 				break;
 			case "Wall":
-				result[1] = "W " + selectedX + "," + selectedY;
+				result[1] = "wall " + selectedX + "," + selectedY;
 				break;
 			case "Slide":
-				result[1] = "S " + selectedX + "," + selectedY + " " + slideDirectionBox.getSelectedItem().toString();
+				result[1] = "slide " + selectedX + "," + selectedY + " " + slideDirectionBox.getSelectedItem().toString();
 				break;
 			case "Teleport":
-				result[1] = "T " + selectedX + "," + selectedY + " " + teleportX.getValue() + ","
+				result[1] = "tele " + selectedX + "," + selectedY + " " + teleportX.getValue() + ","
 						+ teleportY.getValue();
 				break;
 			case "Hole":
-				result[1] = "H " + selectedX + "," + selectedY;
+				result[1] = "hole " + selectedX + "," + selectedY;
 				break;
 			default:
 				break;
@@ -406,30 +417,64 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	public void roomUpdate(Room r) {
+		setRoomScale(Math.max(r.getxLength(), r.getyLength()));
 		images.clear();
 		images.add(room);
 		for (Entity e : r.getEnemies()) {
 			createImage(e);
 		}
-
 		removeRooms();
-		room = new RoomImage(r.getTiles(), scale, r.getId(), r.getExits());
+		updateRoomButtons(r.getxLength(), r.getyLength());
+		room = new RoomImage(r.getTiles(), roomScale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());
 		images.add(room);
+	}
+
+	public void updateRoomButtons(int x, int y) {
+
+		for (JButton b : tileButtons) {
+			this.remove(b);
+		}
+		tileButtons.clear();
+		for (int i = 0; i < y; i++) {
+			for (int j = 0; j < x; j++) {
+				tileButtons.add(new JButton());
+			}
+		}
+
+		for (JButton b : tileButtons) {
+			int xTile = tileButtons.indexOf(b) % x;
+			int yTile = tileButtons.indexOf(b) / x;
+			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale,
+					roomScale, roomScale);
+			b.setOpaque(false);
+			b.setContentAreaFilled(false);
+			b.setBorderPainted(false);
+			b.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					selectedX = xTile;
+					selectedY = yTile;
+					w.addToRoom(generateTile(), xTile, yTile);
+				}
+			});
+			this.add(b);
+		}
 	}
 
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId()));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
-			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection()));
-		} else if (e instanceof SnakeBody) {
-			SnakeBody sb = (SnakeBody) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId()));
+			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), roomScale, t.getRoomId(), t.getDirection()));
+		} else if (e instanceof Snake) {
+			Snake sb = (Snake) e;
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId()));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId()));
 		}
 	}
 
@@ -495,7 +540,8 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		}
 		g.setColor(Color.RED);
-		g.drawRect((selectedX + 1) * scale + 700, (selectedY + 1) * scale, scale, scale);
+		g.drawRect(selectedX * roomScale + 700 + scale, selectedY * roomScale + scale, roomScale,
+				roomScale);
 		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();

@@ -15,11 +15,31 @@ import model.Wall;
 public class RoomImage extends Image {
 	private List<Tile> tiles = new ArrayList<Tile>();
 	private String exits;
+	private int xLength = 11;
+	private int yLength = 11;
 
-	public RoomImage(List<Tile> tiles, int scale, String room, String exits) {
+	public RoomImage(List<Tile> tiles, int scale, int xLength, int yLength, String room, String exits) {
 		super(0, 0, scale, room);
 		this.tiles = tiles;
 		this.exits = exits;
+		this.xLength = xLength;
+		this.yLength = yLength;
+	}
+
+	public int getxLength() {
+		return xLength;
+	}
+
+	public int getyLength() {
+		return yLength;
+	}
+
+	public void setxLength(int xLength) {
+		this.xLength = xLength;
+	}
+
+	public void setyLength(int yLength) {
+		this.yLength = yLength;
 	}
 
 	private Boolean checkExit(char exit) {
@@ -56,13 +76,13 @@ public class RoomImage extends Image {
 			g.fillOval(scale * 5 + x, scale / 2, scale, scale);
 		}
 		if (checkExit('S')) {
-			g.fillOval(scale * 5 + x, scale * Y_LENGTH + scale / 2, scale, scale);
+			g.fillOval(scale * 5 + x, scale * getyLength() + scale / 2, scale, scale);
 		}
 		if (checkExit('W')) {
 			g.fillOval(-scale / 2 + x, scale * 6, scale, scale);
 		}
 		if (checkExit('E')) {
-			g.fillOval(scale * X_LENGTH + scale / 2, scale * 6, scale, scale);
+			g.fillOval(scale * getxLength() + scale / 2, scale * 6, scale, scale);
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
@@ -112,7 +132,7 @@ public class RoomImage extends Image {
 					break;
 				}
 				Polygon p = new Polygon(xCoords, yCoords, 3);
-				p.translate((t.getX() + 1) * scale + getXPos() + x / 4, (t.getY() + 1) * scale + getYPos() + y / 4);
+				p.translate((t.getX()) * scale + getXPos() + x, (t.getY() + 1) * scale + getYPos() + y / 4);
 				g.setColor(Color.BLACK);
 				g.drawPolygon(p);
 
@@ -129,7 +149,7 @@ public class RoomImage extends Image {
 			g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + xPos + x,
 					t.getY() * scale + 20 + yPos + y);
 		}
-		g.drawRect(scale + getXPos(), scale + getYPos(), scale * X_LENGTH, scale * Y_LENGTH);
+		g.drawRect(getXPos() + x, getYPos() + y, scale * getxLength(), scale * getyLength());
 
 	}
 

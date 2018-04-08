@@ -15,42 +15,64 @@ public class Room implements Subject, Constants {
 	private List<Entity> enemies = new ArrayList<Entity>();
 	private int x;
 	private int y;
+	private int xLength = 11;
+	private int yLength = 11;
 	private String exits;
 	private Player player;
 	private String id;
 	private List<Entity> remove = new ArrayList<Entity>();
 	private List<Entity> add = new ArrayList<Entity>();
 
-	public Room(int x, int y, String exits, Player player) {
+	public Room(int x, int y, int xLength, int yLength, String exits, Player player) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		for (int i = 0; i < Y_LENGTH; i++) {
-			for (int j = 0; j < X_LENGTH; j++) {
+		this.xLength = xLength;
+		this.yLength = yLength;
+		for (int i = 0; i < yLength; i++) {
+			for (int j = 0; j < xLength; j++) {
 				tiles.add(new Tile(j, i));
 			}
 		}
 	}
 
-	public Room(int x, int y, String exits, Player player, Observer o) {
+	public Room(int x, int y, int xLength, int yLength, String exits, Player player, Observer o) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
 		this.player = player;
 		this.exits = exits;
-		for (int i = 0; i < Y_LENGTH; i++) {
-			for (int j = 0; j < X_LENGTH; j++) {
+		this.xLength = xLength;
+		this.yLength = yLength;
+		for (int i = 0; i < yLength; i++) {
+			for (int j = 0; j < xLength; j++) {
 				tiles.add(new Tile(j, i));
 			}
 		}
 		this.addObserver(o);
 	}
 
+	public int getxLength() {
+		return xLength;
+	}
+
+	public int getyLength() {
+		return yLength;
+	}
+
+	public void setxLength(int xLength) {
+		this.xLength = xLength;
+	}
+
+	public void setyLength(int yLength) {
+		this.yLength = yLength;
+	}
+
 	public List<String> exportRoom() {
 		List<String> result = new ArrayList<String>();
-		result.add("r " + id + " 0");
+		result.add("r " + id + " " + getxLength() + "," + getyLength());
 
 		for (Entity e : enemies) {
 			result.add(e.toString());
@@ -127,7 +149,6 @@ public class Room implements Subject, Constants {
 	public void addEntity(Entity e) {
 		e.addObserver(observers.get(0));
 		enemies.add(e);
-		System.out.println("Added " + e.toString());
 	}
 
 	public void emptyTrash() {
@@ -155,10 +176,10 @@ public class Room implements Subject, Constants {
 	}
 
 	public int[][] getPath() {
-		int[][] path = new int[Y_LENGTH][X_LENGTH];
-		path[Y_LENGTH - 1][X_LENGTH - 1] = 1;
-		for (int i = 0; i < Y_LENGTH; i++) {
-			for (int j = 0; j < X_LENGTH; j++) {
+		int[][] path = new int[getyLength()][getxLength()];
+		path[getyLength() - 1][getxLength() - 1] = 1;
+		for (int i = 0; i < getyLength(); i++) {
+			for (int j = 0; j < getxLength(); j++) {
 				path[j][i] = getTile(j, i).getPath();
 			}
 		}
@@ -173,7 +194,7 @@ public class Room implements Subject, Constants {
 		tile.setPath(1);
 		findPath(1);
 		if (!tile.getTrav()) {
-			tile.setPath(Y_LENGTH * X_LENGTH + 1);
+			tile.setPath(getyLength() * getxLength() + 1);
 		}
 		getTile(x, y).setPathed(false);
 		notifyObserver();
@@ -187,8 +208,8 @@ public class Room implements Subject, Constants {
 		if (this.pathTiles.size() > 0) {
 			findPath(val + 1);
 		} else {
-			for (int i = 0; i < Y_LENGTH; i++) {
-				for (int j = 0; j < X_LENGTH; j++) {
+			for (int i = 0; i < getyLength(); i++) {
+				for (int j = 0; j < getxLength(); j++) {
 					getTile(j, i).setPathed(false);
 				}
 			}
@@ -250,7 +271,6 @@ public class Room implements Subject, Constants {
 		for (Entity e : enemies) {
 			if (e instanceof Turret) {
 				((Turret) e).next();
-				System.out.println("me");
 			} else if (e instanceof Ghost) {
 				moveGhost((Ghost) e);
 			}
@@ -392,9 +412,9 @@ public class Room implements Subject, Constants {
 	public void print() {
 		int[][] path = getPath();
 		String result = "";
-		for (int i = 0; i < Y_LENGTH; i++) {
-			for (int j = 0; j < X_LENGTH; j++) {
-				if (path[j][i] == Y_LENGTH * X_LENGTH + 1) {
+		for (int i = 0; i < getyLength(); i++) {
+			for (int j = 0; j < getxLength(); j++) {
+				if (path[j][i] == getyLength() * getxLength() + 1) {
 					result += 1;
 				} else {
 					result += 0;
@@ -411,7 +431,7 @@ public class Room implements Subject, Constants {
 			} else {
 				result += "0";
 			}
-			if ((tiles.indexOf(t) + 1) % X_LENGTH == 0) {
+			if ((tiles.indexOf(t) + 1) % getxLength() == 0) {
 				result += "\n";
 			}
 		}

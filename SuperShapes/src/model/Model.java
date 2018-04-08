@@ -83,7 +83,7 @@ public class Model implements Constants, Subject {
 		Room result = fileManager.makeRoom(fileManager.getRoomData(x, y), player, v);
 		exits = fileManager.getExits(x, y);
 		if (result == null)
-			result = new Room(x, y, exits, player, v);
+			result = new Room(x, y, 11, 11, exits, player, v);
 		return result;
 	}
 
@@ -171,7 +171,7 @@ public class Model implements Constants, Subject {
 	}
 
 	private Boolean tryExit(char direction, int x, int y) {
-		if (x == X_LENGTH - 1 && y == 5 && direction == 'E' && room.checkExits('E')) {
+		if (x == room.getxLength() - 1 && y == 5 && direction == 'E' && room.checkExits('E')) {
 			changeRoom(getAdjRoomId('E'), true);
 			return true;
 		} else if (x == 0 && y == 5 && direction == 'W' && room.checkExits('W')) {
@@ -180,7 +180,7 @@ public class Model implements Constants, Subject {
 		} else if (x == 5 && y == 0 && direction == 'N' && room.checkExits('N')) {
 			changeRoom(getAdjRoomId('N'), true);
 			return true;
-		} else if (x == 5 && y == Y_LENGTH - 1 && direction == 'S' && room.checkExits('S')) {
+		} else if (x == 5 && y == room.getyLength() - 1 && direction == 'S' && room.checkExits('S')) {
 			changeRoom(getAdjRoomId('S'), true);
 			return true;
 		}
@@ -191,10 +191,10 @@ public class Model implements Constants, Subject {
 		if (direction == 'N' && y - 1 >= 0 && room.getTile(x, y - 1).getTrav()) {
 			player.setLoc(x, y - 1);
 			return true;
-		} else if (direction == 'E' && x + 1 <= X_LENGTH - 1 && room.getTile(x + 1, y).getTrav()) {
+		} else if (direction == 'E' && x + 1 <= room.getxLength() - 1 && room.getTile(x + 1, y).getTrav()) {
 			player.setLoc(x + 1, y);
 			return true;
-		} else if (direction == 'S' && y + 1 <= Y_LENGTH - 1 && room.getTile(x, y + 1).getTrav()) {
+		} else if (direction == 'S' && y + 1 <= room.getyLength() - 1 && room.getTile(x, y + 1).getTrav()) {
 			player.setLoc(x, y + 1);
 			return true;
 		} else if (direction == 'W' && x - 1 >= 0 && room.getTile(x - 1, y).getTrav()) {
@@ -208,10 +208,10 @@ public class Model implements Constants, Subject {
 		if (direction == 'N' && y - 1 >= 0) {
 			player.setLoc(x, y - 1);
 			return true;
-		} else if (direction == 'E' && x + 1 <= X_LENGTH - 1) {
+		} else if (direction == 'E' && x + 1 <= room.getxLength() - 1) {
 			player.setLoc(x + 1, y);
 			return true;
-		} else if (direction == 'S' && y + 1 <= Y_LENGTH - 1) {
+		} else if (direction == 'S' && y + 1 <= room.getyLength() - 1) {
 			player.setLoc(x, y + 1);
 			return true;
 		} else if (direction == 'W' && x - 1 >= 0) {
@@ -260,10 +260,10 @@ public class Model implements Constants, Subject {
 			player.setLoc(5, 0);
 			break;
 		case 'E':
-			player.setLoc(X_LENGTH - 1, 5);
+			player.setLoc(room.getxLength() - 1, 5);
 			break;
 		case 'S':
-			player.setLoc(5, Y_LENGTH - 1);
+			player.setLoc(5, room.getyLength() - 1);
 			break;
 		case 'W':
 			player.setLoc(0, 5);
@@ -284,13 +284,13 @@ public class Model implements Constants, Subject {
 		room = temp;
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
-				player.setLoc(X_LENGTH - 1, 5);
+				player.setLoc(room.getxLength() - 1, 5);
 			} else {
 				player.setLoc(0, 5);
 			}
 		} else {
 			if (y > 0) {
-				player.setLoc(5, Y_LENGTH - 1);
+				player.setLoc(5, room.getyLength() - 1);
 			} else {
 				player.setLoc(5, 0);
 			}

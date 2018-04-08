@@ -264,13 +264,17 @@ public class FileManager {
 	public Room parseRoom(String[] params, Player player) {
 		int x = 0;
 		int y = 0;
+		int xLength = 11;
+		int yLength = 11;
 		try {
 			x = Integer.parseInt(params[1].split(",")[0]);
 			y = Integer.parseInt(params[1].split(",")[1]);
+			xLength = Integer.parseInt(params[2].split(",")[0]);
+			yLength = Integer.parseInt(params[2].split(",")[1]);
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Room(x, y, getExits(x, y), player);
+		return new Room(x, y,xLength,yLength, getExits(x, y), player);
 	}
 
 	public Block parseBlock(String[] params, int x, int y, int enemyCount) {

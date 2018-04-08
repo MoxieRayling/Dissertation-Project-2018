@@ -57,7 +57,11 @@ public class Animation extends JPanel implements Constants {
 		if (room != null) {
 			divisor = room.getSize() + 4;
 		}
-		scale = Math.min(sizex, sizey) / divisor;
+		setScale(divisor);
+	}
+
+	public void setScale(int size) {
+		scale = Math.min(sizex, sizey) / (size + 3);
 		for (Image i : images) {
 			i.setScale(scale);
 			i.update();
@@ -92,7 +96,8 @@ public class Animation extends JPanel implements Constants {
 			roomId = r.getId();
 		}
 		removeRooms();
-		room = new RoomImage(r.getTiles(), scale, r.getId(), r.getExits());
+		setScale(Math.max(r.getxLength(), r.getyLength()));
+		room = new RoomImage(r.getTiles(), scale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());
 		images.add(room);
 	}
 
@@ -255,7 +260,7 @@ public class Animation extends JPanel implements Constants {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		int[] columns = { scale, scale * 4, scale * 7, scale * 10 };
-		int[] rows = { 20, scale * 13 };
+		int[] rows = { 20, scale * (room.getyLength() + 2) };
 
 		super.paintComponent(g);
 		renderOrder();
@@ -267,7 +272,7 @@ public class Animation extends JPanel implements Constants {
 		drawHUD(g, columns, rows);
 		if (text != "") {
 			g.setColor(new Color(0, 0, 0, 100));
-			g.fillRect(scale, scale * Y_LENGTH, scale * X_LENGTH, scale);
+			g.fillRect(scale, scale * room.getyLength(), scale * room.getxLength(), scale);
 			g.setColor(Color.WHITE);
 			g.drawString(text, scale + 20, scale * 11 + 20);
 		}
