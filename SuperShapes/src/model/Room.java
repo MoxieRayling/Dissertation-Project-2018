@@ -17,7 +17,7 @@ public class Room implements Subject, Constants {
 	private int y;
 	private int xLength = 11;
 	private int yLength = 11;
-	private int[] exits = {-1,-1,-1,-1};
+	private int[] exits = { -1, -1, -1, -1 };
 	private Player player;
 	private String id;
 	private List<Entity> remove = new ArrayList<Entity>();
@@ -33,7 +33,7 @@ public class Room implements Subject, Constants {
 		this.yLength = yLength;
 		for (int i = 0; i < yLength; i++) {
 			for (int j = 0; j < xLength; j++) {
-				tiles.add(new Tile(j, i));
+				tiles.add(new EmptyTile(j, i));
 			}
 		}
 	}
@@ -48,17 +48,20 @@ public class Room implements Subject, Constants {
 		this.yLength = yLength;
 		for (int i = 0; i < yLength; i++) {
 			for (int j = 0; j < xLength; j++) {
-				tiles.add(new Tile(j, i));
+				tiles.add(new EmptyTile(j, i));
 			}
 		}
 		this.addObserver(o);
 	}
 
 	public void setExit(int index, int coord) {
-		exits[index] = coord;
+		if (exits[index] == coord)
+			exits[index] = -1;
+		else
+			exits[index] = coord;
 		notifyObserver();
 	}
-	
+
 	public int getxLength() {
 		return xLength;
 	}
@@ -67,20 +70,42 @@ public class Room implements Subject, Constants {
 		return yLength;
 	}
 
-	public void setxLength(int xLength) {
-		this.xLength = xLength;
-	}
+	public void setSize(int[] size) {
+		this.xLength = size[0];
+		if (exits[0] >= xLength)
+			exits[0] -= 1;
+		if (exits[2] >= xLength)
+			exits[2] -= 1;
+		this.yLength = size[1];
+		if (exits[1] >= yLength)
+			exits[1] -= 1;
+		if (exits[3] >= yLength)
+			exits[3] -= 1;
+		List<Tile> tiles = new ArrayList<Tile>();
+		for (int i = 0; i < yLength; i++) {
+			for (int j = 0; j < xLength; j++) {
+				if (getTile(j, i) != null) {
+					tiles.add(getTile(j, i));
+				} else {
+					tiles.add(new EmptyTile(j, i));
+				}
+			}
 
-	public void setyLength(int yLength) {
-		this.yLength = yLength;
+		}
+		setTiles(tiles);
 	}
 
 	public List<String> exportRoom() {
 		List<String> result = new ArrayList<String>();
-		result.add("r " + id + " " + getxLength() + "," + getyLength());
+		result.add("room " + id + " " + getxLength() + "," + getyLength() + " " + exits[0] + "," + exits[1] + ","
+				+ exits[2] + "," + exits[3]);
 
 		for (Entity e : enemies) {
 			result.add(e.toString());
+		}
+		for (Tile t : tiles) {
+			if (!(t instanceof EmptyTile))
+				result.add(t.toString());
 		}
 		result.add(";");
 		return result;
@@ -182,6 +207,7 @@ public class Room implements Subject, Constants {
 
 	public void setTiles(List<Tile> tiles) {
 		this.tiles = tiles;
+		notifyObserver();
 	}
 
 	public int[][] getPath() {

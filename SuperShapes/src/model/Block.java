@@ -8,6 +8,6 @@ public class Block extends Entity {
 
 	@Override
 	public String toString() {
-		return new String("b " + getX() + "," + getY() + "\n");
+		return new String("block " + getX() + "," + getY());
 	}
 }

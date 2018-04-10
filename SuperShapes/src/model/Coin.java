@@ -6,4 +6,10 @@ public class Coin extends Tile {
 		super(x, y);
 	}
 
+
+	@Override
+	public String toString() {
+		return "coin " + x + "," + y;
+	}
+
 }

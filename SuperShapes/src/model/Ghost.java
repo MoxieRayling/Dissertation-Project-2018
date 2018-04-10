@@ -23,6 +23,6 @@ public class Ghost extends Entity {
 
 	@Override
 	public String toString() {
-		return new String("g " + getX() + "," + getY() + " " + pause + "\n");
+		return new String("ghost " + getX() + "," + getY() + " " + pause );
 	}
 }

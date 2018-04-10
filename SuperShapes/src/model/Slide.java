@@ -15,6 +15,6 @@ public class Slide extends Tile {
 
 	@Override
 	public String toString() {
-		return "S " + x + "," + y + " " + direction;
+		return "slide " + x + "," + y + " " + direction;
 	}
 }

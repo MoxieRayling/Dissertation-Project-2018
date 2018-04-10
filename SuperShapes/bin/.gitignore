@@ -1,4 +1,3 @@
-/game1/
-/views/
-/model/
-/controller/
+*
+!.gitignore
+/.gitignore

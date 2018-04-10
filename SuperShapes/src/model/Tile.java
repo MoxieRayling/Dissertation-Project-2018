@@ -1,6 +1,6 @@
 package model;
 
-public class Tile {
+public abstract class Tile {
 	private Boolean trav = true; // traversable
 	private int path; // path-finding value
 	private int[] loc = new int[2];
@@ -18,7 +18,7 @@ public class Tile {
 		loc[0] = x;
 		loc[1] = y;
 		this.trav = true;
-		//text = "hi";
+		// text = "hi";
 		textRead = true;
 	}
 
@@ -90,7 +90,5 @@ public class Tile {
 		this.path = path;
 	}
 
-	public String toString() {
-		return null;
-	}
+	public abstract String toString();
 }

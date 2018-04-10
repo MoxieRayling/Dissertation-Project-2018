@@ -21,7 +21,7 @@ public class EditorModel extends Model {
 		super.room.addObserver(v);
 		super.room.notifyObserver();
 	}
-	
+
 	public void addToRoom(String[] lines, int x, int y) {
 		for (Tile t : room.getTiles()) {
 			if (t.getX() == x && t.getY() == y) {
@@ -71,51 +71,17 @@ public class EditorModel extends Model {
 		return roomIds;
 	}
 
-	public void exportRooms() {
-		String fileName = "resource/world.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (FileNotFoundException ex) {
-		} catch (IOException ex) {
-		}
+	public void exportRoom() {
+		fileManager.exportWorking(room.exportRoom());
 
-		Boolean inRoom = false;
-		for (String l : lines) {
-			if (l.startsWith("r")) {
-				String id = l.split(" ")[1];
-				for (Room r : rooms) {
-					if (r.getId().equals(id)) {
-						inRoom = true;
-					}
-				}
-			}
-			if (inRoom) {
-				lines.set(lines.indexOf(l), "xxxxxx");
-			}
-			if (l.startsWith(";")) {
-				inRoom = false;
-			}
-		}
-		while (lines.contains("xxxxxx")) {
-			lines.remove(lines.indexOf("xxxxxx"));
-		}
-		for (Room r : rooms) {
-			for (String s : r.exportRoom()) {
-				lines.add(s);
-			}
-		}
-		fileManager.writeToFile(lines, fileName);
 	}
 
 	public void setExit(int index, int coord) {
 		room.setExit(index, coord);
+	}
+
+	public void setRoomSize(int[] size) {
+		room.setSize(size);
 	}
 
 }

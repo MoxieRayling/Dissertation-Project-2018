@@ -6,4 +6,9 @@ public class Save extends Tile {
 		super(x, y);
 	}
 
+	@Override
+	public String toString() {
+		return "save " + x + "," + y;
+	}
+
 }

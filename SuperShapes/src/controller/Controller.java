@@ -70,11 +70,14 @@ public class Controller implements Constants {
 	}
 
 	public void export() {
-		((EditorModel) m).exportRooms();
+		((EditorModel) m).exportRoom();
 	}
-
+	
+	public void setDirectory(String dir) {
+		m.setDirectory(dir);
+	}
 	public String[][] getMap(int x, int y) {
-		return m.getMap(x,y);
+		return m.getMap(x, y);
 	}
 
 	public int getX() {
@@ -87,5 +90,11 @@ public class Controller implements Constants {
 
 	public void setExit(int index, int coord) {
 		((EditorModel) m).setExit(index, coord);
+	}
+
+	public void setRoomSize(int[] size) {
+		if (!(m instanceof EditorModel))
+			this.runEditor();
+		((EditorModel) m).setRoomSize(size);
 	}
 }

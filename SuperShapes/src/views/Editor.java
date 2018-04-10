@@ -19,6 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import controller.Constants;
 import model.Block;
 import model.Entity;
@@ -82,6 +85,9 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private String game;
 	private JTextField entityImage;
 	private JTextField tileImage;
+	private JSlider roomXSlider;
+	private JSlider roomYSlider;
+	private int[] size = {11,11};
 
 	public Editor(Window w) {
 		this.w = w;
@@ -97,6 +103,29 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	private void initUI() {
+
+		roomXSlider = new JSlider(3,20,11);
+		roomXSlider.setBounds(750,500,100,20);
+		roomXSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				size[0] = roomXSlider.getValue();
+				w.setRoomSize(size);
+			}
+		});
+		this.add(roomXSlider);
+		roomYSlider = new JSlider(3,20,11);
+		roomYSlider.setBounds(950,500,100,20);
+		roomYSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				size[1] = roomYSlider.getValue();
+				w.setRoomSize(size);
+			}
+		});
+		this.add(roomYSlider);
 
 		mapUp = new JButton();
 		mapUp.setBounds(scale * 6, 0, scale, scale);
@@ -216,6 +245,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					w.export();
 					selectedRoomX = x;
 					selectedRoomY = y;
 					w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
@@ -545,6 +575,10 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		for (Entity e : r.getEnemies()) {
 			createImage(e);
 		}
+		size[0] = r.getxLength();
+		size[1] = r.getyLength();
+		roomXSlider.setValue(r.getxLength());
+		roomYSlider.setValue(r.getyLength());
 		removeRooms();
 		updateRoomButtons(r.getxLength(), r.getyLength());
 		room = new RoomImage(r.getTiles(), roomScale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());

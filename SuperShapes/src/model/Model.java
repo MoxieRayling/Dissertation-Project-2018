@@ -24,6 +24,10 @@ public class Model implements Constants, Subject {
 		fileManager = new FileManager();
 		mode = "game";
 	}
+	
+	public void setDirectory(String dir) {
+		fileManager.setDirectory(dir);
+	}
 
 	public String getMode() {
 		return mode;

@@ -64,22 +64,22 @@ public class RoomImage extends Image {
 		g.setColor(Color.WHITE);
 
 		if (exits[0] != -1) {
-			g.fillOval(scale * exits[0] + x, scale / 2, scale, scale);
+			g.fillOval(scale * exits[0] + x, y - scale / 2, scale, scale);
 		}
 		if (exits[2] != -1) {
-			g.fillOval(scale * exits[2] + x, scale * getyLength() + scale / 2, scale, scale);
+			g.fillOval(scale * exits[2] + x, y + scale * getyLength() - scale / 2, scale, scale);
 		}
 		if (exits[3] != -1) {
-			g.fillOval(-scale / 2 + x, scale * (exits[3] + 1), scale, scale);
+			g.fillOval(x - scale / 2, y + scale * exits[3], scale, scale);
 		}
 		if (exits[1] != -1) {
-			g.fillOval(scale * getxLength() + scale / 2, scale * (exits[1] + 1), scale, scale);
+			g.fillOval(x + scale * getxLength() - scale / 2, y + scale * exits[1], scale, scale);
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
 			if (t instanceof Wall) {
 				g.setColor(new Color(0x444444));
-				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 			} else if (t instanceof Teleport) {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
@@ -87,7 +87,7 @@ public class RoomImage extends Image {
 				int[] xCoords = { 0, scale / 4, scale / 2, scale / 4 };
 				int[] yCoords = { scale / 4, 0, scale / 4, scale / 2 };
 				Polygon p = new Polygon(xCoords, yCoords, 4);
-				p.translate((t.getX() + 1) * scale + getXPos() + x / 4, (t.getY() + 1) * scale + getYPos() + y / 4);
+				p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
 				g.setColor(Color.BLACK);
 				g.drawPolygon(p);
 
@@ -123,24 +123,23 @@ public class RoomImage extends Image {
 					break;
 				}
 				Polygon p = new Polygon(xCoords, yCoords, 3);
-				p.translate((t.getX()) * scale + getXPos() + x, (t.getY() + 1) * scale + getYPos() + y / 4);
+				p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
 				g.setColor(Color.BLACK);
 				g.drawPolygon(p);
 
 			} else if (t instanceof Hole) {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 				g.setColor(Color.BLACK);
-				g.fillOval(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+				g.fillOval(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 			} else {
 				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 			}
 			g.setColor(Color.BLACK);
-			g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + xPos + x,
-					t.getY() * scale + 20 + yPos + y);
+			g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
 		}
-		g.drawRect(getXPos() + x, getYPos() + y, scale * getxLength(), scale * getyLength());
+		g.drawRect(x, y, scale * getxLength(), scale * getyLength());
 
 	}
 

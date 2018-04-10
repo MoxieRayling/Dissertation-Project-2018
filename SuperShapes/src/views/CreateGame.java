@@ -29,6 +29,7 @@ public class CreateGame extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String dir = (String) games.getSelectedItem();
+				w.setDirectory(dir);
 				w.gameRules(dir);
 			}
 		});
@@ -45,6 +46,7 @@ public class CreateGame extends JPanel {
 					// warning
 				} else {
 					new File(dir).mkdirs();
+					w.setDirectory(dir);
 					w.gameRules(dir);
 				}
 			}

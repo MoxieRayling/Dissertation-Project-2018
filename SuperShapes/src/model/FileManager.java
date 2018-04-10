@@ -14,9 +14,21 @@ import observers.Observer;
 public class FileManager {
 
 	private int enemyCount = 0;
+	private String directory = "games/game1";
 
 	public FileManager() {
+	}
 
+	public void setDirectory(String dir) {
+		directory = "games/" + dir;
+	}
+
+	public void copyWorld() {
+		writeToFile(getWorldData(), directory + "/working.txt");
+	}
+
+	public void saveWorld() {
+		writeToFile(getWorkingData(), directory + "/world.txt");
 	}
 
 	private int getEnemyCount() {
@@ -25,7 +37,7 @@ public class FileManager {
 	}
 
 	public List<String> getSaveData() {
-		String fileName = "resource/save.txt";
+		String fileName = directory + "/save.txt";
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -45,7 +57,27 @@ public class FileManager {
 	}
 
 	public List<String> getWorldData() {
-		String fileName = "resource/world.txt";
+		String fileName = directory + "/world.txt";
+		String line = null;
+		List<String> lines = new ArrayList<String>();
+		try {
+			FileReader fileReader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+			while ((line = bufferedReader.readLine()) != null) {
+				lines.add(line);
+			}
+			bufferedReader.close();
+		} catch (FileNotFoundException ex) {
+			System.out.println("file no work " + fileName);
+		} catch (IOException ex) {
+			System.out.println("file no work " + fileName);
+		}
+		return lines;
+	}
+
+	public List<String> getWorkingData() {
+		String fileName = directory + "/working.txt";
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -65,25 +97,17 @@ public class FileManager {
 	}
 
 	public void saveGame(String checkpointId, Player player, int clock) {
-		String fileName = "resource/save.txt";
-		try {
-			FileWriter fileWriter = new FileWriter(fileName);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			bufferedWriter.write(checkpointId);
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(player.getX()));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(player.getY()));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(clock));
-			bufferedWriter.close();
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
+		String fileName = directory + "/save.txt";
+		List<String> lines = new ArrayList<String>();
+		lines.add(checkpointId);
+		lines.add(String.valueOf(player.getX()));
+		lines.add(String.valueOf(player.getY()));
+		lines.add(String.valueOf(clock));
+		writeToFile(lines, fileName);
 	}
 
 	public void eraseSaveData() {
-		String fileName = "resource/save.txt";
+		String fileName = directory + "/save.txt";
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -101,7 +125,7 @@ public class FileManager {
 	}
 
 	public List<String> getRoomData(int x, int y) {
-		String fileName = "resource/world.txt";
+		String fileName = directory + "/world.txt";
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -193,7 +217,7 @@ public class FileManager {
 	}
 
 	public void updateWorldFile(String room, String oldLine, String newLine) {
-		String fileName = "resource/world.txt";
+		String fileName = directory + "/working.txt";
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -262,6 +286,37 @@ public class FileManager {
 			}
 		}
 		return result;
+	}
+
+	public void removeRoom(String id) {
+		List<String> world = getWorkingData();
+		Boolean inRoom = false;
+		for (String s : world) {
+			if (s.startsWith("room")) {
+				if (id.equals(s.split(" ")[1]))
+					inRoom = true;
+			}
+			if (inRoom) {
+				world.set(world.indexOf(s), "xxx");
+				if (s.startsWith(";")) {
+					inRoom = false;
+				}
+			}
+		}
+		while (world.contains("xxx")) {
+			world.remove("xxx");
+		}
+		writeToFile(world, directory + "/working.txt");
+	}
+
+	public void exportWorking(List<String> room) {
+		removeRoom(room.get(0).split(" ")[1]);
+		List<String> lines = getWorkingData();
+		for (String l : room) {
+			lines.add(l);
+		}
+		writeToFile(lines, directory + "/working.txt");
+		writeToFile(lines, directory + "/world.txt");
 	}
 
 	public Room parseRoom(String[] params, Player player) {
@@ -449,7 +504,7 @@ public class FileManager {
 		return w;
 	}
 
-	public Tile parseEmptyTile(String[] params) {
+	public EmptyTile parseEmptyTile(String[] params) {
 		int x = 0;
 		int y = 0;
 		String[] coords = params[1].split(",");
@@ -459,7 +514,7 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		Tile t = new Tile(x, y);
+		EmptyTile t = new EmptyTile(x, y);
 		if (params.length == 3) {
 			t.setImage(params[2]);
 		}

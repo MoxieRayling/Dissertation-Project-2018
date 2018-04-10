@@ -78,7 +78,7 @@ public class Snake extends Entity {
 
 	@Override
 	public String toString() {
-		return new String("s " + getX() + "," + getY() + " " + length + "\n");
+		return new String("snake " + getX() + "," + getY() + " " + length);
 	}
 
 	@Override

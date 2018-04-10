@@ -159,8 +159,8 @@ public class Window extends JFrame implements View, Constants {
 	}
 
 	public void editor(String game) {
-		editor.setGame(game);
 		c.runEditor();
+		editor.setGame(game);
 		c.setMode("editor");
 		this.setSize(1200, 600);
 		this.setResizable(false);
@@ -259,9 +259,16 @@ public class Window extends JFrame implements View, Constants {
 		this.repaint();
 		gameRules.requestFocusInWindow();
 	}
-
+	
+	public void setDirectory(String dir) {
+		c.setDirectory(dir);
+	}
 	public void setExit(int index, int coord) {
 		c.setExit(index,coord);
+	}
+
+	public void setRoomSize(int[] size) {
+		c.setRoomSize(size);
 	}
 
 }

@@ -40,6 +40,6 @@ public class Turret extends Entity {
 
 	@Override
 	public String toString() {
-		return new String("t " + getX() + "," + getY() + " " + ratio + " " + direction + " " + delay + "\n");
+		return new String("turret " + getX() + "," + getY() + " " + ratio + " " + direction + " " + delay);
 	}
 }

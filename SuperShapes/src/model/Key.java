@@ -6,4 +6,10 @@ public class Key extends Tile {
 		super(x, y);
 	}
 
+
+	@Override
+	public String toString() {
+		return "key " + x + "," + y;
+	}
+
 }
