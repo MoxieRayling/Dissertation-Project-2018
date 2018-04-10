@@ -84,4 +84,8 @@ public class Controller implements Constants {
 	public int getY() {
 		return m.getY();
 	}
+
+	public void setExit(int index, int coord) {
+		((EditorModel) m).setExit(index, coord);
+	}
 }

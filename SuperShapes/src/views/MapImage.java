@@ -13,14 +13,6 @@ public class MapImage extends Image implements Constants {
 	public MapImage(String[][] map, int x, int y, int scale) {
 		super(x, y, scale, null);
 		this.map = map;
-		String line = "";
-		for (int i = 10; i >= 0; i--) {
-			for (int j = 10; j >= 0; j--) {
-				line += map[i][j] + ",";
-			}
-			System.out.println(line);
-			line = "";
-		}
 	}
 
 	@Override

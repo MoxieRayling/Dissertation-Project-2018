@@ -114,4 +114,8 @@ public class EditorModel extends Model {
 		fileManager.writeToFile(lines, fileName);
 	}
 
+	public void setExit(int index, int coord) {
+		room.setExit(index, coord);
+	}
+
 }

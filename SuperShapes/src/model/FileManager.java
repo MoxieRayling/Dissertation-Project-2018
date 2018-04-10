@@ -136,6 +136,23 @@ public class FileManager {
 		return lines;
 	}
 
+	public int[] generateExits(int x, int y) {
+		List<String> data = getWorldData();
+		int[] result = { -1, -1, -1, -1 };
+		for (String l : data) {
+			if (l.startsWith("room " + x + "," + (y - 1))) {
+				result[0] = 5;
+			} else if (l.startsWith("room " + x + "," + (y + 1))) {
+				result[2] = 5;
+			} else if (l.startsWith("room " + (x - 1) + "," + y)) {
+				result[3] = 5;
+			} else if (l.startsWith("room " + (x + 1) + "," + y)) {
+				result[1] = 5;
+			}
+		}
+		return result;
+	}
+
 	public Room makeRoom(List<String> lines, Player player, Observer o) {
 		List<Entity> enemies = new ArrayList<Entity>();
 		enemyCount = 0;
@@ -201,12 +218,10 @@ public class FileManager {
 			}
 			if (l.contains(oldLine) && inRoom) {
 				lines.set(lines.indexOf(l), newLine);
-				System.out.println("yes");
 				break;
 			}
 			if (l.startsWith(";") && inRoom) {
 				lines.add(lines.indexOf(l), newLine);
-				System.out.println("no");
 				break;
 			}
 		}
@@ -227,38 +242,26 @@ public class FileManager {
 		}
 	}
 
-	public String getExits(int x, int y) {
+	public int[] getExits(String id) {
 		List<String> lines = getWorldData();
-		String exits = "";
+		int[] result = { -1, -1, -1, -1 };
 		for (String l : lines) {
 			if (l.startsWith("room")) {
-				String id = l.split(" ")[1];
-				String[] coords = id.split(",");
-				int rx = 0;
-				int ry = 0;
-				try {
-					rx = Integer.parseInt(coords[0]);
-					ry = Integer.parseInt(coords[1]);
-				} catch (NumberFormatException e) {
-					System.out.println("rip ints");
-				}
-				if (x == rx) {
-					if (ry == y - 1) {
-						exits += 'N';
-					} else if (ry == y + 1) {
-						exits += 'S';
-					}
-				}
-				if (y == ry) {
-					if (rx == x - 1) {
-						exits += 'W';
-					} else if (rx == x + 1) {
-						exits += 'E';
+				String[] params = l.split(" ");
+				if (params[1].equals(id)) {
+					String[] exits = params[3].split(",");
+					try {
+						result[0] = Integer.parseInt(exits[0]);
+						result[1] = Integer.parseInt(exits[1]);
+						result[2] = Integer.parseInt(exits[2]);
+						result[3] = Integer.parseInt(exits[3]);
+					} catch (NumberFormatException e) {
+						System.out.println("rip ints");
 					}
 				}
 			}
 		}
-		return exits;
+		return result;
 	}
 
 	public Room parseRoom(String[] params, Player player) {
@@ -274,7 +277,7 @@ public class FileManager {
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
-		return new Room(x, y,xLength,yLength, getExits(x, y), player);
+		return new Room(x, y, xLength, yLength, getExits(x + "," + y), player);
 	}
 
 	public Block parseBlock(String[] params, int x, int y, int enemyCount) {
@@ -398,7 +401,6 @@ public class FileManager {
 		String[] coords = params[1].split(",");
 		String[] tCoords = params[2].split(",");
 		try {
-			System.out.println(params[2]);
 			x = Integer.parseInt(coords[0]);
 			y = Integer.parseInt(coords[1]);
 			tx = Integer.parseInt(tCoords[0]);
@@ -481,7 +483,7 @@ public class FileManager {
 		return null;
 	}
 
-	private int[] idToCoords(String id) {
+	public int[] idToCoords(String id) {
 		int[] result = new int[2];
 		String[] coords = id.split(",");
 		try {
@@ -518,7 +520,6 @@ public class FileManager {
 						if (searchList("save", lines)) {
 							map[coords[0] + 5 - x][coords[1] + 5 - y] += "S";
 						}
-						System.out.println(map[coords[0] + 5][coords[1] + 5]);
 					}
 				}
 				lines.clear();

@@ -16,7 +16,7 @@ public class StartMenu extends JPanel {
 	private int sizey = 190;
 	private JButton newGame = new JButton("New Game");
 	private JButton continueGame = new JButton("Continue");
-	private JButton editLevels = new JButton("Edit Levels");
+	private JButton createGame = new JButton("Create Game");
 	private JButton options = new JButton("Options");
 	private JButton exitGame = new JButton("Exit");
 	private List<JButton> buttons = new ArrayList<JButton>();
@@ -29,7 +29,7 @@ public class StartMenu extends JPanel {
 		
 		buttons.add(newGame);
 		buttons.add(continueGame);
-		buttons.add(editLevels);
+		buttons.add(createGame);
 		buttons.add(options);
 		buttons.add(exitGame);
 		
@@ -52,11 +52,12 @@ public class StartMenu extends JPanel {
 				w.loadGame();
 			}
 		});
-		editLevels.addActionListener(new ActionListener() {
+		createGame.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.editor();
+				//w.createGame();
+				w.editor("");
 			}
 		});
 	}

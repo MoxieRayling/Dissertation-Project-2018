@@ -17,13 +17,13 @@ public class Room implements Subject, Constants {
 	private int y;
 	private int xLength = 11;
 	private int yLength = 11;
-	private String exits;
+	private int[] exits = {-1,-1,-1,-1};
 	private Player player;
 	private String id;
 	private List<Entity> remove = new ArrayList<Entity>();
 	private List<Entity> add = new ArrayList<Entity>();
 
-	public Room(int x, int y, int xLength, int yLength, String exits, Player player) {
+	public Room(int x, int y, int xLength, int yLength, int[] exits, Player player) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
@@ -38,7 +38,7 @@ public class Room implements Subject, Constants {
 		}
 	}
 
-	public Room(int x, int y, int xLength, int yLength, String exits, Player player, Observer o) {
+	public Room(int x, int y, int xLength, int yLength, int[] exits, Player player, Observer o) {
 		this.x = x;
 		this.y = y;
 		id = String.valueOf(x) + "," + String.valueOf(y);
@@ -54,6 +54,11 @@ public class Room implements Subject, Constants {
 		this.addObserver(o);
 	}
 
+	public void setExit(int index, int coord) {
+		exits[index] = coord;
+		notifyObserver();
+	}
+	
 	public int getxLength() {
 		return xLength;
 	}
@@ -111,8 +116,12 @@ public class Room implements Subject, Constants {
 		return y;
 	}
 
-	public String getExits() {
+	public int[] getExits() {
 		return exits;
+	}
+
+	public void setExits(int[] exits) {
+		this.exits = exits;
 	}
 
 	public List<Entity> getEnemies() {
@@ -254,15 +263,6 @@ public class Room implements Subject, Constants {
 			tiles.add(getTile(x + 1, y));
 		}
 		return tiles;
-	}
-
-	public Boolean checkExits(char direction) {
-		for (int i = 0; i < exits.length(); i++) {
-			if (exits.charAt(i) == direction) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public void moveEnemies() {

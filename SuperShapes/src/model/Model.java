@@ -13,7 +13,6 @@ public class Model implements Constants, Subject {
 	private String roomId;
 	private int clock = 0;
 	private Boolean input = true;
-	private String exits = "";
 	private String text = "";
 	private String textToShow = "";
 	private String mode = "";
@@ -71,19 +70,11 @@ public class Model implements Constants, Subject {
 	}
 
 	protected Room loadRoom(String roomId) {
-		String[] roomCoords = roomId.split(",");
-		int x = 0;
-		int y = 0;
-		try {
-			x = Integer.parseInt(roomCoords[0]);
-			y = Integer.parseInt(roomCoords[1]);
-		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
-		}
-		Room result = fileManager.makeRoom(fileManager.getRoomData(x, y), player, v);
-		exits = fileManager.getExits(x, y);
+		int[] coords = fileManager.idToCoords(roomId);
+		Room result = fileManager.makeRoom(fileManager.getRoomData(coords[0], coords[1]), player, v);
+		int[] exits = fileManager.generateExits(coords[0], coords[1]);
 		if (result == null)
-			result = new Room(x, y, 11, 11, exits, player, v);
+			result = new Room(coords[0], coords[1], 11, 11, exits, player, v);
 		return result;
 	}
 
@@ -171,16 +162,16 @@ public class Model implements Constants, Subject {
 	}
 
 	private Boolean tryExit(char direction, int x, int y) {
-		if (x == room.getxLength() - 1 && y == 5 && direction == 'E' && room.checkExits('E')) {
+		if (x == room.getxLength() - 1 && y == room.getExits()[1] && direction == 'E') {
 			changeRoom(getAdjRoomId('E'), true);
 			return true;
-		} else if (x == 0 && y == 5 && direction == 'W' && room.checkExits('W')) {
+		} else if (x == 0 && y == room.getExits()[3] && direction == 'W') {
 			changeRoom(getAdjRoomId('W'), true);
 			return true;
-		} else if (x == 5 && y == 0 && direction == 'N' && room.checkExits('N')) {
+		} else if (x == room.getExits()[0] && y == 0 && direction == 'N') {
 			changeRoom(getAdjRoomId('N'), true);
 			return true;
-		} else if (x == 5 && y == room.getyLength() - 1 && direction == 'S' && room.checkExits('S')) {
+		} else if (x == room.getExits()[2] && y == room.getyLength() - 1 && direction == 'S') {
 			changeRoom(getAdjRoomId('S'), true);
 			return true;
 		}
@@ -284,15 +275,15 @@ public class Model implements Constants, Subject {
 		room = temp;
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
-				player.setLoc(room.getxLength() - 1, 5);
+				player.setLoc(room.getxLength() - 1, temp.getExits()[1]);
 			} else {
-				player.setLoc(0, 5);
+				player.setLoc(0, temp.getExits()[3]);
 			}
 		} else {
 			if (y > 0) {
-				player.setLoc(5, room.getyLength() - 1);
+				player.setLoc(temp.getExits()[2], room.getyLength() - 1);
 			} else {
-				player.setLoc(5, 0);
+				player.setLoc(temp.getExits()[0], 0);
 			}
 		}
 		room.addObserver(v);

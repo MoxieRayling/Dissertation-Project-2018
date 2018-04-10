@@ -24,12 +24,16 @@ public class Window extends JFrame implements View, Constants {
 	private MapView map;
 	private JFrame frame;
 	private Boolean input = true;
+	private CreateGame create;
+	private GameRules gameRules;
 
 	public Window() {
 		frame = this;
 		start = new StartMenu(this);
 		game = new Animation(this);
 		editor = new Editor(this);
+		create = new CreateGame(this);
+		gameRules = new GameRules(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
@@ -50,24 +54,7 @@ public class Window extends JFrame implements View, Constants {
 							c.Input(e.getKeyCode());
 							input = false;
 						}
-					}
-					else if (getContentPane().contains(map.getLocation())) {
-						if (e.getKeyCode() == 27 || e.getKeyCode() == 77 || e.getKeyCode() == 13) {
-							returnToGame();
-						}
-						else if (e.getKeyCode() == 38) {
-							map.moveMap('N');
-						}
-						else if (e.getKeyCode() == 37) {
-							map.moveMap('W');
-						}
-						else if (e.getKeyCode() == 39) {
-							map.moveMap('E');
-						}
-						else if (e.getKeyCode() == 40) {
-							map.moveMap('S');
-						}	
-					}
+					} 
 				}
 			}
 
@@ -151,7 +138,28 @@ public class Window extends JFrame implements View, Constants {
 		returnToGame();
 	}
 
-	public void editor() {
+	public void mainMenu() {
+		this.setSize(200, 190);
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(start);
+		this.validate();
+		this.repaint();
+		start.requestFocusInWindow();
+	}
+
+	public void createGame() {
+		this.setSize(200, 190);
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(create);
+		this.validate();
+		this.repaint();
+		create.requestFocusInWindow();
+	}
+
+	public void editor(String game) {
+		editor.setGame(game);
 		c.runEditor();
 		c.setMode("editor");
 		this.setSize(1200, 600);
@@ -166,6 +174,36 @@ public class Window extends JFrame implements View, Constants {
 
 	public void map() {
 		this.map = new MapView(this, c.getX(), c.getY());
+		map.addKeyListener(new KeyListener() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (getContentPane().contains(map.getLocation())) {
+					System.out.println("yes");
+					if (e.getKeyCode() == 27 || e.getKeyCode() == 77 || e.getKeyCode() == 13) {
+						returnToGame();
+					} else if (e.getKeyCode() == 38) {
+						map.moveMap('N');
+					} else if (e.getKeyCode() == 37) {
+						map.moveMap('W');
+					} else if (e.getKeyCode() == 39) {
+						map.moveMap('E');
+					} else if (e.getKeyCode() == 40) {
+						map.moveMap('S');
+					}
+				}
+
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+		});
 		this.setSize(512, 512);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
@@ -174,7 +212,7 @@ public class Window extends JFrame implements View, Constants {
 		this.repaint();
 		map.requestFocusInWindow();
 	}
-	
+
 	public void returnToGame() {
 		this.setSize(512, 512);
 		this.getContentPane().removeAll();
@@ -210,6 +248,20 @@ public class Window extends JFrame implements View, Constants {
 
 	public String[][] getMap(int x, int y) {
 		return c.getMap(x, y);
+	}
+
+	public void gameRules(String dir) {
+		gameRules.setGame(dir);
+		this.setSize(650, 512);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(gameRules);
+		this.validate();
+		this.repaint();
+		gameRules.requestFocusInWindow();
+	}
+
+	public void setExit(int index, int coord) {
+		c.setExit(index,coord);
 	}
 
 }

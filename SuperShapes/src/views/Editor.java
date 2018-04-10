@@ -17,6 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import controller.Constants;
 import model.Block;
@@ -39,7 +40,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private RoomImage room = null;
 	private MapImage map = null;
 	private List<JButton> tileButtons = new ArrayList<JButton>();
+	private List<JButton> nExitButtons = new ArrayList<JButton>();
+	private List<JButton> eExitButtons = new ArrayList<JButton>();
+	private List<JButton> sExitButtons = new ArrayList<JButton>();
+	private List<JButton> wExitButtons = new ArrayList<JButton>();
 	private List<JButton> roomButtons = new ArrayList<JButton>();
+	private List<Component> blockOptions = new ArrayList<Component>();
 	private List<Component> snakeOptions = new ArrayList<Component>();
 	private JSlider snakeSize;
 	private List<Component> ghostOptions = new ArrayList<Component>();
@@ -73,6 +79,9 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private JCheckBox paintEntity;
 	private JCheckBox paintTile;
 	private JButton export;
+	private String game;
+	private JTextField entityImage;
+	private JTextField tileImage;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -99,6 +108,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreY -= 1;
+				selectedRoomY += 1;
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
@@ -116,6 +126,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreX -= 1;
+				selectedRoomX += 1;
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
@@ -133,6 +144,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreY += 1;
+				selectedRoomY -= 1;
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
@@ -150,6 +162,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mapCentreX += 1;
+				selectedRoomX -= 1;
 				images.remove(map);
 				map = new MapImage(w.getMap(mapCentreX, mapCentreY), 0, 0, scale);
 				images.add(map);
@@ -158,7 +171,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		this.add(mapRight);
 
 		export = new JButton("export");
-		export.setBounds(scale * 13, scale * 12, scale * 3, scale);
+		export.setBounds(scale * 14, scale * 13, scale * 2, 20);
 		export.addActionListener(new ActionListener() {
 
 			@Override
@@ -183,7 +196,6 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
 			b.addActionListener(new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					selectedX = x;
@@ -212,14 +224,21 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			this.add(b);
 		}
 
+		entityImage = new JTextField();
+		entityImage.setBounds(scale * 14, scale * 2, 100, 20);
+		this.add(entityImage);
+		tileImage = new JTextField();
+		tileImage.setBounds(scale * 14, scale * 8, 100, 20);
+		this.add(tileImage);
+
 		paintEntity = new JCheckBox("Change Entity");
 		paintEntity.setContentAreaFilled(false);
-		paintEntity.setBounds(scale * 13, scale / 3, scale * 3, 20);
+		paintEntity.setBounds(scale * 14, scale / 3, scale * 3, 20);
 		this.add(paintEntity);
 
 		entities = new String[] { "None", "Block", "Snake", "Ghost", "Turret" };
 		entitiesBox = new JComboBox<String>(entities);
-		entitiesBox.setBounds(scale * 13, scale, scale * 2, 20);
+		entitiesBox.setBounds(scale * 14, scale, scale * 2, 20);
 		entitiesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -227,21 +246,28 @@ public class Editor extends JPanel implements Constants, ItemListener {
 					hideEntityMenu();
 					switch (e.getItem().toString()) {
 					case "Block":
+						entityImage.setVisible(true);
 						break;
 					case "Snake":
 						for (Component c : snakeOptions) {
 							c.setVisible(true);
 						}
+						entityImage.setBounds(scale * 14, scale * (2 + snakeOptions.size()), 100, 20);
+						entityImage.setVisible(true);
 						break;
 					case "Turret":
 						for (Component c : turretOptions) {
 							c.setVisible(true);
 						}
+						entityImage.setBounds(scale * 14, scale * (2 + turretOptions.size()), 100, 20);
+						entityImage.setVisible(true);
 						break;
 					case "Ghost":
 						for (Component c : ghostOptions) {
 							c.setVisible(true);
 						}
+						entityImage.setBounds(scale * 14, scale * (2 + ghostOptions.size()), 100, 20);
+						entityImage.setVisible(true);
 						break;
 					case "None":
 						break;
@@ -255,12 +281,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 		paintTile = new JCheckBox("Change Tile");
 		paintTile.setContentAreaFilled(false);
-		paintTile.setBounds(scale * 16, scale / 3, scale * 3, 20);
+		paintTile.setBounds(scale * 14, scale * 6, scale * 3, 20);
 		this.add(paintTile);
 
 		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole" };
 		tilesBox = new JComboBox<String>(tiles);
-		tilesBox.setBounds(scale * 16, scale, scale * 2, 20);
+		tilesBox.setBounds(scale * 14, scale * 7, scale * 2, 20);
 		tilesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -268,17 +294,22 @@ public class Editor extends JPanel implements Constants, ItemListener {
 					hideTileMenu();
 					switch (e.getItem().toString()) {
 					case "Empty":
+						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
 						break;
 					case "Wall":
+						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
 						break;
 					case "Slide":
 						slideDirectionBox.setVisible(true);
+						tileImage.setBounds(scale * 14, scale * 9, 100, 20);
 						break;
 					case "Teleport":
 						teleportX.setVisible(true);
 						teleportY.setVisible(true);
+						tileImage.setBounds(scale * 14, scale * 10, 100, 20);
 						break;
 					case "Hole":
+						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
 						break;
 					default:
 						break;
@@ -302,16 +333,18 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		ghostPower = new JSlider(1, 122, 3);
 		ghostOptions.add(ghostPower);
 
+		entityComponents.add(blockOptions);
 		entityComponents.add(snakeOptions);
 		entityComponents.add(turretOptions);
 		entityComponents.add(ghostOptions);
 		for (List<Component> l : entityComponents) {
 			for (Component c : l) {
-				c.setBounds(scale * 13, scale * (l.indexOf(c) + 2), scale * 2, 20);
+				c.setBounds(scale * 14, scale * (l.indexOf(c) + 2), scale * 2, 20);
 				c.setVisible(false);
 				this.add(c);
 			}
 		}
+		entityImage.setVisible(false);
 
 		teleportX = new JSlider(0, 10, 0);
 		teleportY = new JSlider(0, 10, 0);
@@ -323,10 +356,98 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		tileComponents.add(slideOptions);
 		for (List<Component> l : tileComponents) {
 			for (Component c : l) {
-				c.setBounds(scale * 16, scale * (l.indexOf(c) + 2), scale * 2, 20);
+				c.setBounds(scale * 14, scale * (l.indexOf(c) + 8), scale * 2, 20);
 				c.setVisible(false);
 				this.add(c);
 			}
+		}
+		initExits();
+	}
+
+	public void updateExits() {
+		for (int i = 0; i < 20; i++) {
+			if (i >= room.getxLength()) {
+				nExitButtons.get(i).setVisible(false);
+				sExitButtons.get(i).setVisible(false);
+			} else {
+				nExitButtons.get(i).setVisible(true);
+				sExitButtons.get(i).setVisible(true);
+				nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale, roomScale,
+						roomScale / 2);
+				sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, room.getyLength() * roomScale + scale, roomScale,
+						roomScale / 2);
+			}
+			if (i >= room.getyLength()) {
+				eExitButtons.get(i).setVisible(false);
+				wExitButtons.get(i).setVisible(false);
+			} else {
+				eExitButtons.get(i).setVisible(true);
+				wExitButtons.get(i).setVisible(true);
+				wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale, roomScale / 2,
+						roomScale);
+				eExitButtons.get(i).setBounds(700 + scale + roomScale * room.getxLength(), roomScale * i + scale, roomScale / 2,
+						roomScale);
+			}
+		}
+	}
+
+	public void initExits() {
+		for (int i = 0; i < 20; i++) {
+			int x = i;
+			nExitButtons.add(new JButton());
+			nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale, roomScale,
+					roomScale / 2);
+			nExitButtons.get(i).setOpaque(false);
+			nExitButtons.get(i).setContentAreaFilled(false);
+			nExitButtons.get(i).setBorderPainted(false);
+			nExitButtons.get(i).addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					w.setExit(0, x);
+				}
+			});
+			this.add(nExitButtons.get(i));
+
+			sExitButtons.add(new JButton());
+			sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, 20 * roomScale + scale, roomScale,
+					roomScale / 2);
+			sExitButtons.get(i).setOpaque(false);
+			sExitButtons.get(i).setContentAreaFilled(false);
+			sExitButtons.get(i).setBorderPainted(false);
+			sExitButtons.get(i).addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					w.setExit(2, x);
+				}
+			});
+			this.add(sExitButtons.get(i));
+
+			wExitButtons.add(new JButton());
+			wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale, roomScale / 2, roomScale);
+			wExitButtons.get(i).setOpaque(false);
+			wExitButtons.get(i).setContentAreaFilled(false);
+			wExitButtons.get(i).setBorderPainted(false);
+			wExitButtons.get(i).addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					w.setExit(3, x);
+				}
+			});
+			this.add(wExitButtons.get(i));
+
+			eExitButtons.add(new JButton());
+			eExitButtons.get(i).setBounds(700 + scale + roomScale * 20, roomScale * i + scale, roomScale / 2,
+					roomScale);
+			eExitButtons.get(i).setOpaque(false);
+			eExitButtons.get(i).setContentAreaFilled(false);
+			eExitButtons.get(i).setBorderPainted(false);
+			eExitButtons.get(i).addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					w.setExit(1, x);
+				}
+			});
+			this.add(eExitButtons.get(i));
 		}
 	}
 
@@ -388,7 +509,8 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				result[1] = "wall " + selectedX + "," + selectedY;
 				break;
 			case "Slide":
-				result[1] = "slide " + selectedX + "," + selectedY + " " + slideDirectionBox.getSelectedItem().toString();
+				result[1] = "slide " + selectedX + "," + selectedY + " "
+						+ slideDirectionBox.getSelectedItem().toString();
 				break;
 			case "Teleport":
 				result[1] = "tele " + selectedX + "," + selectedY + " " + teleportX.getValue() + ","
@@ -427,6 +549,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		updateRoomButtons(r.getxLength(), r.getyLength());
 		room = new RoomImage(r.getTiles(), roomScale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());
 		images.add(room);
+		updateExits();
 	}
 
 	public void updateRoomButtons(int x, int y) {
@@ -444,8 +567,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		for (JButton b : tileButtons) {
 			int xTile = tileButtons.indexOf(b) % x;
 			int yTile = tileButtons.indexOf(b) / x;
-			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale,
-					roomScale, roomScale);
+			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale, roomScale, roomScale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -540,8 +662,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		}
 		g.setColor(Color.RED);
-		g.drawRect(selectedX * roomScale + 700 + scale, selectedY * roomScale + scale, roomScale,
-				roomScale);
+		g.drawRect(selectedX * roomScale + 700 + scale, selectedY * roomScale + scale, roomScale, roomScale);
 		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();
@@ -550,5 +671,9 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	@Override
 	public void itemStateChanged(ItemEvent arg0) {
 
+	}
+
+	public void setGame(String game) {
+		this.game = game;
 	}
 }

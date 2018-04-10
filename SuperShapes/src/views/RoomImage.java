@@ -14,11 +14,11 @@ import model.Wall;
 
 public class RoomImage extends Image {
 	private List<Tile> tiles = new ArrayList<Tile>();
-	private String exits;
+	private int[] exits;
 	private int xLength = 11;
 	private int yLength = 11;
 
-	public RoomImage(List<Tile> tiles, int scale, int xLength, int yLength, String room, String exits) {
+	public RoomImage(List<Tile> tiles, int scale, int xLength, int yLength, String room, int[] exits) {
 		super(0, 0, scale, room);
 		this.tiles = tiles;
 		this.exits = exits;
@@ -42,16 +42,6 @@ public class RoomImage extends Image {
 		this.yLength = yLength;
 	}
 
-	private Boolean checkExit(char exit) {
-		Boolean result = false;
-		for (int i = 0; i < exits.length(); i++) {
-			if (exits.charAt(i) == exit) {
-				result = true;
-			}
-		}
-		return result;
-	}
-
 	public int getSize() {
 		int result = 0;
 		for (Tile t : tiles) {
@@ -72,17 +62,18 @@ public class RoomImage extends Image {
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
 		g.setColor(Color.WHITE);
-		if (checkExit('N')) {
-			g.fillOval(scale * 5 + x, scale / 2, scale, scale);
+
+		if (exits[0] != -1) {
+			g.fillOval(scale * exits[0] + x, scale / 2, scale, scale);
 		}
-		if (checkExit('S')) {
-			g.fillOval(scale * 5 + x, scale * getyLength() + scale / 2, scale, scale);
+		if (exits[2] != -1) {
+			g.fillOval(scale * exits[2] + x, scale * getyLength() + scale / 2, scale, scale);
 		}
-		if (checkExit('W')) {
-			g.fillOval(-scale / 2 + x, scale * 6, scale, scale);
+		if (exits[3] != -1) {
+			g.fillOval(-scale / 2 + x, scale * (exits[3] + 1), scale, scale);
 		}
-		if (checkExit('E')) {
-			g.fillOval(scale * getxLength() + scale / 2, scale * 6, scale, scale);
+		if (exits[1] != -1) {
+			g.fillOval(scale * getxLength() + scale / 2, scale * (exits[1] + 1), scale, scale);
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
