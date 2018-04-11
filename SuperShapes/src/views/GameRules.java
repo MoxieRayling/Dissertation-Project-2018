@@ -3,6 +3,9 @@ package views;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
@@ -133,12 +136,13 @@ public class GameRules extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				w.editor(game);
+				writeGameRules();
 			}
 		});
 		this.add(next);
 
 		back = new JButton("Back");
-		back.setBounds(420,450,100,20);
+		back.setBounds(420, 450, 100, 20);
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -146,6 +150,61 @@ public class GameRules extends JPanel {
 			}
 		});
 		this.add(back);
+	}
+
+	private void writeGameRules() {
+		List<String> lines = new ArrayList<String>();
+		
+		lines.add("lives " + playerLives.getValue());
+		if (infiniteLives.isSelected())
+			lines.add("infinite lives");
+		if (fly.isSelected()) {
+			lines.add("flight");
+			lines.add("flight duration " + flyDuration.getValue());
+			if(flyInfinite.isSelected()){
+				lines.add("infinite flight");
+			}
+			lines.add("flight cooldown " + flyCooldown.getValue());
+			if(flyRoomCooldown.isSelected())
+				lines.add("flight room cooldown");
+		}	
+		if(shield.isSelected()) {
+			lines.add("shield");
+			lines.add("shield cooldown " + shieldCooldown.getValue());
+			if(shieldRoomCooldown.isSelected())
+				lines.add("shield room cooldown");
+		}
+		if (rewind.isSelected()) {
+			lines.add("rewind");
+			lines.add("rewind length " + rewindLength.getValue());
+			lines.add("rewind cooldown " + rewindCooldown.getValue());
+			if(rewindRoomCooldown.isSelected())
+				lines.add("rewind room cooldown");
+		}	
+		if (pause.isSelected()) {
+			lines.add("pause");
+			lines.add("pause length " + pauseLength.getValue());
+			if(pauseInfinite.isSelected()){
+				lines.add("infinite pause");
+			}
+			lines.add("pause cooldown " + pauseCooldown.getValue());
+			if(pauseRoomCooldown.isSelected())
+				lines.add("pause room cooldown");
+		}	
+		
+		String fileName = "games/" + game + "/gamerules.txt";
+		try {
+			FileWriter fileWriter = new FileWriter(fileName);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			for (String l : lines) {
+				bufferedWriter.write(l);
+				bufferedWriter.newLine();
+			}
+			bufferedWriter.close();
+		} catch (IOException ex) {
+			System.out.println("file no work " + fileName);
+		}
+
 	}
 
 	@Override

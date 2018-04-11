@@ -28,7 +28,6 @@ import model.Entity;
 import model.Ghost;
 import model.Room;
 import model.Snake;
-import model.SnakeBody;
 import model.Turret;
 
 @SuppressWarnings("serial")
@@ -82,12 +81,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private JCheckBox paintEntity;
 	private JCheckBox paintTile;
 	private JButton export;
-	private String game;
 	private JTextField entityImage;
 	private JTextField tileImage;
 	private JSlider roomXSlider;
 	private JSlider roomYSlider;
-	private int[] size = {11,11};
+	private int[] size = { 11, 11 };
+	private JButton newRoom;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -103,9 +102,19 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	private void initUI() {
+		newRoom = new JButton("Add New Room");
+		newRoom.setBounds(150, 500, 100, 20);
+		newRoom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.addRoom(selectedRoomX - 5, selectedRoomY - 5);
+				map.setMap(w.getMap(mapCentreX, mapCentreY));
+			}
+		});
+		this.add(newRoom);
 
-		roomXSlider = new JSlider(3,20,11);
-		roomXSlider.setBounds(750,500,100,20);
+		roomXSlider = new JSlider(3, 20, 11);
+		roomXSlider.setBounds(750, 500, 100, 20);
 		roomXSlider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -115,8 +124,8 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		});
 		this.add(roomXSlider);
-		roomYSlider = new JSlider(3,20,11);
-		roomYSlider.setBounds(950,500,100,20);
+		roomYSlider = new JSlider(3, 20, 11);
+		roomYSlider.setBounds(950, 500, 100, 20);
 		roomYSlider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -205,7 +214,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.export();
+				w.exportWorld();
 			}
 		});
 		this.add(export);
@@ -245,7 +254,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					w.export();
+					w.exportWorld();
 					selectedRoomX = x;
 					selectedRoomY = y;
 					w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
@@ -404,8 +413,8 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				sExitButtons.get(i).setVisible(true);
 				nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale, roomScale,
 						roomScale / 2);
-				sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, room.getyLength() * roomScale + scale, roomScale,
-						roomScale / 2);
+				sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, room.getyLength() * roomScale + scale,
+						roomScale, roomScale / 2);
 			}
 			if (i >= room.getyLength()) {
 				eExitButtons.get(i).setVisible(false);
@@ -415,8 +424,8 @@ public class Editor extends JPanel implements Constants, ItemListener {
 				wExitButtons.get(i).setVisible(true);
 				wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale, roomScale / 2,
 						roomScale);
-				eExitButtons.get(i).setBounds(700 + scale + roomScale * room.getxLength(), roomScale * i + scale, roomScale / 2,
-						roomScale);
+				eExitButtons.get(i).setBounds(700 + scale + roomScale * room.getxLength(), roomScale * i + scale,
+						roomScale / 2, roomScale);
 			}
 		}
 	}
@@ -707,7 +716,4 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 	}
 
-	public void setGame(String game) {
-		this.game = game;
-	}
 }

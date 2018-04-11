@@ -95,19 +95,19 @@ public class Room implements Subject, Constants {
 		setTiles(tiles);
 	}
 
-	public List<String> exportRoom() {
-		List<String> result = new ArrayList<String>();
-		result.add("room " + id + " " + getxLength() + "," + getyLength() + " " + exits[0] + "," + exits[1] + ","
-				+ exits[2] + "," + exits[3]);
-
+	public String exportRoom() {
+		String result = "";
+		result += "room " + id + " " + getxLength() + "," + getyLength() + " " + exits[0] + "," + exits[1] + ","
+				+ exits[2] + "," + exits[3];
+		result += ";E";
 		for (Entity e : enemies) {
-			result.add(e.toString());
+			result += e.toString() + ":";
 		}
+		result += ";T";
 		for (Tile t : tiles) {
 			if (!(t instanceof EmptyTile))
-				result.add(t.toString());
+				result += t.toString() + ":";
 		}
-		result.add(";");
 		return result;
 	}
 
@@ -206,7 +206,9 @@ public class Room implements Subject, Constants {
 	}
 
 	public void setTiles(List<Tile> tiles) {
-		this.tiles = tiles;
+		for(Tile t : tiles) {
+			swapTile(t);
+		}
 		notifyObserver();
 	}
 

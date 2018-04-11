@@ -10,7 +10,7 @@ public class GameModel extends Model {
 		super.player.addObserver(v);
 		super.room = loadRoom("0,0");
 		super.room.addObserver(v);
-		super.room.updatePath(player.getX(), player.getY());
+		//super.room.updatePath(player.getX(), player.getY());
 		super.room.notifyObserver();
 	}
 }

@@ -54,7 +54,7 @@ public class Window extends JFrame implements View, Constants {
 							c.Input(e.getKeyCode());
 							input = false;
 						}
-					} 
+					}
 				}
 			}
 
@@ -80,8 +80,9 @@ public class Window extends JFrame implements View, Constants {
 			@Override
 			public void componentResized(ComponentEvent arg0) {
 				game.setSize(frame.getWidth(), frame.getHeight());
-				if (c != null)
+				if (c != null) {
 					c.notifyObservers();
+				}
 			}
 
 			@Override
@@ -160,7 +161,6 @@ public class Window extends JFrame implements View, Constants {
 
 	public void editor(String game) {
 		c.runEditor();
-		editor.setGame(game);
 		c.setMode("editor");
 		this.setSize(1200, 600);
 		this.setResizable(false);
@@ -230,20 +230,21 @@ public class Window extends JFrame implements View, Constants {
 		c.changeRoom(x, y);
 	}
 
-	public String[] getRooms() {
-		return c.getRooms();
-	}
-
 	public void changeRoom(String id) {
 		c.changeRoom(id);
 	}
 
-	public void addRoom() {
-		c.addRoom();
+	/*
+	 * public String[] getRooms() { return c.getRooms(); }
+	 * 
+	 * public void addRoom() { c.addRoom(); }
+	 */
+	public void exportRoom() {
+		c.exportRoom();
 	}
 
-	public void export() {
-		c.export();
+	public void exportWorld() {
+		c.exportWorld();
 	}
 
 	public String[][] getMap(int x, int y) {
@@ -259,16 +260,21 @@ public class Window extends JFrame implements View, Constants {
 		this.repaint();
 		gameRules.requestFocusInWindow();
 	}
-	
+
 	public void setDirectory(String dir) {
 		c.setDirectory(dir);
 	}
+
 	public void setExit(int index, int coord) {
-		c.setExit(index,coord);
+		c.setExit(index, coord);
 	}
 
 	public void setRoomSize(int[] size) {
 		c.setRoomSize(size);
+	}
+
+	public void addRoom(int x, int y) {
+		c.addRoom(x, y);
 	}
 
 }

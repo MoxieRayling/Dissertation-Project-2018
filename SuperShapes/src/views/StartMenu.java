@@ -56,8 +56,7 @@ public class StartMenu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//w.createGame();
-				w.editor("");
+				w.createGame();
 			}
 		});
 	}

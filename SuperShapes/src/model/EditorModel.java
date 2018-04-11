@@ -1,17 +1,10 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import observers.Observer;
 
 public class EditorModel extends Model {
 
-	List<Room> rooms = new ArrayList<Room>();
 
 	public EditorModel(Observer v) {
 		super(v);
@@ -25,7 +18,6 @@ public class EditorModel extends Model {
 	public void addToRoom(String[] lines, int x, int y) {
 		for (Tile t : room.getTiles()) {
 			if (t.getX() == x && t.getY() == y) {
-				System.out.println(t.toString());
 			}
 		}
 		room.printEnemies();
@@ -44,36 +36,15 @@ public class EditorModel extends Model {
 		room.notifyObserver();
 	}
 
-	public void addRoom() {
-		int index = searchRooms(room.getX(), room.getY());
-		if (index == -1) {
-			rooms.add(room);
-		} else {
-			rooms.set(index, room);
-		}
-	}
-
-	private int searchRooms(int x, int y) {
-		for (Room r : rooms) {
-			if (r.getX() == x && r.getY() == y) {
-				return rooms.indexOf(r);
-			}
-		}
-		return -1;
-	}
-
-	public String[] getRoomIds() {
-		int i = rooms.size();
-		String[] roomIds = new String[i];
-		for (Room r : rooms) {
-			roomIds[rooms.indexOf(r)] = r.getId();
-		}
-		return roomIds;
-	}
-
 	public void exportRoom() {
 		fileManager.exportWorking(room.exportRoom());
+	}
 
+	public void changeRoom(String roomId, Boolean resetPos) {
+		System.out.println("editor change");
+		Room room = loadRoom(roomId);
+		room.addObserver(v);
+		room.notifyObserver();
 	}
 
 	public void setExit(int index, int coord) {
@@ -82,6 +53,18 @@ public class EditorModel extends Model {
 
 	public void setRoomSize(int[] size) {
 		room.setSize(size);
+	}
+
+	public void exportWorld() {
+		fileManager.exportMaster(room.exportRoom());
+	}
+
+	public void addRoom(int x, int y) {
+
+		System.out.println("add room");
+		int[] exits = { -1, -1, -1, -1 };
+		room = new Room(x, y, 11, 11, exits, player, v);
+
 	}
 
 }

@@ -14,6 +14,10 @@ public class MapImage extends Image implements Constants {
 		super(x, y, scale, null);
 		this.map = map;
 	}
+	
+	public void setMap(String[][] map) {
+		this.map = map;
+	}
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {

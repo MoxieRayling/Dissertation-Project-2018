@@ -124,28 +124,15 @@ public class FileManager {
 		}
 	}
 
-	public List<String> getRoomData(int x, int y) {
+	public String getRoomData(int x, int y) {
 		String fileName = directory + "/world.txt";
 		String line = null;
-		List<String> lines = new ArrayList<String>();
 		try {
 			FileReader fileReader = new FileReader(fileName);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
 			while ((line = bufferedReader.readLine()) != null) {
-				String[] rParams = line.split(" ");
-				if (rParams[0].equalsIgnoreCase("room")) {
-					if (rParams[1].equalsIgnoreCase(String.valueOf(x) + "," + String.valueOf(y))) {
-						lines.add(line);
-						while ((line = bufferedReader.readLine()) != null) {
-							String[] params = line.split(" ");
-							if (!params[0].startsWith(";")) {
-								lines.add(line);
-							} else {
-								break;
-							}
-						}
-					}
+				if (line.startsWith("room " + x + "," + y)) {
+					break;
 				} else {
 
 					continue;
@@ -157,7 +144,7 @@ public class FileManager {
 		FileNotFoundException ex) {
 		} catch (IOException ex) {
 		}
-		return lines;
+		return line;
 	}
 
 	public int[] generateExits(int x, int y) {
@@ -177,79 +164,35 @@ public class FileManager {
 		return result;
 	}
 
-	public Room makeRoom(List<String> lines, Player player, Observer o) {
-		List<Entity> enemies = new ArrayList<Entity>();
+	public Room makeRoom(int x, int y, Player player, Observer o) {
 		enemyCount = 0;
-		int x = 0;
-		int y = 0;
-		Room r = null;
-		if (!lines.isEmpty()) {
-			for (String l : lines) {
-				String[] params = l.split(" ");
-				if (params[0].equalsIgnoreCase("room")) {
-					r = parseRoom(params, player);
-					r.addObserver(o);
-					x = r.getX();
-					y = r.getY();
-				} else if (params[0].startsWith("block")) {
-					enemies.add(parseBlock(params, x, y, getEnemyCount()));
-				} else if (params[0].startsWith("ghost")) {
-					enemies.add(parseGhost(params, x, y, getEnemyCount()));
-				} else if (params[0].startsWith("turret")) {
-					enemies.add(parseTurret(params, x, y, r, getEnemyCount()));
-				} else if (params[0].startsWith("snake")) {
-					enemies.add(parseSnake(params, x, y, r, getEnemyCount(), o));
-				} else if (params[0].startsWith("empty")) {
-					r.swapTile(parseEmptyTile(params));
-				} else if (params[0].startsWith("wall")) {
-					r.swapTile(parseWall(params));
-				} else if (params[0].startsWith("slide")) {
-					r.swapTile(parseSlide(params));
-				} else if (params[0].startsWith("tele")) {
-					r.swapTile(parseTeleport(params));
-				} else if (params[0].startsWith("hole")) {
-					r.swapTile(parseHole(params));
-				}
-			}
-			r.setEnemies(enemies);
-		}
+		String room = getRoomData(x, y);	
+		String[] params = room.split(";");
+		Room r = parseRoom(params[0].split(" "), player, o);
+		if (params[1].length() > 1)
+			r.setEnemies(parseEntities(params[1].substring(1), x, y, r, o));
+		if (params[2].length() > 1)
+			r.setTiles(parseTiles(params[2].substring(1)));
+
 		return r;
 	}
 
-	public void updateWorldFile(String room, String oldLine, String newLine) {
-		String fileName = directory + "/working.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (
-
-		FileNotFoundException ex) {
-		} catch (IOException ex) {
+	private List<Tile> parseTiles(String tileLine) {
+		List<Tile> tiles = new ArrayList<Tile>();
+		String[] params = tileLine.split(":");
+		for (int i = 0; i < params.length; i++) {
+			tiles.add(parseTile(params[i]));
 		}
+		return tiles;
+	}
 
-		Boolean inRoom = false;
-		for (String l : lines) {
-			if (l.startsWith("room")) {
-				if (l.split(" ")[1].contains(room)) {
-					inRoom = true;
-				}
-			}
-			if (l.contains(oldLine) && inRoom) {
-				lines.set(lines.indexOf(l), newLine);
-				break;
-			}
-			if (l.startsWith(";") && inRoom) {
-				lines.add(lines.indexOf(l), newLine);
-				break;
-			}
+	private List<Entity> parseEntities(String entityLine, int x, int y, Room r, Observer o) {
+		String[] params = entityLine.split(":");
+		List<Entity> entities = new ArrayList<Entity>();
+		for (int i = 0; i < params.length; i++) {
+			entities.add(parseEntity(params[i], r, o));
 		}
-		writeToFile(lines, fileName);
+		return entities;
 	}
 
 	public void writeToFile(List<String> lines, String fileName) {
@@ -270,19 +213,17 @@ public class FileManager {
 		List<String> lines = getWorldData();
 		int[] result = { -1, -1, -1, -1 };
 		for (String l : lines) {
-			if (l.startsWith("room")) {
-				String[] params = l.split(" ");
-				if (params[1].equals(id)) {
-					String[] exits = params[3].split(",");
-					try {
-						result[0] = Integer.parseInt(exits[0]);
-						result[1] = Integer.parseInt(exits[1]);
-						result[2] = Integer.parseInt(exits[2]);
-						result[3] = Integer.parseInt(exits[3]);
-					} catch (NumberFormatException e) {
-						System.out.println("rip ints");
-					}
+			if (l.startsWith("room " + id)) {
+				String[] exits = l.split(";")[0].split(" ")[3].split(",");
+				try {
+					result[0] = Integer.parseInt(exits[0]);
+					result[1] = Integer.parseInt(exits[1]);
+					result[2] = Integer.parseInt(exits[2]);
+					result[3] = Integer.parseInt(exits[3]);
+				} catch (NumberFormatException e) {
+					System.out.println("rip exits ints");
 				}
+
 			}
 		}
 		return result;
@@ -290,36 +231,41 @@ public class FileManager {
 
 	public void removeRoom(String id) {
 		List<String> world = getWorkingData();
-		Boolean inRoom = false;
 		for (String s : world) {
-			if (s.startsWith("room")) {
-				if (id.equals(s.split(" ")[1]))
-					inRoom = true;
-			}
-			if (inRoom) {
+			if (s.startsWith("room " + id)) {
 				world.set(world.indexOf(s), "xxx");
-				if (s.startsWith(";")) {
-					inRoom = false;
-				}
 			}
 		}
-		while (world.contains("xxx")) {
-			world.remove("xxx");
-		}
+		world.remove("xxx");
 		writeToFile(world, directory + "/working.txt");
 	}
 
-	public void exportWorking(List<String> room) {
-		removeRoom(room.get(0).split(" ")[1]);
+	public void exportWorking(String room) {
+		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
-		for (String l : room) {
-			lines.add(l);
-		}
+		lines.add(room);
+		writeToFile(lines, directory + "/working.txt");
+	}
+
+	public void exportWorld(String room) {
+		removeRoom(room.split(" ")[1]);
+		List<String> lines = getWorkingData();
+		lines.add(room);
 		writeToFile(lines, directory + "/working.txt");
 		writeToFile(lines, directory + "/world.txt");
 	}
 
-	public Room parseRoom(String[] params, Player player) {
+	public void exportMaster(String room) {
+		removeRoom(room.split(" ")[1]);
+		List<String> lines = getWorkingData();
+		lines.add(room);
+		writeToFile(lines, directory + "/working.txt");
+		writeToFile(lines, directory + "/world.txt");
+		writeToFile(lines, directory + "/master.txt");
+		System.out.println("exported");
+	}
+
+	public Room parseRoom(String[] params, Player player, Observer o) {
 		int x = 0;
 		int y = 0;
 		int xLength = 11;
@@ -330,9 +276,9 @@ public class FileManager {
 			xLength = Integer.parseInt(params[2].split(",")[0]);
 			yLength = Integer.parseInt(params[2].split(",")[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip room ints");
 		}
-		return new Room(x, y, xLength, yLength, getExits(x + "," + y), player);
+		return new Room(x, y, xLength, yLength, getExits(x + "," + y), player, o);
 	}
 
 	public Block parseBlock(String[] params, int x, int y, int enemyCount) {
@@ -343,7 +289,7 @@ public class FileManager {
 			bx = Integer.parseInt(loc[0]);
 			by = Integer.parseInt(loc[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip block ints");
 		}
 		Block b = new Block(x + "," + y, enemyCount, bx, by);
 		if (params.length == 3) {
@@ -362,7 +308,7 @@ public class FileManager {
 			by = Integer.parseInt(loc[1]);
 			pause = Integer.parseInt(params[2]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip ghost ints");
 		}
 		Ghost g = new Ghost(x + "," + y, enemyCount, bx, by, pause);
 		if (params.length == 4) {
@@ -383,7 +329,7 @@ public class FileManager {
 			ratio = Integer.parseInt(params[2]);
 			delay = Integer.parseInt(params[4]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip turret ints");
 		}
 		char direction = params[3].charAt(0);
 		r.getTile(tx, ty).setTrav(false);
@@ -404,7 +350,7 @@ public class FileManager {
 			sy = Integer.parseInt(loc[1]);
 			length = Integer.parseInt(params[2]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip snake ints");
 		}
 		Snake s = new Snake(x + "," + y, enemyCount, sx, sy, length, r, o);
 		if (params.length == 4) {
@@ -439,7 +385,7 @@ public class FileManager {
 			x = Integer.parseInt(coords[0]);
 			y = Integer.parseInt(coords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip hole ints");
 		}
 		Hole h = new Hole(x, y);
 		if (params.length == 3) {
@@ -461,7 +407,7 @@ public class FileManager {
 			tx = Integer.parseInt(tCoords[0]);
 			ty = Integer.parseInt(tCoords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip tele ints");
 		}
 		Teleport t = new Teleport(x, y, tx, ty);
 		if (params.length == 4) {
@@ -478,7 +424,7 @@ public class FileManager {
 			x = Integer.parseInt(coords[0]);
 			y = Integer.parseInt(coords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip slide ints");
 		}
 		Slide s = new Slide(x, y, params[2].charAt(0));
 		if (params.length == 4) {
@@ -495,7 +441,7 @@ public class FileManager {
 			x = Integer.parseInt(coords[0]);
 			y = Integer.parseInt(coords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip wall ints");
 		}
 		Wall w = new Wall(x, y);
 		if (params.length == 3) {
@@ -504,7 +450,7 @@ public class FileManager {
 		return w;
 	}
 
-	public EmptyTile parseEmptyTile(String[] params) {
+	public Tile parseEmptyTile(String[] params) {
 		int x = 0;
 		int y = 0;
 		String[] coords = params[1].split(",");
@@ -512,7 +458,7 @@ public class FileManager {
 			x = Integer.parseInt(coords[0]);
 			y = Integer.parseInt(coords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip empty ints");
 		}
 		EmptyTile t = new EmptyTile(x, y);
 		if (params.length == 3) {
@@ -545,41 +491,27 @@ public class FileManager {
 			result[0] = Integer.parseInt(coords[0]);
 			result[1] = Integer.parseInt(coords[1]);
 		} catch (NumberFormatException e) {
-			System.out.println("rip ints");
+			System.out.println("rip these ints");
 		}
 		return result;
 	}
 
-	private Boolean searchList(String search, List<String> lines) {
-		for (String line : lines) {
-			if (line.contains(search)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public String[][] getMap(int x, int y) {
-		List<String> rooms = this.getWorldData();
-		List<String> lines = new ArrayList<String>();
+		List<String> rooms = this.getWorkingData();
 		String[][] map = new String[11][11];
 		for (String line : rooms) {
-			if (line.startsWith("room")) {
-				if (!map.equals(new String[11][11])) {
-					int[] coords = idToCoords(line.split(" ")[1]);
-					if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
-						map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
-						if (searchList("key", lines)) {
-							map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
-						}
-						if (searchList("save", lines)) {
-							map[coords[0] + 5 - x][coords[1] + 5 - y] += "S";
-						}
+			if (!map.equals(new String[11][11])) {
+				int[] coords = idToCoords(line.split(" ")[1]);
+				if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
+					map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
+					if (line.contains("key")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
+					}
+					if (line.contains("save")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "S";
 					}
 				}
-				lines.clear();
 			}
-			lines.add(line);
 		}
 		return map;
 	}

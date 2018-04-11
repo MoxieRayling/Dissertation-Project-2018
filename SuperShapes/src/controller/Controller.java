@@ -49,7 +49,7 @@ public class Controller implements Constants {
 	}
 
 	public void changeRoom(int x, int y) {
-		m.changeRoom(x + "," + y, false);
+		((EditorModel)m).changeRoom(x + "," + y, false);
 	}
 
 	public void changeRoom(String id) {
@@ -61,16 +61,8 @@ public class Controller implements Constants {
 		m = new EditorModel(v);
 	}
 
-	public String[] getRooms() {
-		return ((EditorModel) m).getRoomIds();
-	}
-
-	public void addRoom() {
-		((EditorModel) m).addRoom();
-	}
-
-	public void export() {
-		((EditorModel) m).exportRoom();
+	public void exportWorld() {
+		((EditorModel) m).exportWorld();
 	}
 	
 	public void setDirectory(String dir) {
@@ -96,5 +88,13 @@ public class Controller implements Constants {
 		if (!(m instanceof EditorModel))
 			this.runEditor();
 		((EditorModel) m).setRoomSize(size);
+	}
+
+	public void exportRoom() {
+		((EditorModel) m).exportRoom();
+	}
+
+	public void addRoom(int x, int y) {
+		((EditorModel) m).addRoom(x,y);
 	}
 }

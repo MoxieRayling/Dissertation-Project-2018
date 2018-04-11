@@ -24,7 +24,7 @@ public class Model implements Constants, Subject {
 		fileManager = new FileManager();
 		mode = "game";
 	}
-	
+
 	public void setDirectory(String dir) {
 		fileManager.setDirectory(dir);
 	}
@@ -75,7 +75,7 @@ public class Model implements Constants, Subject {
 
 	protected Room loadRoom(String roomId) {
 		int[] coords = fileManager.idToCoords(roomId);
-		Room result = fileManager.makeRoom(fileManager.getRoomData(coords[0], coords[1]), player, v);
+		Room result = fileManager.makeRoom(coords[0], coords[1], player, v);
 		int[] exits = fileManager.generateExits(coords[0], coords[1]);
 		if (result == null)
 			result = new Room(coords[0], coords[1], 11, 11, exits, player, v);
@@ -248,6 +248,7 @@ public class Model implements Constants, Subject {
 	}
 
 	public void resetRoom() {
+		System.out.println("reset");
 		player.setDead(false);
 		room = loadRoom(room.getId());
 		switch (player.getLastEntrance()) {
@@ -273,21 +274,22 @@ public class Model implements Constants, Subject {
 	}
 
 	public void changeRoom(String roomId, Boolean resetPos) {
+		System.out.println("change");
 		Room temp = loadRoom(roomId);
 		int x = room.getX() - temp.getX();
 		int y = room.getY() - temp.getY();
 		room = temp;
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
-				player.setLoc(room.getxLength() - 1, temp.getExits()[1]);
+				player.setLoc(room.getxLength() - 1, room.getExits()[1]);
 			} else {
-				player.setLoc(0, temp.getExits()[3]);
+				player.setLoc(0, room.getExits()[3]);
 			}
 		} else {
 			if (y > 0) {
-				player.setLoc(temp.getExits()[2], room.getyLength() - 1);
+				player.setLoc(room.getExits()[2], room.getyLength() - 1);
 			} else {
-				player.setLoc(temp.getExits()[0], 0);
+				player.setLoc(room.getExits()[0], 0);
 			}
 		}
 		room.addObserver(v);
