@@ -16,7 +16,7 @@ import javax.swing.Timer;
 import controller.Constants;
 
 @SuppressWarnings("serial")
-public class MapView extends JPanel implements Constants, ItemListener {
+public class MapView extends JPanel implements ItemListener {
 	private Timer timer;
 	private Window w;
 	private int sizex = 512;

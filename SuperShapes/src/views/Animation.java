@@ -23,7 +23,7 @@ import model.SnakeBody;
 import model.Turret;
 
 @SuppressWarnings("serial")
-public class Animation extends JPanel implements Constants {
+public class Animation extends JPanel {
 	private Timer timer;
 	private int sizex = 512;
 	private int sizey = 512;
@@ -82,8 +82,7 @@ public class Animation extends JPanel implements Constants {
 
 	public void roomUpdate(Room r) {
 		if (roomId != r.getId()) {
-			player.setXPos(player.getXDest());
-			player.setYPos(player.getYDest());
+			setScale(Math.max(r.getxLength(), r.getyLength()));
 			List<Image> remove = new ArrayList<Image>();
 			for (Image i : images) {
 				if (i.getRoom() != r.getId() && !(i instanceof PlayerImage || i instanceof RoomImage)) {
@@ -96,7 +95,6 @@ public class Animation extends JPanel implements Constants {
 			roomId = r.getId();
 		}
 		removeRooms();
-		setScale(Math.max(r.getxLength(), r.getyLength()));
 		room = new RoomImage(r.getTiles(), scale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());
 		images.add(room);
 	}
@@ -110,8 +108,12 @@ public class Animation extends JPanel implements Constants {
 		rewindCooldown = play.getRewindCooldown();
 		shield = play.getShield();
 		shieldCooldown = play.getShieldCooldown();
+		String img = "player.png";
+		if (play.getImage() != null) {
+			img = play.getImage();
+		}
 		if (player == null) {
-			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId());
+			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId(), img,  Constants.gameDir);
 			images.add(player);
 		}
 		player.setShield(play.getShield());
@@ -146,21 +148,22 @@ public class Animation extends JPanel implements Constants {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId()));
+			System.out.println(e.getImage());
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId(), e.getImage(), Constants.gameDir));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
-			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection()));
+			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection(),
+					e.getImage(), Constants.gameDir));
 		} else if (e instanceof Shot) {
 			Shot s = (Shot) e;
-			images.add(new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection()));
+			images.add(new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection(),
+					e.getImage(), Constants.gameDir));
 		} else if (e instanceof SnakeBody) {
 			SnakeBody sb = (SnakeBody) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId()));
-		} else if (e instanceof Snake) {
-
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId(), e.getImage(), Constants.gameDir));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId(), e.getImage(), Constants.gameDir));
 		}
 	}
 
@@ -250,7 +253,7 @@ public class Animation extends JPanel implements Constants {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(sizex, sizey);
+		return new Dimension(512, 512);
 	}
 
 	@Override
@@ -276,7 +279,6 @@ public class Animation extends JPanel implements Constants {
 			g.setColor(Color.WHITE);
 			g.drawString(text, scale + 20, scale * 11 + 20);
 		}
-
 		timer.start();
 	}
 

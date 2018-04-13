@@ -5,7 +5,7 @@ import model.GameModel;
 import model.Model;
 import views.View;
 
-public class Controller implements Constants {
+public class Controller {
 	private View v;
 	private Model m;
 
@@ -24,7 +24,7 @@ public class Controller implements Constants {
 
 	public void newGame() {
 		m = new GameModel(v);
-		m.eraseSaveData();
+		m.newSaveData();
 	}
 
 	public void restart() {
@@ -49,7 +49,7 @@ public class Controller implements Constants {
 	}
 
 	public void changeRoom(int x, int y) {
-		((EditorModel)m).changeRoom(x + "," + y, false);
+		((EditorModel) m).changeRoom(x + "," + y, false);
 	}
 
 	public void changeRoom(String id) {
@@ -64,10 +64,7 @@ public class Controller implements Constants {
 	public void exportWorld() {
 		((EditorModel) m).exportWorld();
 	}
-	
-	public void setDirectory(String dir) {
-		m.setDirectory(dir);
-	}
+
 	public String[][] getMap(int x, int y) {
 		return m.getMap(x, y);
 	}
@@ -85,8 +82,6 @@ public class Controller implements Constants {
 	}
 
 	public void setRoomSize(int[] size) {
-		if (!(m instanceof EditorModel))
-			this.runEditor();
 		((EditorModel) m).setRoomSize(size);
 	}
 
@@ -95,6 +90,15 @@ public class Controller implements Constants {
 	}
 
 	public void addRoom(int x, int y) {
-		((EditorModel) m).addRoom(x,y);
+		((EditorModel) m).addRoom(x, y);
+	}
+
+	public void deleteRoom(int x, int y) {
+
+		((EditorModel) m).deleteRoom(x, y);
+	}
+
+	public void makeNewDir() {
+		m.makeNewDir();
 	}
 }

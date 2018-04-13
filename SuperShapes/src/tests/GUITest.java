@@ -5,7 +5,7 @@ import controller.Controller;
 import model.Model;
 import views.Window;
 
-public class GUITest implements Constants 
+public class GUITest 
 {
 	public static void main(String[] args) 
 	{

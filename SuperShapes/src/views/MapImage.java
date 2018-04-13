@@ -6,7 +6,7 @@ import java.awt.Polygon;
 
 import controller.Constants;
 
-public class MapImage extends Image implements Constants {
+public class MapImage extends Image{
 
 	private String[][] map = new String[11][11];
 

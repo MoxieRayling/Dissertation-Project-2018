@@ -2,6 +2,13 @@ package views;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class PlayerImage extends Image {
 
@@ -10,8 +17,8 @@ public class PlayerImage extends Image {
 	private int shrinkCount = 0;
 	private Boolean shield = false;
 
-	public PlayerImage(int x, int y, int scale, String room) {
-		super(x, y, scale, room);
+	public PlayerImage(int x, int y, int scale, String room, String img, String dir) {
+		super(x, y, scale, room,img,"player.png", dir);
 	}
 
 	public void setShrink(boolean b) {
@@ -87,14 +94,17 @@ public class PlayerImage extends Image {
 
 		if (shrink)
 			shrink();
-		g.setColor(Color.RED);
-		g.fillOval(getXPos() + x, getYPos() + y, size, size);
-		g.setColor(Color.BLACK);
-		g.drawOval(getXPos() + x, getYPos() + y, size, size);
+		if (image != null)
+			g.drawImage(image, getXPos() + x, getYPos() + y, size, size, null);
+		else {
+			g.setColor(Color.RED);
+			g.fillOval(getXPos() + x, getYPos() + y, size, size);
+			g.setColor(Color.BLACK);
+			g.drawOval(getXPos() + x, getYPos() + y, size, size);
+		}
 		if (shield) {
 			g.setColor(new Color(255, 0, 0, 100));
-			g.fillOval(getXPos() + x - size * 1 / 10, getYPos() + y - size * 1 / 10, size * 12 / 10,
-					size * 12 / 10);
+			g.fillOval(getXPos() + x - size * 1 / 10, getYPos() + y - size * 1 / 10, size * 12 / 10, size * 12 / 10);
 		}
 	}
 

@@ -8,7 +8,7 @@ public class EmptyTile extends Tile {
 
 	@Override
 	public String toString() {
-		return "empty " + x + "," + y;
+		return "empty " + x + "," + y + " /" + image + " " + getText();
 	}
 
 	

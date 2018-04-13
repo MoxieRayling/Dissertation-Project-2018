@@ -8,7 +8,7 @@ import controller.Constants;
 import observers.Observer;
 import observers.Subject;
 
-public class Room implements Subject, Constants {
+public class Room implements Subject {
 	private List<Tile> tiles = new ArrayList<Tile>();
 	private List<Observer> observers = new ArrayList<Observer>();
 	private List<Tile> pathTiles = new ArrayList<Tile>();

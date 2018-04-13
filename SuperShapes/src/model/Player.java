@@ -9,10 +9,12 @@ public class Player extends Entity {
 	private List<Observer> observers = new ArrayList<Observer>();
 	private String name = "Player";
 	private Boolean movable = true;
-	private String checkpoint;
 	private int lives = 3;
-	private char checkpointEntrance;
 	private char lastEntrance;
+	private Boolean canShield = false;
+	private Boolean canFly = false;
+	private Boolean canRewind = false;
+	private Boolean canPause = false;
 	private int fly = 0;
 	private int pause = 0;
 	private int flyCooldown = 0;
@@ -27,7 +29,6 @@ public class Player extends Entity {
 		super(room, 1, x, y);
 		this.deadly = false;
 		this.roomId = room;
-		this.checkpoint = room;
 		this.lives = lives;
 		if (Math.abs(x - 5) >= Math.abs(y - 5)) {
 			if (x - 5 > 0) {
@@ -43,6 +44,38 @@ public class Player extends Entity {
 			}
 		}
 		resetHistory();
+	}
+
+	public Boolean getCanShield() {
+		return canShield;
+	}
+
+	public Boolean getCanFly() {
+		return canFly;
+	}
+
+	public Boolean getCanRewind() {
+		return canRewind;
+	}
+
+	public Boolean getCanPause() {
+		return canPause;
+	}
+
+	public void setCanShield(Boolean canShield) {
+		this.canShield = canShield;
+	}
+
+	public void setCanFly(Boolean canFly) {
+		this.canFly = canFly;
+	}
+
+	public void setCanRewind(Boolean canRewind) {
+		this.canRewind = canRewind;
+	}
+
+	public void setCanPause(Boolean canPause) {
+		this.canPause = canPause;
 	}
 
 	@Override
@@ -116,14 +149,14 @@ public class Player extends Entity {
 	}
 
 	public void fly() {
-		if (flyCooldown <= 0) {
+		if (flyCooldown <= 0 && canFly) {
 			fly = 3;
 			notifyObserver();
 		}
 	}
 
 	public void pauseTime() {
-		if (pauseCooldown <= 0) {
+		if (pauseCooldown <= 0 && canPause) {
 			pause = 3;
 			notifyObserver();
 		}
@@ -138,28 +171,12 @@ public class Player extends Entity {
 			shieldCooldown--;
 	}
 
-	public char getCheckpointEntrance() {
-		return checkpointEntrance;
-	}
-
-	public void setCheckpointEntrance(char checkpointEntrance) {
-		this.checkpointEntrance = checkpointEntrance;
-	}
-
 	public char getLastEntrance() {
 		return lastEntrance;
 	}
 
 	public void setLastEntrance(char lastEntrance) {
 		this.lastEntrance = lastEntrance;
-	}
-
-	public String getCheckpoint() {
-		return checkpoint;
-	}
-
-	public void setCheckpoint(String checkpoint) {
-		this.checkpoint = checkpoint;
 	}
 
 	public int getLives() {
@@ -224,7 +241,7 @@ public class Player extends Entity {
 	}
 
 	public void rewind() {
-		if (rewindCooldown <= 0) {
+		if (rewindCooldown <= 0 && canRewind) {
 			setTeleport(true);
 			setLoc(xCoords[4], yCoords[4]);
 
@@ -244,7 +261,7 @@ public class Player extends Entity {
 	}
 
 	public void shield() {
-		if (shieldCooldown <= 0)
+		if (shieldCooldown <= 0 && canShield)
 			this.shield = true;
 		notifyObserver();
 	}

@@ -17,6 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -27,17 +28,19 @@ import model.Block;
 import model.Entity;
 import model.Ghost;
 import model.Room;
+import model.Shot;
 import model.Snake;
+import model.SnakeBody;
 import model.Turret;
 
 @SuppressWarnings("serial")
-public class Editor extends JPanel implements Constants, ItemListener {
+public class Editor extends JPanel implements ItemListener {
 	private Timer timer;
 	private Window w;
-	private int sizex = 512;
-	private int sizey = 512;
-	private int scale = sizex / 13;
-	private int roomScale = sizex / 13;
+	private int sizex = 1200;
+	private int sizey = 600;
+	private int scale = 512/13;
+	private int roomScale = 512/13;
 	private List<Image> images = new ArrayList<Image>();
 	private RoomImage room = null;
 	private MapImage map = null;
@@ -83,10 +86,12 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	private JButton export;
 	private JTextField entityImage;
 	private JTextField tileImage;
+	private JTextArea tileText;
 	private JSlider roomXSlider;
 	private JSlider roomYSlider;
 	private int[] size = { 11, 11 };
 	private JButton newRoom;
+	private JButton deleteRoom;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -103,7 +108,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 
 	private void initUI() {
 		newRoom = new JButton("Add New Room");
-		newRoom.setBounds(150, 500, 100, 20);
+		newRoom.setBounds(100, 500, 150, 20);
 		newRoom.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -112,6 +117,17 @@ public class Editor extends JPanel implements Constants, ItemListener {
 			}
 		});
 		this.add(newRoom);
+		
+		deleteRoom = new JButton("Delete Room");
+		deleteRoom.setBounds(300, 500, 150, 20);
+		deleteRoom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.deleteRoom(selectedRoomX - 5, selectedRoomY - 5);
+				map.setMap(w.getMap(mapCentreX, mapCentreY));
+			}
+		});
+		this.add(deleteRoom);
 
 		roomXSlider = new JSlider(3, 20, 11);
 		roomXSlider.setBounds(750, 500, 100, 20);
@@ -269,6 +285,10 @@ public class Editor extends JPanel implements Constants, ItemListener {
 		tileImage = new JTextField();
 		tileImage.setBounds(scale * 14, scale * 8, 100, 20);
 		this.add(tileImage);
+		tileText = new JTextArea();
+		tileText.setBounds(scale * 14, scale * 9, 180, 60);
+		tileText.setLineWrap(true);
+		this.add(tileText);
 
 		paintEntity = new JCheckBox("Change Entity");
 		paintEntity.setContentAreaFilled(false);
@@ -334,21 +354,26 @@ public class Editor extends JPanel implements Constants, ItemListener {
 					switch (e.getItem().toString()) {
 					case "Empty":
 						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
+						tileText.setBounds(scale * 14, scale * 9, 180, 20);
 						break;
 					case "Wall":
 						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
+						tileText.setBounds(scale * 14, scale * 9, 180, 20);
 						break;
 					case "Slide":
 						slideDirectionBox.setVisible(true);
 						tileImage.setBounds(scale * 14, scale * 9, 100, 20);
+						tileText.setBounds(scale * 14, scale * 10, 180, 20);
 						break;
 					case "Teleport":
 						teleportX.setVisible(true);
 						teleportY.setVisible(true);
 						tileImage.setBounds(scale * 14, scale * 10, 100, 20);
+						tileText.setBounds(scale * 14, scale * 11, 180, 20);
 						break;
 					case "Hole":
 						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
+						tileText.setBounds(scale * 14, scale * 9, 180, 20);
 						break;
 					default:
 						break;
@@ -491,7 +516,7 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	}
 
 	public void setRoomScale(int size) {
-		roomScale = Math.min(sizex, sizey) / (size + 3);
+		roomScale = Math.min(512, 512) / (size + 3);
 		for (Image i : images) {
 			if (i != null && !(i instanceof MapImage)) {
 				i.setScale(scale);
@@ -630,16 +655,18 @@ public class Editor extends JPanel implements Constants, ItemListener {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId(), e.getImage(),
+					Constants.gameDir + "/textures"));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
-			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), roomScale, t.getRoomId(), t.getDirection()));
-		} else if (e instanceof Snake) {
+			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), roomScale, t.getRoomId(), t.getDirection(),
+					e.getImage(), Constants.gameDir + "/textures"));
+		} else if (e instanceof SnakeBody) {
 			Snake sb = (Snake) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId()));
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId(), e.getImage(), Constants.gameDir + "/textures"));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId(), e.getImage(), Constants.gameDir + "/textures"));
 		}
 	}
 

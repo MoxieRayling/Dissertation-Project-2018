@@ -6,7 +6,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import controller.Constants;
 import controller.Controller;
 import model.Entity;
@@ -15,25 +20,29 @@ import model.Player;
 import model.Room;
 
 @SuppressWarnings("serial")
-public class Window extends JFrame implements View, Constants {
+public class Window extends JFrame implements View {
 
 	private Controller c;
 	private StartMenu start;
 	private Animation game;
 	private Editor editor;
 	private MapView map;
+	private PauseMenu pause;
+	private LoadMenu load;
 	private JFrame frame;
 	private Boolean input = true;
 	private CreateGame create;
 	private GameRules gameRules;
+	private List<JPanel> history = new ArrayList<JPanel>();
 
 	public Window() {
 		frame = this;
 		start = new StartMenu(this);
 		game = new Animation(this);
-		editor = new Editor(this);
 		create = new CreateGame(this);
 		gameRules = new GameRules(this);
+		pause = new PauseMenu(this);
+		load = new LoadMenu(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
@@ -50,6 +59,8 @@ public class Window extends JFrame implements View, Constants {
 					if (getContentPane().contains(game.getLocation())) {
 						if (e.getKeyChar() == 'm') {
 							map();
+						} else if (e.getKeyCode() == 27) {
+							pauseMenu();
 						} else {
 							c.Input(e.getKeyCode());
 							input = false;
@@ -81,7 +92,7 @@ public class Window extends JFrame implements View, Constants {
 			public void componentResized(ComponentEvent arg0) {
 				game.setSize(frame.getWidth(), frame.getHeight());
 				if (c != null) {
-					c.notifyObservers();
+					//c.notifyObservers();
 				}
 			}
 
@@ -91,6 +102,7 @@ public class Window extends JFrame implements View, Constants {
 
 			}
 		});
+		this.mainMenu();
 	}
 
 	public Boolean getInput() {
@@ -109,7 +121,8 @@ public class Window extends JFrame implements View, Constants {
 			game.modelUpdate((Model) o);
 		} else if (o instanceof Room) {
 			game.roomUpdate((Room) o);
-			editor.roomUpdate((Room) o);
+			if (editor != null)
+				editor.roomUpdate((Room) o);
 		} else if (o instanceof Player) {
 			game.playerUpdate((Player) o);
 		} else if (o instanceof Entity) {
@@ -134,13 +147,15 @@ public class Window extends JFrame implements View, Constants {
 	}
 
 	public void loadGame() {
+		this.setResizable(true);
 		c.loadGame();
 		c.setMode("game");
 		returnToGame();
 	}
 
 	public void mainMenu() {
-		this.setSize(200, 190);
+		history.add(start);
+		this.setSize(start.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(start);
@@ -150,7 +165,8 @@ public class Window extends JFrame implements View, Constants {
 	}
 
 	public void createGame() {
-		this.setSize(200, 190);
+		history.add(create);
+		this.setSize(create.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(create);
@@ -159,10 +175,22 @@ public class Window extends JFrame implements View, Constants {
 		create.requestFocusInWindow();
 	}
 
-	public void editor(String game) {
+	public void gameRules() {
+		history.add(gameRules);
+		this.setSize(gameRules.getPreferredSize());
+		this.getContentPane().removeAll();
+		this.getContentPane().add(gameRules);
+		this.validate();
+		this.repaint();
+		gameRules.requestFocusInWindow();
+	}
+
+	public void editor() {
+		editor = new Editor(this);
+		history.add(editor);
 		c.runEditor();
 		c.setMode("editor");
-		this.setSize(1200, 600);
+		this.setSize(editor.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(editor);
@@ -172,7 +200,18 @@ public class Window extends JFrame implements View, Constants {
 		editor.requestFocusInWindow();
 	}
 
+	public void pauseMenu() {
+		this.setSize(pause.getPreferredSize());
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(pause);
+		this.validate();
+		this.repaint();
+		pause.requestFocusInWindow();
+	}
+
 	public void map() {
+		history.add(map);
 		this.map = new MapView(this, c.getX(), c.getY());
 		map.addKeyListener(new KeyListener() {
 			@Override
@@ -204,7 +243,7 @@ public class Window extends JFrame implements View, Constants {
 			}
 
 		});
-		this.setSize(512, 512);
+		this.setSize(map.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(map);
@@ -214,12 +253,44 @@ public class Window extends JFrame implements View, Constants {
 	}
 
 	public void returnToGame() {
-		this.setSize(512, 512);
+		history.clear();
+		history.add(game);
+		this.setResizable(true);
+		this.setSize(game.getPreferredSize());
 		this.getContentPane().removeAll();
 		this.getContentPane().add(game);
 		this.validate();
 		this.repaint();
 		game.requestFocusInWindow();
+	}
+
+	public void loadMenu() {
+		history.add(load);
+		this.setSize(load.getPreferredSize());
+		this.getContentPane().removeAll();
+		this.getContentPane().add(load);
+		this.validate();
+		this.repaint();
+		load.requestFocusInWindow();
+	}
+
+	public void saveMenu() {
+
+	}
+
+	public void controls() {
+
+	}
+
+	public void back() {
+		history.remove(history.size() - 1);
+		JPanel back = history.get(history.size() - 1);
+		this.setSize(back.getPreferredSize());
+		this.getContentPane().removeAll();
+		this.getContentPane().add(back);
+		this.validate();
+		this.repaint();
+		back.requestFocusInWindow();
 	}
 
 	public void addToRoom(String[] lines, int x, int y) {
@@ -234,11 +305,6 @@ public class Window extends JFrame implements View, Constants {
 		c.changeRoom(id);
 	}
 
-	/*
-	 * public String[] getRooms() { return c.getRooms(); }
-	 * 
-	 * public void addRoom() { c.addRoom(); }
-	 */
 	public void exportRoom() {
 		c.exportRoom();
 	}
@@ -249,20 +315,6 @@ public class Window extends JFrame implements View, Constants {
 
 	public String[][] getMap(int x, int y) {
 		return c.getMap(x, y);
-	}
-
-	public void gameRules(String dir) {
-		gameRules.setGame(dir);
-		this.setSize(650, 512);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(gameRules);
-		this.validate();
-		this.repaint();
-		gameRules.requestFocusInWindow();
-	}
-
-	public void setDirectory(String dir) {
-		c.setDirectory(dir);
 	}
 
 	public void setExit(int index, int coord) {
@@ -277,4 +329,15 @@ public class Window extends JFrame implements View, Constants {
 		c.addRoom(x, y);
 	}
 
+	public void deleteRoom(int x, int y) {
+		c.deleteRoom(x, y);
+	}
+
+	public void saveGame(String save) {
+
+	}
+
+	public void makeNewDir() {
+		c.makeNewDir();
+	}
 }

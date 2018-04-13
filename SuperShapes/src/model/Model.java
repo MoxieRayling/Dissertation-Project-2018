@@ -6,7 +6,7 @@ import controller.Constants;
 import observers.Observer;
 import observers.Subject;
 
-public class Model implements Constants, Subject {
+public class Model implements Subject {
 	protected Room room;
 	protected Observer v;
 	protected Player player;
@@ -18,15 +18,12 @@ public class Model implements Constants, Subject {
 	private String mode = "";
 	private int textLength = 50;
 	protected FileManager fileManager;
+	private String save = "";
 
 	public Model(Observer v) {
 		this.v = v;
 		fileManager = new FileManager();
 		mode = "game";
-	}
-
-	public void setDirectory(String dir) {
-		fileManager.setDirectory(dir);
 	}
 
 	public String getMode() {
@@ -56,14 +53,15 @@ public class Model implements Constants, Subject {
 	}
 
 	public void loadGame() {
-		List<String> lines = fileManager.getSaveData();
-		changeRoom(lines.get(0), false);
+		System.out.println(fileManager.getSaveData());
+		String[] saveData = fileManager.getSaveData().split(":");
+		changeRoom(saveData[0], false);
 		int x = 0;
 		int y = 0;
 		try {
-			x = Integer.parseInt(lines.get(1));
-			y = Integer.parseInt(lines.get(2));
-			setClock(Integer.parseInt(lines.get(3)));
+			x = Integer.parseInt(saveData[1].split(",")[0]);
+			y = Integer.parseInt(saveData[1].split(",")[1]);
+			setClock(Integer.parseInt(saveData[2]));
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
@@ -117,8 +115,13 @@ public class Model implements Constants, Subject {
 			}
 		}
 		if (player.getLives() == 0) {
-			loadGame();
+			this.resetRoom();
 		}
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
+		this.room.notifyObserver();
 	}
 
 	public String getAdjRoomId(char direction) {
@@ -250,7 +253,7 @@ public class Model implements Constants, Subject {
 	public void resetRoom() {
 		System.out.println("reset");
 		player.setDead(false);
-		room = loadRoom(room.getId());
+		setRoom(loadRoom(room.getId()));
 		switch (player.getLastEntrance()) {
 		case 'N':
 			player.setLoc(5, 0);
@@ -267,9 +270,7 @@ public class Model implements Constants, Subject {
 		default:
 			break;
 		}
-		room.addObserver(v);
 		player.resetPos();
-		room.notifyObserver();
 		notifyObserver();
 	}
 
@@ -278,7 +279,7 @@ public class Model implements Constants, Subject {
 		Room temp = loadRoom(roomId);
 		int x = room.getX() - temp.getX();
 		int y = room.getY() - temp.getY();
-		room = temp;
+		setRoom(temp);
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
 				player.setLoc(room.getxLength() - 1, room.getExits()[1]);
@@ -292,7 +293,6 @@ public class Model implements Constants, Subject {
 				player.setLoc(room.getExits()[0], 0);
 			}
 		}
-		room.addObserver(v);
 		player.setRoomId(room.getId());
 		room.updatePath(player.getX(), player.getY());
 		notifyObserver();
@@ -403,8 +403,8 @@ public class Model implements Constants, Subject {
 		}
 	}
 
-	public void eraseSaveData() {
-		fileManager.eraseSaveData();
+	public void newSaveData() {
+		fileManager.newSaveData();
 	}
 
 	public String[][] getMap(int x, int y) {
@@ -417,5 +417,9 @@ public class Model implements Constants, Subject {
 
 	public int getY() {
 		return room.getY();
+	}
+
+	public void makeNewDir() {
+		fileManager.makeNewDir();
 	}
 }

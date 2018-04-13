@@ -1,6 +1,15 @@
 package controller;
 
-public interface Constants 
+public class Constants 
 {
-	public static final int speed = 1000;
+	public static String gameDir = "games/game1";
+	public static String saveFile = "save";
+
+	public static void setGameDir(String gameFile) {
+		Constants.gameDir = "games/" + gameFile;
+	}
+
+	public static void setSaveFile(String saveFile) {
+		Constants.saveFile = saveFile;
+	}
 }

@@ -8,7 +8,7 @@ public class Save extends Tile {
 
 	@Override
 	public String toString() {
-		return "save " + x + "," + y;
+		return "save " + x + "," + y + " /" + image + " " + getText();
 	}
 
 }

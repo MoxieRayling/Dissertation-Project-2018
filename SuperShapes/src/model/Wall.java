@@ -10,6 +10,6 @@ public class Wall extends Tile {
 
 	@Override
 	public String toString() {
-		return "wall " + x + "," + y;
+		return "wall " + x + "," + y + " /" + image + " " + getText();
 	}
 }

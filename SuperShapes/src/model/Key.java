@@ -9,7 +9,7 @@ public class Key extends Tile {
 
 	@Override
 	public String toString() {
-		return "key " + x + "," + y;
+		return "key " + x + "," + y + " /" + image + " " + getText();
 	}
 
 }

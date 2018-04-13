@@ -2,33 +2,31 @@ package model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import controller.Constants;
 import observers.Observer;
 
 public class FileManager {
 
 	private int enemyCount = 0;
-	private String directory = "games/game1";
 
 	public FileManager() {
 	}
 
-	public void setDirectory(String dir) {
-		directory = "games/" + dir;
-	}
-
 	public void copyWorld() {
-		writeToFile(getWorldData(), directory + "/working.txt");
+		writeToFile(getWorldData(), Constants.gameDir + "/working.txt");
 	}
 
 	public void saveWorld() {
-		writeToFile(getWorkingData(), directory + "/world.txt");
+		writeToFile(getWorkingData(), Constants.gameDir + "/world.txt");
 	}
 
 	private int getEnemyCount() {
@@ -36,8 +34,7 @@ public class FileManager {
 		return enemyCount;
 	}
 
-	public List<String> getSaveData() {
-		String fileName = directory + "/save.txt";
+	private List<String> readFromFile(String fileName) {
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -54,97 +51,45 @@ public class FileManager {
 			System.out.println("file no work " + fileName);
 		}
 		return lines;
+	}
+
+	public String getSaveData() {
+		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
+		return readFromFile(fileName).get(0);
 	}
 
 	public List<String> getWorldData() {
-		String fileName = directory + "/world.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (FileNotFoundException ex) {
-			System.out.println("file no work " + fileName);
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-		return lines;
+		String fileName = Constants.gameDir + "/world.txt";
+		return readFromFile(fileName);
 	}
 
 	public List<String> getWorkingData() {
-		String fileName = directory + "/working.txt";
-		String line = null;
-		List<String> lines = new ArrayList<String>();
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-			while ((line = bufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-			bufferedReader.close();
-		} catch (FileNotFoundException ex) {
-			System.out.println("file no work " + fileName);
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
-		return lines;
+		String fileName = Constants.gameDir + "/working.txt";
+		return readFromFile(fileName);
 	}
 
-	public void saveGame(String checkpointId, Player player, int clock) {
-		String fileName = directory + "/save.txt";
-		List<String> lines = new ArrayList<String>();
-		lines.add(checkpointId);
-		lines.add(String.valueOf(player.getX()));
-		lines.add(String.valueOf(player.getY()));
-		lines.add(String.valueOf(clock));
-		writeToFile(lines, fileName);
+	public void saveGame(Room r, Player player, int clock) {
+		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
+		String saveData = r.getId() + ":" + player.getX() + "," + player.getY() + ":" + clock;
+		writeToFile(saveData, fileName);
 	}
 
-	public void eraseSaveData() {
-		String fileName = directory + "/save.txt";
-		try {
-			FileWriter fileWriter = new FileWriter(fileName);
-			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			bufferedWriter.write("0,0");
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(5));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(10));
-			bufferedWriter.newLine();
-			bufferedWriter.write(String.valueOf(0));
-			bufferedWriter.close();
-		} catch (IOException ex) {
-			System.out.println("file no work " + fileName);
-		}
+	public void newSaveData() {
+		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
+		String saveData = "0,0:0,0:0";
+		writeToFile(saveData, fileName);
 	}
 
 	public String getRoomData(int x, int y) {
-		String fileName = directory + "/world.txt";
-		String line = null;
-		try {
-			FileReader fileReader = new FileReader(fileName);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			while ((line = bufferedReader.readLine()) != null) {
-				if (line.startsWith("room " + x + "," + y)) {
-					break;
-				} else {
-
-					continue;
-				}
+		List<String> world = getWorldData();
+		String roomId = x + "," + y;
+		String result = "";
+		for (String s : world) {
+			if (s.substring(0, 10).contains(roomId)) {
+				result = s;
 			}
-			bufferedReader.close();
-		} catch (
-
-		FileNotFoundException ex) {
-		} catch (IOException ex) {
 		}
-		return line;
+		return result;
 	}
 
 	public int[] generateExits(int x, int y) {
@@ -166,7 +111,7 @@ public class FileManager {
 
 	public Room makeRoom(int x, int y, Player player, Observer o) {
 		enemyCount = 0;
-		String room = getRoomData(x, y);	
+		String room = getRoomData(x, y);
 		String[] params = room.split(";");
 		Room r = parseRoom(params[0].split(" "), player, o);
 		if (params[1].length() > 1)
@@ -195,7 +140,18 @@ public class FileManager {
 		return entities;
 	}
 
-	public void writeToFile(List<String> lines, String fileName) {
+	private void writeToFile(String saveData, String fileName) {
+		try {
+			FileWriter fileWriter = new FileWriter(fileName);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			bufferedWriter.write(saveData);
+			bufferedWriter.close();
+		} catch (IOException ex) {
+			System.out.println("file no work " + fileName);
+		}
+	}
+
+	private void writeToFile(List<String> lines, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -237,31 +193,31 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, directory + "/working.txt");
+		writeToFile(world, Constants.gameDir + "/working.txt");
 	}
 
 	public void exportWorking(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, directory + "/working.txt");
+		writeToFile(lines, Constants.gameDir + "/working.txt");
 	}
 
 	public void exportWorld(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, directory + "/working.txt");
-		writeToFile(lines, directory + "/world.txt");
+		writeToFile(lines, Constants.gameDir + "/working.txt");
+		writeToFile(lines, Constants.gameDir + "/world.txt");
 	}
 
 	public void exportMaster(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, directory + "/working.txt");
-		writeToFile(lines, directory + "/world.txt");
-		writeToFile(lines, directory + "/master.txt");
+		writeToFile(lines, Constants.gameDir + "/working.txt");
+		writeToFile(lines, Constants.gameDir + "/world.txt");
+		writeToFile(lines, Constants.gameDir + "/master.txt");
 		System.out.println("exported");
 	}
 
@@ -514,5 +470,20 @@ public class FileManager {
 			}
 		}
 		return map;
+	}
+
+	public void makeNewDir() { 
+		File dir = new File(Constants.gameDir);
+		dir.mkdir();
+		dir = new File(Constants.gameDir + "/saves");
+		dir.mkdir();
+		dir = new File(Constants.gameDir + "/textures");
+		dir.mkdir();
+		List<String> world = new ArrayList<String>();
+		world.add("room 0,0 11,11 5,5,5,5;E;T");
+		writeToFile(world, Constants.gameDir + "/working.txt");
+		writeToFile(world, Constants.gameDir + "/world.txt");
+		writeToFile(world, Constants.gameDir + "/master.txt");
+		newSaveData();
 	}
 }

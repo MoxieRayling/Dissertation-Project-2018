@@ -1,16 +1,14 @@
 package model;
 
-
 import observers.Observer;
 
 public class EditorModel extends Model {
-
 
 	public EditorModel(Observer v) {
 		super(v);
 		super.player = new Player("0,0", 5, 10, 5);
 		super.player.addObserver(v);
-		super.room = loadRoom("0,0");
+		setRoom(loadRoom("0,0"));
 		super.room.addObserver(v);
 		super.room.notifyObserver();
 	}
@@ -40,9 +38,8 @@ public class EditorModel extends Model {
 		fileManager.exportWorking(room.exportRoom());
 	}
 
-	public void changeRoom(String roomId, Boolean resetPos) {
-		System.out.println("editor change");
-		Room room = loadRoom(roomId);
+	public void changeRoom(String roomId) {
+		setRoom(loadRoom(roomId));
 		room.addObserver(v);
 		room.notifyObserver();
 	}
@@ -60,11 +57,16 @@ public class EditorModel extends Model {
 	}
 
 	public void addRoom(int x, int y) {
-
-		System.out.println("add room");
 		int[] exits = { -1, -1, -1, -1 };
-		room = new Room(x, y, 11, 11, exits, player, v);
+		setRoom(new Room(x, y, 11, 11, exits, player, v));
+		fileManager.exportMaster(room.exportRoom());
+	}
 
+	public void deleteRoom(int x, int y) {
+		if (!(x == 0 && y == 0)) {
+			changeRoom("0,0");
+			fileManager.removeRoom(x + "," + y);
+		}
 	}
 
 }

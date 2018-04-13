@@ -13,12 +13,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
+import controller.Constants;
+
 @SuppressWarnings("serial")
 public class GameRules extends JPanel {
 
-	private int sizex = 600;
+	private int sizex = 700;
 	private int sizey = 512;
-	private String game;
 	private JButton next = new JButton("Next");
 	private JButton back = new JButton("Back");
 
@@ -135,7 +136,7 @@ public class GameRules extends JPanel {
 		next.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.editor(game);
+				w.editor();
 				writeGameRules();
 			}
 		});
@@ -146,7 +147,7 @@ public class GameRules extends JPanel {
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.createGame();
+				w.back();
 			}
 		});
 		this.add(back);
@@ -192,7 +193,7 @@ public class GameRules extends JPanel {
 				lines.add("pause room cooldown");
 		}	
 		
-		String fileName = "games/" + game + "/gamerules.txt";
+		String fileName = Constants.gameDir + "/gamerules.txt";
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -210,9 +211,5 @@ public class GameRules extends JPanel {
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(sizex, sizey);
-	}
-
-	public void setGame(String dir) {
-		this.game = dir;
 	}
 }

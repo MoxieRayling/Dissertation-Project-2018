@@ -1,10 +1,16 @@
 package views;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.IIOException;
+import javax.imageio.ImageIO;
 
 import controller.Constants;
 
-public abstract class Image implements Constants {
+public abstract class Image {
 
 	protected String id;
 	protected int xPos;
@@ -20,6 +26,34 @@ public abstract class Image implements Constants {
 	protected String room;
 	protected Boolean stationary = true;
 	private Boolean noCollide = false;
+	private String dir = "games/game1/textures/";
+	private String img = "";
+	protected BufferedImage image;
+
+	public Image(int x, int y, int scale, String room, String img, String alt, String dir) {
+		this.xSpeed = 1;
+		this.ySpeed = 1;
+		this.scale = scale;
+		this.size = scale;
+		this.room = room;
+
+		xPos = x * scale;
+		yPos = y * scale;
+		xDest = x * scale;
+		yDest = y * scale;
+		String texture = alt;
+		if(img != "")
+			texture = img;
+		this.img = texture;
+		this.dir = dir;
+		try {
+			File imgSrc = new File(dir + img);
+			if (imgSrc.exists() && img != "")
+				image = ImageIO.read(imgSrc);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Image(int x, int y, int scale, String room) {
 		this.xSpeed = 1;
@@ -32,7 +66,6 @@ public abstract class Image implements Constants {
 		yPos = y * scale;
 		xDest = x * scale;
 		yDest = y * scale;
-
 	}
 
 	public Boolean getNoCollide() {
