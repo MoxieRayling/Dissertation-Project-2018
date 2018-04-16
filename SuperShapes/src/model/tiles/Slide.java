@@ -7,6 +7,7 @@ public class Slide extends Tile {
 	public Slide(int x, int y, char direction) {
 		super(x, y);
 		this.direction = direction;
+		setImage("slide.png");
 	}
 
 	public char getDirection() {
@@ -15,6 +16,6 @@ public class Slide extends Tile {
 
 	@Override
 	public String toString() {
-		return "slide " + x + "," + y + " " + direction + " /" + image + " \"" + getText() + " " + getTextRead().toString();
+		return "slide " + x + "," + y + " " + direction + " " + image + " \"" + getText() + " " + getTextRead().toString();
 	}
 }

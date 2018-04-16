@@ -18,6 +18,8 @@ import model.entities.Snake;
 import model.entities.Turret;
 import model.tiles.EmptyTile;
 import model.tiles.Hole;
+import model.tiles.Key;
+import model.tiles.Lock;
 import model.tiles.Slide;
 import model.tiles.Teleport;
 import model.tiles.Tile;
@@ -75,9 +77,9 @@ public class FileManager {
 		return readFromFile(fileName);
 	}
 
-	public void saveGame(Room r, Player player, int x, int y, int clock) {
+	public void saveGame(Room r, String playerData, int clock) {
 		String fileName = Constants.saveDir + "/save.txt";
-		String saveData = r.getId() + ":" + player.getX() + "," + player.getY() + ":" + x + "," + y + ":" + clock;
+		String saveData = r.getId() + ":" + playerData + ":" + clock;
 		writeToFile(saveData, fileName);
 	}
 
@@ -257,8 +259,10 @@ public class FileManager {
 			System.out.println("rip block ints");
 		}
 		Block b = new Block(x + "," + y, enemyCount, bx, by);
-		if (params.length == 3 && !params[3].equals("none")) {
-			b.setImage(params[2]);
+		if (params.length == 3) {
+			if (!params[2].equals("none")) {
+				b.setImage(params[2]);
+			}
 		}
 		return b;
 	}
@@ -276,8 +280,10 @@ public class FileManager {
 			System.out.println("rip ghost ints");
 		}
 		Ghost g = new Ghost(x + "," + y, enemyCount, bx, by, pause);
-		if (params.length == 4 && !params[3].equals("none")) {
-			g.setImage(params[3]);
+		if (params.length == 4) {
+			if (!params[3].equals("none")) {
+				g.setImage(params[3]);
+			}
 		}
 		return g;
 	}
@@ -299,8 +305,10 @@ public class FileManager {
 		char direction = params[3].charAt(0);
 		r.getTile(tx, ty).setTrav(false);
 		Turret t = new Turret(x + "," + y, enemyCount, tx, ty, ratio, delay, direction, r);
-		if (params.length == 6 && !params[3].equals("none")) {
-			t.setImage(params[5]);
+		if (params.length == 6) {
+			if (!params[5].equals("none")) {
+				t.setImage(params[5]);
+			}
 		}
 		return t;
 	}
@@ -318,8 +326,10 @@ public class FileManager {
 			System.out.println("rip snake ints");
 		}
 		Snake s = new Snake(x + "," + y, enemyCount, sx, sy, length, r, o);
-		if (params.length == 4 && !params[3].equals("none")) {
-			s.setImage(params[3]);
+		if (params.length == 4) {
+			if (!params[3].equals("none")) {
+				s.setImage(params[3]);
+			}
 		}
 		return s;
 	}
@@ -337,6 +347,10 @@ public class FileManager {
 				return parseTeleport(params);
 			} else if (params[0].startsWith("hole")) {
 				return parseHole(params);
+			} else if (params[0].startsWith("key")) {
+				return parseKey(params);
+			} else if (params[0].startsWith("lock")) {
+				return parseLock(params);
 			}
 		}
 		return null;
@@ -354,7 +368,7 @@ public class FileManager {
 		}
 		Hole h = new Hole(x, y);
 		if (!params[2].equals("none")) {
-			h.setImage(params[2].substring(1));
+			h.setImage(params[2]);
 		}
 		if (!params[3].equals("\"")) {
 			h.setText(params[3].substring(1));
@@ -385,7 +399,7 @@ public class FileManager {
 		Teleport t = new Teleport(x, y, tx, ty);
 
 		if (!params[3].equals("none")) {
-			t.setImage(params[3].substring(1));
+			t.setImage(params[3]);
 		}
 		if (!params[4].equals("\"")) {
 			t.setText(params[4].substring(1));
@@ -410,7 +424,7 @@ public class FileManager {
 		}
 		Slide s = new Slide(x, y, params[2].charAt(0));
 		if (!params[3].equals("none")) {
-			s.setImage(params[3].substring(1));
+			s.setImage(params[3]);
 		}
 		if (!params[4].equals("\"")) {
 			s.setText(params[4].substring(1));
@@ -436,7 +450,7 @@ public class FileManager {
 		Wall w = new Wall(x, y);
 
 		if (!params[2].equals("none")) {
-			w.setImage(params[2].substring(1));
+			w.setImage(params[2]);
 		}
 		if (!params[3].equals("\"")) {
 			System.out.println(params[3]);
@@ -462,18 +476,68 @@ public class FileManager {
 		}
 		EmptyTile t = new EmptyTile(x, y);
 		if (!params[2].equals("none")) {
-			t.setImage(params[2].substring(1));
+			t.setImage(params[2]);
 		}
-		if (!params[3].equals("\"")) {
+		//System.out.println("p3 " +	params[3]);
+		if (!params[3].equals("")) {
 			t.setText(params[3].substring(1));
 		}
-		System.out.println(params[3]);
 		if (params[4].equals("true")) {
 			t.setTextRead(true);
 		} else {
 			t.setTextRead(false);
 		}
 		return t;
+	}
+
+	public Tile parseLock(String[] params) {
+		int x = 0;
+		int y = 0;
+		String[] coords = params[1].split(",");
+		try {
+			x = Integer.parseInt(coords[0]);
+			y = Integer.parseInt(coords[1]);
+		} catch (NumberFormatException e) {
+			System.out.println("rip empty ints");
+		}
+		Lock l = new Lock(x, y, params[2]);
+		if (!params[3].equals("none")) {
+			l.setImage(params[3]);
+		}
+		if (!params[4].equals("\"")) {
+			l.setText(params[4].substring(1));
+		}
+		if (params[4].equals("true")) {
+			l.setTextRead(true);
+		} else {
+			l.setTextRead(false);
+		}
+		return l;
+	}
+
+	public Tile parseKey(String[] params) {
+		int x = 0;
+		int y = 0;
+		String[] coords = params[1].split(",");
+		try {
+			x = Integer.parseInt(coords[0]);
+			y = Integer.parseInt(coords[1]);
+		} catch (NumberFormatException e) {
+			System.out.println("rip empty ints");
+		}
+		Key k = new Key(x, y, params[2]);
+		if (!params[3].equals("none")) {
+			k.setImage(params[3]);
+		}
+		if (!params[4].equals("\"")) {
+			k.setText(params[4].substring(1));
+		}
+		if (params[4].equals("true")) {
+			k.setTextRead(true);
+		} else {
+			k.setTextRead(false);
+		}
+		return k;
 	}
 
 	public Entity parseEntity(String line, Room room, Observer o) {

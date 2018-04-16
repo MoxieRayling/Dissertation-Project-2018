@@ -16,6 +16,7 @@ public class PlayerImage extends Image {
 	private Boolean dead = false;
 	private int shrinkCount = 0;
 	private Boolean shield = false;
+	private Boolean flying = false;
 
 	public PlayerImage(int x, int y, int scale, String room, String img) {
 		super(x, y, scale, room,img,"player.png");
@@ -90,8 +91,16 @@ public class PlayerImage extends Image {
 	}
 
 	@Override
-	public void drawThis(Graphics2D g, int x, int y) {
+	public void drawThis(Graphics2D g, int xCoord, int yCoord) {
 
+		int x = xCoord;
+		int y = yCoord;
+		if(flying) {
+			g.setColor(new Color(0, 0, 0, 100));
+			g.fillOval(getXPos() + x, getYPos() + y, size, size);
+			y -= size/3;
+		}
+		
 		if (shrink)
 			shrink();
 		if (image != null)
@@ -118,6 +127,14 @@ public class PlayerImage extends Image {
 
 	public void setShield(Boolean shield) {
 		this.shield = shield;
+	}
+
+	public Boolean getFlying() {
+		return flying;
+	}
+
+	public void setFlying(Boolean flying) {
+		this.flying = flying;
 	}
 
 }

@@ -117,11 +117,17 @@ public class Room implements Subject {
 				+ exits[2] + "," + exits[3];
 		result += ";E";
 		for (Entity e : enemies) {
-			result += e.toString() + ":";
+			if (e.toString() != null)
+				result += e.toString() + ":";
 		}
 		result += ";T";
 		for (Tile t : tiles) {
-			if (!(t instanceof EmptyTile && t.getImage().isEmpty() && t.getText().isEmpty()))
+			if (t instanceof EmptyTile) {
+				if (!t.getImage().equals("empty.png") || !t.getText().equals("")) {
+					System.out.println("text is:" + t.getText() + "!");
+					result += t.toString() + ":";
+				}
+			} else 
 				result += t.toString() + ":";
 		}
 		return result;
@@ -392,7 +398,7 @@ public class Room implements Subject {
 				t.setOccupied(true);
 				return true;
 			}
-		} 
+		}
 		return false;
 	}
 

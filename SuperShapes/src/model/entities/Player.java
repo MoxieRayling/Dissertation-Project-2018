@@ -22,12 +22,16 @@ public class Player extends Entity {
 	private int pauseCooldown = 0;
 	private Boolean shield = false;
 	private int shieldCooldown = 0;
+	private int respawnx = 0;
+	private int respawny = 0;
+	private List<String> keys = new ArrayList<String>();
 
 	public Player(String room, int x, int y, int lives) {
 		super(room, 1, x, y);
 		this.deadly = false;
 		this.roomId = room;
 		this.lives = lives;
+		image = "player.png";
 		if (Math.abs(x - 5) >= Math.abs(y - 5)) {
 			if (x - 5 > 0) {
 				setLastEntrance('E');
@@ -57,18 +61,34 @@ public class Player extends Entity {
 				setLastEntrance('S');
 		}
 		this.roomId = room;
-		if(Constants.PauseRoomCooldown) {
+		if (Constants.PauseRoomCooldown) {
 			this.pauseCooldown = 0;
 		}
-		if(Constants.flightRoomCooldown) {
+		if (Constants.flightRoomCooldown) {
 			this.flyCooldown = 0;
 		}
-		if(Constants.rewindRoomCooldown) {
+		if (Constants.rewindRoomCooldown) {
 			this.rewindCooldown = 0;
 		}
-		if(Constants.shieldRoomCooldown) {
+		if (Constants.shieldRoomCooldown) {
 			this.shieldCooldown = 0;
 		}
+	}
+
+	public int getRespawnx() {
+		return respawnx;
+	}
+
+	public void setRespawnx(int respawnx) {
+		this.respawnx = respawnx;
+	}
+
+	public int getRespawny() {
+		return respawny;
+	}
+
+	public void setRespawny(int respawny) {
+		this.respawny = respawny;
 	}
 
 	@Override
@@ -272,9 +292,27 @@ public class Player extends Entity {
 			pauseCooldown--;
 		notifyObserver();
 	}
+
 	@Override
 	public String toString() {
-		return null;
+		String result = getX() + "," + getY() + ":" + getRespawnx() + "," + getRespawny();
+		for (String s : keys) {
+			result += ":" + s;
+		}
+		return result;
+	}
+
+	public void addKey(String key) {
+		keys.add(key);
+	}
+
+	public boolean hasKey(String key) {
+		for (String s : keys) {
+			if (s.equals(key)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

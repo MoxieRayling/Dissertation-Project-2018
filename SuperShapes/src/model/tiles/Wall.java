@@ -6,10 +6,11 @@ public class Wall extends Tile {
 		super(x, y);
 		this.setTrav(false);
 		this.setPath(122);
+		setImage("wall.png");
 	}
 
 	@Override
 	public String toString() {
-		return "wall " + x + "," + y + " /" + image + " \"" + getText() + " " + getTextRead().toString();
+		return "wall " + x + "," + y + " " + image + " \"" + getText() + " " + getTextRead().toString();
 	}
 }

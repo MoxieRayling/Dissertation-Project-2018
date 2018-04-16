@@ -48,7 +48,7 @@ public class Controller {
 	}
 
 	public void changeRoom(int x, int y) {
-		((EditorModel) m).changeRoom(x + "," + y, false);
+		((EditorModel) m).changeRoom(x + "," + y);
 	}
 
 	public void changeRoom(String id) {

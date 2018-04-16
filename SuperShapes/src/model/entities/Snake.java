@@ -18,6 +18,7 @@ public class Snake extends Entity {
 	public Snake(String roomId, int count, int x, int y, int length, Room room, Observer o) {
 		super(roomId, count, x, y);
 		id += "s";
+		image = "snake.png";
 		this.room = room;
 		this.length = length;
 		startX = x;

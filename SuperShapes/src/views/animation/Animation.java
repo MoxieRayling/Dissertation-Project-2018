@@ -1,8 +1,5 @@
 package views.animation;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,7 +69,7 @@ public class Animation extends JPanel {
 	public void updateScale() {
 		setScale(Math.max(room.getxLength(), room.getyLength()));
 	}
-	
+
 	private void removeRooms() {
 		List<Image> remove = new ArrayList<Image>();
 		for (Image i : images) {
@@ -102,6 +99,8 @@ public class Animation extends JPanel {
 		removeRooms();
 		room = new RoomImage(r.getTiles(), scale, r.getxLength(), r.getyLength(), r.getId(), r.getExits());
 		images.add(room);
+		if (getGraphics() != null)
+			room.drawThis((Graphics2D) this.getGraphics(), scale, scale);
 	}
 
 	public void playerUpdate(Player play) {
@@ -121,6 +120,10 @@ public class Animation extends JPanel {
 			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId(), img);
 			images.add(player);
 		}
+		if (play.getFly() > 0) {
+			player.setFlying(true);
+		} else
+			player.setFlying(false);
 		player.setShield(play.getShield());
 		player.setNoCollide(play.getFly() > 0);
 		player.next(play.getX(), play.getY(), play.getTeleport());
@@ -160,8 +163,8 @@ public class Animation extends JPanel {
 					e.getImage()));
 		} else if (e instanceof Shot) {
 			Shot s = (Shot) e;
-			images.add(new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection(),
-					e.getImage()));
+			images.add(
+					new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection(), e.getImage()));
 		} else if (e instanceof SnakeBody) {
 			SnakeBody sb = (SnakeBody) e;
 			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId(), e.getImage()));
@@ -186,7 +189,7 @@ public class Animation extends JPanel {
 					}
 				}
 				if (stationary) {
-					if(lives == 0) {
+					if (lives == 0) {
 						w.gameOver();
 					}
 					w.setInput(true);

@@ -5,8 +5,6 @@ public class Block extends Entity {
 		super(roomId, count, x, y);
 		id += "b";
 		image = "block.png";
-		if (count % 2 == 0)
-			this.image = "player.png";
 	}
 
 	@Override

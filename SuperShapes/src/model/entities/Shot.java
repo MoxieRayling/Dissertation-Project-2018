@@ -11,6 +11,7 @@ public class Shot extends Entity {
 	public Shot(String roomId, int count, int x, int y, Observer o, char direction) {
 		super(roomId, count, x, y);
 		id += "ts";
+		image = "shot.png";
 		this.direction = direction;
 		this.sx = x;
 		this.sy = y;

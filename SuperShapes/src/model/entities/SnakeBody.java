@@ -6,6 +6,7 @@ public class SnakeBody extends Entity
 	{
 		super(roomId,count, x, y);
 		id += "sb";
+		image = "snake.png";
 	}
 
 	@Override

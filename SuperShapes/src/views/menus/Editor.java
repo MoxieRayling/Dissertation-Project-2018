@@ -80,6 +80,9 @@ public class Editor extends JPanel implements ItemListener {
 	private List<Component> teleportOptions = new ArrayList<Component>();
 	private JComboBox<String> slideDirectionBox;
 	private List<Component> slideOptions = new ArrayList<Component>();
+	private JTextField key;
+	private List<Component> keyOptions = new ArrayList<Component>();
+	private List<Component> lockOptions = new ArrayList<Component>();
 	private JComboBox<String> tilesBox;
 	private int selectedX = 0;
 	private int selectedY = 0;
@@ -361,7 +364,13 @@ public class Editor extends JPanel implements ItemListener {
 		paintTile.setBounds(scale * 14, scale * 6, scale * 3, 20);
 		this.add(paintTile);
 
-		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole" };
+		key = new JTextField();
+		key.setBounds(scale * 14, scale * 8, 100, 20);
+		this.add(key);
+		this.keyOptions.add(key);
+		this.lockOptions.add(key);
+
+		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole", "Key", "Lock" };
 		tilesBox = new JComboBox<String>(tiles);
 		tilesBox.setBounds(scale * 14, scale * 7, scale * 2, 20);
 		tilesBox.addItemListener(new ItemListener() {
@@ -392,6 +401,16 @@ public class Editor extends JPanel implements ItemListener {
 					case "Hole":
 						tileImage.setBounds(scale * 14, scale * 8, 100, 20);
 						tileText.setBounds(scale * 14, scale * 9, 180, 60);
+						break;
+					case "Key":
+						key.setVisible(true);
+						tileImage.setBounds(scale * 14, scale * 9, 100, 20);
+						tileText.setBounds(scale * 14, scale * 10, 180, 60);
+						break;
+					case "Lock":
+						key.setVisible(true);
+						tileImage.setBounds(scale * 14, scale * 9, 100, 20);
+						tileText.setBounds(scale * 14, scale * 10, 180, 60);
 						break;
 					default:
 						break;
@@ -436,6 +455,8 @@ public class Editor extends JPanel implements ItemListener {
 		slideOptions.add(slideDirectionBox);
 		tileComponents.add(teleportOptions);
 		tileComponents.add(slideOptions);
+		tileComponents.add(keyOptions);
+		tileComponents.add(lockOptions);
 		for (List<Component> l : tileComponents) {
 			for (Component c : l) {
 				c.setBounds(scale * 14, scale * (l.indexOf(c) + 8), scale * 2, 20);
@@ -454,10 +475,10 @@ public class Editor extends JPanel implements ItemListener {
 				return new File(current, name).isFile();
 			}
 		});
-		String[] result = new String[images.length+1];
+		String[] result = new String[images.length + 1];
 		result[0] = "none";
-		for(int i = 1; i < images.length+1;i++) {
-			result[i] = images[i-1];
+		for (int i = 1; i < images.length + 1; i++) {
+			result[i] = images[i - 1];
 		}
 		return result;
 	}
@@ -618,12 +639,22 @@ public class Editor extends JPanel implements ItemListener {
 				break;
 			case "Teleport":
 				result[1] = "tele " + selectedX + "," + selectedY + " " + teleportX.getValue() + ","
-						+ teleportY.getValue() + " " + tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
-						+ String.valueOf(tileText.getText().isEmpty());
+						+ teleportY.getValue() + " " + tileImage.getSelectedItem() + " \""
+						+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 				break;
 			case "Hole":
 				result[1] = "hole " + selectedX + "," + selectedY + " " + tileImage.getSelectedItem() + " \""
 						+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
+				break;
+			case "Key":
+				result[1] = "key " + selectedX + "," + selectedY + " " + key.getText() + " "
+						+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
+						+ String.valueOf(tileText.getText().isEmpty());
+				break;
+			case "Lock":
+				result[1] = "lock " + selectedX + "," + selectedY + " " + key.getText() + " "
+						+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
+						+ String.valueOf(tileText.getText().isEmpty());
 				break;
 			default:
 				break;

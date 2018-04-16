@@ -3,10 +3,10 @@ package controller;
 public class Constants {
 	public static String gameDir = "games/game1";
 	public static String saveDir = "save";
-	public static Boolean flight = false;
-	public static Boolean pause = false;
-	public static Boolean rewind = false;
-	public static Boolean shield = false;
+	public static Boolean flight = true;
+	public static Boolean pause = true;
+	public static Boolean rewind = true;
+	public static Boolean shield = true;
 	public static int flightDuration = 3;
 	public static Boolean infFlight = false;
 	public static Boolean flightRoomCooldown = false;

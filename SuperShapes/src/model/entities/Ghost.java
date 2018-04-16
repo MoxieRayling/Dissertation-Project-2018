@@ -6,6 +6,7 @@ public class Ghost extends Entity {
 	public Ghost(String roomId, int count, int x, int y, int pause) {
 		super(roomId, count, x, y);
 		id += "g";
+		image = "ghost.png";
 		this.deadly = false;
 		this.pause = pause;
 	}

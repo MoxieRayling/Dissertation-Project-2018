@@ -3,10 +3,18 @@ package views.animation;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
+import controller.Constants;
 import model.tiles.Hole;
+import model.tiles.Key;
+import model.tiles.Lock;
 import model.tiles.Slide;
 import model.tiles.Teleport;
 import model.tiles.Tile;
@@ -132,12 +140,22 @@ public class RoomImage extends Image {
 				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 				g.setColor(Color.BLACK);
 				g.fillOval(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+			} else if (t instanceof Key) {
+				g.setColor(Color.LIGHT_GRAY);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				g.drawString("K", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+			} else if (t instanceof Lock) {
+				g.setColor(Color.LIGHT_GRAY);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				g.drawString("L", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
 			} else {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 			}
+
 			g.setColor(Color.BLACK);
-			//g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+			// g.drawString(String.valueOf(t.getPath()), t.getX() * scale + 10 + x, t.getY()
+			// * scale + 20 + y);
 		}
 		g.drawRect(x, y, scale * getxLength(), scale * getyLength());
 

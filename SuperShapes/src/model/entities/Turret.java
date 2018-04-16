@@ -12,6 +12,7 @@ public class Turret extends Entity {
 	public Turret(String roomId, int enemyCount, int x, int y, int ratio, int delay, char direction, Room room) {
 		super(roomId, enemyCount, x, y);
 		id += "t";
+		image = "turret.png";
 		this.ratio = ratio;
 		this.count = 0;
 		this.delay = delay;
