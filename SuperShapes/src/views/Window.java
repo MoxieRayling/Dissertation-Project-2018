@@ -14,10 +14,21 @@ import javax.swing.JPanel;
 
 import controller.Constants;
 import controller.Controller;
-import model.Entity;
 import model.Model;
-import model.Player;
 import model.Room;
+import model.entities.Entity;
+import model.entities.Player;
+import views.animation.Animation;
+import views.menus.CreateMenu;
+import views.menus.Editor;
+import views.menus.GameOverMenu;
+import views.menus.GameRulesMenu;
+import views.menus.LoadMenu;
+import views.menus.MapView;
+import views.menus.NewGameMenu;
+import views.menus.PauseMenu;
+import views.menus.SaveMenu;
+import views.menus.StartMenu;
 
 @SuppressWarnings("serial")
 public class Window extends JFrame implements View {
@@ -29,20 +40,26 @@ public class Window extends JFrame implements View {
 	private MapView map;
 	private PauseMenu pause;
 	private LoadMenu load;
+	private SaveMenu save;
+	private NewGameMenu ngMenu;
 	private JFrame frame;
 	private Boolean input = true;
-	private CreateGame create;
-	private GameRules gameRules;
+	private CreateMenu create;
+	private GameRulesMenu gameRules;
+	private GameOverMenu gameOver;
 	private List<JPanel> history = new ArrayList<JPanel>();
 
 	public Window() {
 		frame = this;
 		start = new StartMenu(this);
 		game = new Animation(this);
-		create = new CreateGame(this);
-		gameRules = new GameRules(this);
+		create = new CreateMenu(this);
+		gameRules = new GameRulesMenu(this);
 		pause = new PauseMenu(this);
 		load = new LoadMenu(this);
+		save = new SaveMenu(this);
+		ngMenu = new NewGameMenu(this);
+		gameOver = new GameOverMenu(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
@@ -153,6 +170,17 @@ public class Window extends JFrame implements View {
 		returnToGame();
 	}
 
+	public void gameOver() {
+		history.add(gameOver);
+		this.setSize(gameOver.getPreferredSize());
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(gameOver);
+		this.validate();
+		this.repaint();
+		gameOver.requestFocusInWindow();
+	}
+	
 	public void mainMenu() {
 		history.add(start);
 		this.setSize(start.getPreferredSize());
@@ -164,6 +192,17 @@ public class Window extends JFrame implements View {
 		start.requestFocusInWindow();
 	}
 
+	public void newGameMenu() {
+		history.add(ngMenu);
+		load.updateSaves();
+		this.setSize(ngMenu.getPreferredSize());
+		this.getContentPane().removeAll();
+		this.getContentPane().add(ngMenu);
+		this.validate();
+		this.repaint();
+		ngMenu.requestFocusInWindow();
+	}
+	
 	public void createGame() {
 		history.add(create);
 		this.setSize(create.getPreferredSize());
@@ -201,6 +240,7 @@ public class Window extends JFrame implements View {
 	}
 
 	public void pauseMenu() {
+		history.add(pause);
 		this.setSize(pause.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
@@ -266,6 +306,7 @@ public class Window extends JFrame implements View {
 
 	public void loadMenu() {
 		history.add(load);
+		load.updateSaves();
 		this.setSize(load.getPreferredSize());
 		this.getContentPane().removeAll();
 		this.getContentPane().add(load);
@@ -275,7 +316,13 @@ public class Window extends JFrame implements View {
 	}
 
 	public void saveMenu() {
-
+		history.add(save);
+		this.setSize(save.getPreferredSize());
+		this.getContentPane().removeAll();
+		this.getContentPane().add(save);
+		this.validate();
+		this.repaint();
+		save.requestFocusInWindow();
 	}
 
 	public void controls() {
@@ -334,10 +381,23 @@ public class Window extends JFrame implements View {
 	}
 
 	public void saveGame(String save) {
-
+		c.saveGame();
 	}
 
 	public void makeNewDir() {
 		c.makeNewDir();
+	}
+	
+
+	public void makeNewSave() {
+		c.makeNewSave();
+	}
+
+	public void endTurn() {
+		c.endTurn();
+	}
+
+	public void exit() {
+		System.exit(0);
 	}
 }

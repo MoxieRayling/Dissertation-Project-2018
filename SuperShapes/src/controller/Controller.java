@@ -24,7 +24,6 @@ public class Controller {
 
 	public void newGame() {
 		m = new GameModel(v);
-		m.newSaveData();
 	}
 
 	public void restart() {
@@ -100,5 +99,17 @@ public class Controller {
 
 	public void makeNewDir() {
 		m.makeNewDir();
+	}
+
+	public void saveGame() {
+		m.saveGame();
+	}
+
+	public void makeNewSave() {
+		m.makeNewSave();
+	}
+
+	public void endTurn() {
+		m.endTurn();
 	}
 }

@@ -7,11 +7,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import controller.Constants;
+import model.entities.Block;
+import model.entities.Entity;
+import model.entities.Ghost;
+import model.entities.Player;
+import model.entities.Snake;
+import model.entities.Turret;
+import model.tiles.EmptyTile;
+import model.tiles.Hole;
+import model.tiles.Slide;
+import model.tiles.Teleport;
+import model.tiles.Tile;
+import model.tiles.Wall;
 import observers.Observer;
 
 public class FileManager {
@@ -19,14 +29,6 @@ public class FileManager {
 	private int enemyCount = 0;
 
 	public FileManager() {
-	}
-
-	public void copyWorld() {
-		writeToFile(getWorldData(), Constants.gameDir + "/working.txt");
-	}
-
-	public void saveWorld() {
-		writeToFile(getWorkingData(), Constants.gameDir + "/world.txt");
 	}
 
 	private int getEnemyCount() {
@@ -54,34 +56,39 @@ public class FileManager {
 	}
 
 	public String getSaveData() {
-		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
+		String fileName = Constants.saveDir + "/save.txt";
 		return readFromFile(fileName).get(0);
 	}
 
 	public List<String> getWorldData() {
-		String fileName = Constants.gameDir + "/world.txt";
+		String fileName = Constants.saveDir + "/world.txt";
 		return readFromFile(fileName);
 	}
 
 	public List<String> getWorkingData() {
-		String fileName = Constants.gameDir + "/working.txt";
+		String fileName = Constants.saveDir + "/working.txt";
 		return readFromFile(fileName);
 	}
 
-	public void saveGame(Room r, Player player, int clock) {
-		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
-		String saveData = r.getId() + ":" + player.getX() + "," + player.getY() + ":" + clock;
+	public List<String> getMasterData() {
+		String fileName = Constants.gameDir + "/master.txt";
+		return readFromFile(fileName);
+	}
+
+	public void saveGame(Room r, Player player, int x, int y, int clock) {
+		String fileName = Constants.saveDir + "/save.txt";
+		String saveData = r.getId() + ":" + player.getX() + "," + player.getY() + ":" + x + "," + y + ":" + clock;
 		writeToFile(saveData, fileName);
 	}
 
 	public void newSaveData() {
-		String fileName = Constants.gameDir + "/saves/" + Constants.saveFile + ".txt";
-		String saveData = "0,0:0,0:0";
+		String fileName = Constants.saveDir + "/save.txt";
+		String saveData = "0,0:0,0:0,0:0";
 		writeToFile(saveData, fileName);
 	}
 
 	public String getRoomData(int x, int y) {
-		List<String> world = getWorldData();
+		List<String> world = getWorkingData();
 		String roomId = x + "," + y;
 		String result = "";
 		for (String s : world) {
@@ -117,7 +124,9 @@ public class FileManager {
 		if (params[1].length() > 1)
 			r.setEnemies(parseEntities(params[1].substring(1), x, y, r, o));
 		if (params[2].length() > 1)
-			r.setTiles(parseTiles(params[2].substring(1)));
+			for (Tile t : parseTiles(params[2].substring(1))) {
+				r.swapTile(t);
+			}
 
 		return r;
 	}
@@ -193,30 +202,30 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, Constants.gameDir + "/working.txt");
+		writeToFile(world, Constants.saveDir + "/working.txt");
 	}
 
 	public void exportWorking(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.gameDir + "/working.txt");
+		writeToFile(lines, Constants.saveDir + "/working.txt");
 	}
 
 	public void exportWorld(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.gameDir + "/working.txt");
-		writeToFile(lines, Constants.gameDir + "/world.txt");
+		writeToFile(lines, Constants.saveDir + "/working.txt");
+		writeToFile(lines, Constants.saveDir + "/world.txt");
 	}
 
 	public void exportMaster(String room) {
 		removeRoom(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.gameDir + "/working.txt");
-		writeToFile(lines, Constants.gameDir + "/world.txt");
+		writeToFile(lines, Constants.saveDir + "/working.txt");
+		writeToFile(lines, Constants.saveDir + "/world.txt");
 		writeToFile(lines, Constants.gameDir + "/master.txt");
 		System.out.println("exported");
 	}
@@ -248,7 +257,7 @@ public class FileManager {
 			System.out.println("rip block ints");
 		}
 		Block b = new Block(x + "," + y, enemyCount, bx, by);
-		if (params.length == 3) {
+		if (params.length == 3 && !params[3].equals("none")) {
 			b.setImage(params[2]);
 		}
 		return b;
@@ -267,7 +276,7 @@ public class FileManager {
 			System.out.println("rip ghost ints");
 		}
 		Ghost g = new Ghost(x + "," + y, enemyCount, bx, by, pause);
-		if (params.length == 4) {
+		if (params.length == 4 && !params[3].equals("none")) {
 			g.setImage(params[3]);
 		}
 		return g;
@@ -290,7 +299,7 @@ public class FileManager {
 		char direction = params[3].charAt(0);
 		r.getTile(tx, ty).setTrav(false);
 		Turret t = new Turret(x + "," + y, enemyCount, tx, ty, ratio, delay, direction, r);
-		if (params.length == 6) {
+		if (params.length == 6 && !params[3].equals("none")) {
 			t.setImage(params[5]);
 		}
 		return t;
@@ -309,7 +318,7 @@ public class FileManager {
 			System.out.println("rip snake ints");
 		}
 		Snake s = new Snake(x + "," + y, enemyCount, sx, sy, length, r, o);
-		if (params.length == 4) {
+		if (params.length == 4 && !params[3].equals("none")) {
 			s.setImage(params[3]);
 		}
 		return s;
@@ -344,8 +353,16 @@ public class FileManager {
 			System.out.println("rip hole ints");
 		}
 		Hole h = new Hole(x, y);
-		if (params.length == 3) {
-			h.setImage(params[2]);
+		if (!params[2].equals("none")) {
+			h.setImage(params[2].substring(1));
+		}
+		if (!params[3].equals("\"")) {
+			h.setText(params[3].substring(1));
+		}
+		if (params[4].equals("true")) {
+			h.setTextRead(true);
+		} else {
+			h.setTextRead(false);
 		}
 		return h;
 	}
@@ -366,8 +383,17 @@ public class FileManager {
 			System.out.println("rip tele ints");
 		}
 		Teleport t = new Teleport(x, y, tx, ty);
-		if (params.length == 4) {
-			t.setImage(params[3]);
+
+		if (!params[3].equals("none")) {
+			t.setImage(params[3].substring(1));
+		}
+		if (!params[4].equals("\"")) {
+			t.setText(params[4].substring(1));
+		}
+		if (params[5].equals("true")) {
+			t.setTextRead(true);
+		} else {
+			t.setTextRead(false);
 		}
 		return t;
 	}
@@ -383,8 +409,16 @@ public class FileManager {
 			System.out.println("rip slide ints");
 		}
 		Slide s = new Slide(x, y, params[2].charAt(0));
-		if (params.length == 4) {
-			s.setImage(params[3]);
+		if (!params[3].equals("none")) {
+			s.setImage(params[3].substring(1));
+		}
+		if (!params[4].equals("\"")) {
+			s.setText(params[4].substring(1));
+		}
+		if (params[5].equals("true")) {
+			s.setTextRead(true);
+		} else {
+			s.setTextRead(false);
 		}
 		return s;
 	}
@@ -400,8 +434,18 @@ public class FileManager {
 			System.out.println("rip wall ints");
 		}
 		Wall w = new Wall(x, y);
-		if (params.length == 3) {
-			w.setImage(params[2]);
+
+		if (!params[2].equals("none")) {
+			w.setImage(params[2].substring(1));
+		}
+		if (!params[3].equals("\"")) {
+			System.out.println(params[3]);
+			w.setText(params[3].substring(1));
+		}
+		if (params[4].equals("true")) {
+			w.setTextRead(true);
+		} else {
+			w.setTextRead(false);
 		}
 		return w;
 	}
@@ -417,8 +461,17 @@ public class FileManager {
 			System.out.println("rip empty ints");
 		}
 		EmptyTile t = new EmptyTile(x, y);
-		if (params.length == 3) {
-			t.setImage(params[2]);
+		if (!params[2].equals("none")) {
+			t.setImage(params[2].substring(1));
+		}
+		if (!params[3].equals("\"")) {
+			t.setText(params[3].substring(1));
+		}
+		System.out.println(params[3]);
+		if (params[4].equals("true")) {
+			t.setTextRead(true);
+		} else {
+			t.setTextRead(false);
 		}
 		return t;
 	}
@@ -472,18 +525,40 @@ public class FileManager {
 		return map;
 	}
 
-	public void makeNewDir() { 
+	public void makeNewDir() {
 		File dir = new File(Constants.gameDir);
 		dir.mkdir();
 		dir = new File(Constants.gameDir + "/saves");
+		dir.mkdir();
+		Constants.setSaveDir("save");
+		dir = new File(Constants.saveDir);
 		dir.mkdir();
 		dir = new File(Constants.gameDir + "/textures");
 		dir.mkdir();
 		List<String> world = new ArrayList<String>();
 		world.add("room 0,0 11,11 5,5,5,5;E;T");
-		writeToFile(world, Constants.gameDir + "/working.txt");
-		writeToFile(world, Constants.gameDir + "/world.txt");
+		writeToFile(world, Constants.saveDir + "/working.txt");
+		writeToFile(world, Constants.saveDir + "/world.txt");
 		writeToFile(world, Constants.gameDir + "/master.txt");
 		newSaveData();
+	}
+
+	public void makeNewSave() {
+		File dir = new File(Constants.gameDir);
+		dir.mkdir();
+		dir = new File(Constants.gameDir + "/textures");
+		dir.mkdir();
+		dir = new File(Constants.gameDir + "/saves");
+		dir.mkdir();
+		dir = new File(Constants.saveDir);
+		dir.mkdir();
+		List<String> world = this.getMasterData();
+		writeToFile(world, Constants.saveDir + "/working.txt");
+		writeToFile(world, Constants.saveDir + "/world.txt");
+		newSaveData();
+	}
+
+	public void overWriteWorking() {
+		writeToFile(getWorldData(), Constants.saveDir + "/working.txt");
 	}
 }

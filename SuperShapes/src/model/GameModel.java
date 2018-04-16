@@ -1,5 +1,6 @@
 package model;
 
+import model.entities.Player;
 import observers.Observer;
 
 public class GameModel extends Model {

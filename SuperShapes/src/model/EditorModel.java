@@ -1,5 +1,8 @@
 package model;
 
+import model.entities.Entity;
+import model.entities.Player;
+import model.tiles.Tile;
 import observers.Observer;
 
 public class EditorModel extends Model {

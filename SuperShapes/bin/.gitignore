@@ -1,3 +1,5 @@
-*
-!.gitignore
-/.gitignore
+/controller/
+/model/
+/views/
+/game1/
+/TutorialLand/

@@ -3,6 +3,16 @@ package model;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import controller.Constants;
+import model.entities.Entity;
+import model.entities.Ghost;
+import model.entities.Player;
+import model.entities.Shot;
+import model.tiles.Coin;
+import model.tiles.Hole;
+import model.tiles.Key;
+import model.tiles.Slide;
+import model.tiles.Teleport;
+import model.tiles.Tile;
 import observers.Observer;
 import observers.Subject;
 
@@ -18,7 +28,9 @@ public class Model implements Subject {
 	private String mode = "";
 	private int textLength = 50;
 	protected FileManager fileManager;
-	private String save = "";
+	private int respawnx = 0;
+	private int respawny = 0;
+	private boolean endTurn = false;
 
 	public Model(Observer v) {
 		this.v = v;
@@ -53,7 +65,7 @@ public class Model implements Subject {
 	}
 
 	public void loadGame() {
-		System.out.println(fileManager.getSaveData());
+		fileManager.overWriteWorking();
 		String[] saveData = fileManager.getSaveData().split(":");
 		changeRoom(saveData[0], false);
 		int x = 0;
@@ -61,7 +73,9 @@ public class Model implements Subject {
 		try {
 			x = Integer.parseInt(saveData[1].split(",")[0]);
 			y = Integer.parseInt(saveData[1].split(",")[1]);
-			setClock(Integer.parseInt(saveData[2]));
+			respawnx = Integer.parseInt(saveData[2].split(",")[0]);
+			respawny = Integer.parseInt(saveData[2].split(",")[1]);
+			setClock(Integer.parseInt(saveData[3]));
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
@@ -74,9 +88,6 @@ public class Model implements Subject {
 	protected Room loadRoom(String roomId) {
 		int[] coords = fileManager.idToCoords(roomId);
 		Room result = fileManager.makeRoom(coords[0], coords[1], player, v);
-		int[] exits = fileManager.generateExits(coords[0], coords[1]);
-		if (result == null)
-			result = new Room(coords[0], coords[1], 11, 11, exits, player, v);
 		return result;
 	}
 
@@ -148,37 +159,42 @@ public class Model implements Subject {
 
 	public void step(char direction) {
 		if (ghostCheck()) {
-			endTurn();
+			room.moveEnemies();
+			endTurn = true;
 			return;
 		}
 		int x = player.getX();
 		int y = player.getY();
 		Boolean pMoved = false;
-
+		System.out.println(room.getTile(x, y).getText());
 		if (tryExit(direction, x, y)) {
-		} else if (player.getFly() > 0 && move(direction, player.getX(), player.getY())) {
-			pMoved = true;
 		} else if (tryMove(direction, x, y)) {
 			pMoved = true;
 		}
 		if (pMoved) {
+			room.updatePath(player.getX(), player.getY());
+			room.moveEnemies();
 			if (player.getPause() <= 0)
-				endTurn();
+				endTurn = true;
 			player.step();
 		}
 	}
 
 	private Boolean tryExit(char direction, int x, int y) {
-		if (x == room.getxLength() - 1 && y == room.getExits()[1] && direction == 'E') {
+		if (x == room.getxLength() - 1 && y == room.getExits()[1] && direction == 'E'
+				&& fileManager.getRoomData(room.getX() + 1, room.getY()) != "") {
 			changeRoom(getAdjRoomId('E'), true);
 			return true;
-		} else if (x == 0 && y == room.getExits()[3] && direction == 'W') {
+		} else if (x == 0 && y == room.getExits()[3] && direction == 'W'
+				&& fileManager.getRoomData(room.getX() - 1, room.getY()) != "") {
 			changeRoom(getAdjRoomId('W'), true);
 			return true;
-		} else if (x == room.getExits()[0] && y == 0 && direction == 'N') {
+		} else if (x == room.getExits()[0] && y == 0 && direction == 'N'
+				&& fileManager.getRoomData(room.getX(), room.getY() - 1) != "") {
 			changeRoom(getAdjRoomId('N'), true);
 			return true;
-		} else if (x == room.getExits()[2] && y == room.getyLength() - 1 && direction == 'S') {
+		} else if (x == room.getExits()[2] && y == room.getyLength() - 1 && direction == 'S'
+				&& fileManager.getRoomData(room.getX(), room.getY() + 1) != "") {
 			changeRoom(getAdjRoomId('S'), true);
 			return true;
 		}
@@ -202,33 +218,17 @@ public class Model implements Subject {
 		return false;
 	}
 
-	private Boolean move(char direction, int x, int y) {
-		if (direction == 'N' && y - 1 >= 0) {
-			player.setLoc(x, y - 1);
-			return true;
-		} else if (direction == 'E' && x + 1 <= room.getxLength() - 1) {
-			player.setLoc(x + 1, y);
-			return true;
-		} else if (direction == 'S' && y + 1 <= room.getyLength() - 1) {
-			player.setLoc(x, y + 1);
-			return true;
-		} else if (direction == 'W' && x - 1 >= 0) {
-			player.setLoc(x - 1, y);
-			return true;
-		}
-		return false;
-	}
-
 	public void endTurn() {
-		room.updatePath(player.getX(), player.getY());
-		room.moveEnemies();
-		checkShield();
-		checkForDeath();
-		checkTile(room.getTile(player));
-		clock++;
-		if (!room.getTile(player).getTextRead())
-			this.setText(room.getTile(player).getText());
-		notifyObserver();
+		if (endTurn) {
+			checkShield();
+			checkForDeath();
+			checkTile(room.getTile(player));
+			clock++;
+			if (!room.getTile(player).getTextRead())
+				this.setText(room.getTile(player).getText().replaceAll("_", " "));
+			notifyObserver();
+			endTurn = false;
+		}
 	}
 
 	private void checkTile(Tile t) {
@@ -242,8 +242,6 @@ public class Model implements Subject {
 			player.die();
 		} else if (t instanceof Key) {
 
-		} else if (t instanceof Save) {
-
 		} else if (t instanceof Coin) {
 
 		}
@@ -251,48 +249,64 @@ public class Model implements Subject {
 	}
 
 	public void resetRoom() {
-		System.out.println("reset");
 		player.setDead(false);
-		setRoom(loadRoom(room.getId()));
-		switch (player.getLastEntrance()) {
-		case 'N':
-			player.setLoc(5, 0);
-			break;
-		case 'E':
-			player.setLoc(room.getxLength() - 1, 5);
-			break;
-		case 'S':
-			player.setLoc(5, room.getyLength() - 1);
-			break;
-		case 'W':
-			player.setLoc(0, 5);
-			break;
-		default:
-			break;
-		}
-		player.resetPos();
+		player.setLoc(respawnx, respawny);
+		room = this.loadRoom(room.getId());
 		notifyObserver();
 	}
 
 	public void changeRoom(String roomId, Boolean resetPos) {
-		System.out.println("change");
 		Room temp = loadRoom(roomId);
 		int x = room.getX() - temp.getX();
 		int y = room.getY() - temp.getY();
 		setRoom(temp);
+		player.setTeleport(true);
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
-				player.setLoc(room.getxLength() - 1, room.getExits()[1]);
+				if (room.getExits()[1] == -1) {
+					player.setLoc(0, room.getyLength() / 2);
+					respawnx = 0;
+					respawny = room.getyLength() / 2;
+				} else {
+					player.setLoc(room.getxLength() - 1, room.getExits()[1]);
+					respawnx = room.getxLength()-1;
+					respawny = room.getExits()[1];
+				}
 			} else {
-				player.setLoc(0, room.getExits()[3]);
+				if (room.getExits()[3] == -1) {
+					player.setLoc(room.getxLength() - 1, room.getyLength() / 2);
+					respawnx = room.getxLength()-1;
+					respawny = room.getyLength() / 2;
+				} else {
+					player.setLoc(0, room.getExits()[3]);
+					respawnx = 0;
+					respawny = room.getExits()[3];
+				}
 			}
 		} else {
 			if (y > 0) {
-				player.setLoc(room.getExits()[2], room.getyLength() - 1);
+				if (room.getExits()[2] == -1) {
+					player.setLoc(room.getxLength() / 2, room.getyLength() - 1);
+					respawnx = room.getxLength() / 2;
+					respawny = room.getyLength() - 1;
+				} else {
+					player.setLoc(room.getExits()[2], room.getyLength() - 1);
+					respawnx = room.getExits()[2];
+					respawny = room.getyLength() - 1;
+				}
 			} else {
-				player.setLoc(room.getExits()[0], 0);
+				if (room.getExits()[0] == -1) {
+					player.setLoc(room.getxLength() / 2, 0);
+					respawnx = room.getxLength();
+					respawny = 0;
+				} else {
+					player.setLoc(room.getExits()[0], 0);
+					respawnx = room.getExits()[0];
+					respawny = 0;
+				}
 			}
 		}
+		player.setTeleport(false);
 		player.setRoomId(room.getId());
 		room.updatePath(player.getX(), player.getY());
 		notifyObserver();
@@ -354,51 +368,62 @@ public class Model implements Subject {
 	}
 
 	public void input(int i) {
+
 		if (mode == "game") {
-			switch (i) {
-			case 37:
-				step('W');
-				break;
-			case 38:
-				step('N');
-				break;
-			case 39:
-				step('E');
-				break;
-			case 40:
-				step('S');
-				break;
-			case 70:
-				fly();
-				break;
-			case 82:
-				rewind();
-				break;
-			case 80:
-				pauseTime();
-				break;
-			case 83:
-				shield();
-				break;
-			default:
-				break;
-			}
+			gameInput(i);
 		} else if (mode == "text") {
-			if (textToShow == "") {
-				setText("");
-				room.getTile(player).setTextRead(true);
-				mode = "game";
-				return;
-			}
-			if (textToShow.length() < textLength) {
-				setText(textToShow);
-				textToShow = "";
-			} else {
-				String text = textToShow.substring(0, textLength);
-				setText(textToShow.substring(0, text.lastIndexOf(" ")));
-				textToShow = textToShow.substring(text.lastIndexOf(" ") + 1);
-			}
-			System.out.println(text);
+			textInput();
+		}
+	}
+
+	private void gameInput(int i) {
+		switch (i) {
+		case 37:
+			step('W');
+			break;
+		case 38:
+			step('N');
+			break;
+		case 39:
+			step('E');
+			break;
+		case 40:
+			step('S');
+			break;
+		case 70:
+			fly();
+			break;
+		case 82:
+			rewind();
+			break;
+		case 80:
+			pauseTime();
+			break;
+		case 83:
+			shield();
+			break;
+		default:
+			break;
+
+		}
+
+	}
+
+	private void textInput() {
+		if (textToShow == "") {
+			setText("");
+			room.getTile(player).setTextRead(true);
+			fileManager.exportWorld(room.exportRoom());
+			mode = "game";
+			return;
+		}
+		if (textToShow.length() < textLength) {
+			setText(textToShow);
+			textToShow = "";
+		} else {
+			String text = textToShow.substring(0, textLength);
+			setText(textToShow.substring(0, text.lastIndexOf(" ")));
+			textToShow = textToShow.substring(text.lastIndexOf(" ") + 1);
 
 		}
 	}
@@ -421,5 +446,13 @@ public class Model implements Subject {
 
 	public void makeNewDir() {
 		fileManager.makeNewDir();
+	}
+
+	public void saveGame() {
+		fileManager.saveGame(room, player, respawnx, respawny, clock);
+	}
+
+	public void makeNewSave() {
+		fileManager.makeNewSave();
 	}
 }

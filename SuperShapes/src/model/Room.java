@@ -4,7 +4,17 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import controller.Constants;
+import model.entities.Block;
+import model.entities.Entity;
+import model.entities.Ghost;
+import model.entities.Player;
+import model.entities.Shot;
+import model.entities.Snake;
+import model.entities.Turret;
+import model.tiles.EmptyTile;
+import model.tiles.Key;
+import model.tiles.Tile;
+import model.tiles.Wall;
 import observers.Observer;
 import observers.Subject;
 
@@ -81,16 +91,22 @@ public class Room implements Subject {
 			exits[1] -= 1;
 		if (exits[3] >= yLength)
 			exits[3] -= 1;
+		for (Entity e : enemies) {
+			if (e.getX() > xLength - 1 || e.getY() > yLength - 1) {
+				this.removeEntity(e);
+			}
+		}
+		this.emptyTrash();
+
 		List<Tile> tiles = new ArrayList<Tile>();
 		for (int i = 0; i < yLength; i++) {
 			for (int j = 0; j < xLength; j++) {
-				if (getTile(j, i) != null) {
-					tiles.add(getTile(j, i));
-				} else {
+				Tile t = getTile(j, i);
+				if (t != null) {
+					tiles.add(t);
+				} else
 					tiles.add(new EmptyTile(j, i));
-				}
 			}
-
 		}
 		setTiles(tiles);
 	}
@@ -105,7 +121,7 @@ public class Room implements Subject {
 		}
 		result += ";T";
 		for (Tile t : tiles) {
-			if (!(t instanceof EmptyTile))
+			if (!(t instanceof EmptyTile && t.getImage().isEmpty() && t.getText().isEmpty()))
 				result += t.toString() + ":";
 		}
 		return result;
@@ -114,15 +130,6 @@ public class Room implements Subject {
 	public Boolean containsKey() {
 		for (Tile t : tiles) {
 			if (t instanceof Key) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Boolean containsSave() {
-		for (Tile t : tiles) {
-			if (t instanceof Save) {
 				return true;
 			}
 		}
@@ -167,7 +174,6 @@ public class Room implements Subject {
 		for (Entity e : enemies) {
 			if (e.getX() == x && e.getY() == y) {
 				e.delete();
-				// System.out.println("deleted " + e.toString());
 				removeEntity(e);
 			}
 		}
@@ -206,9 +212,7 @@ public class Room implements Subject {
 	}
 
 	public void setTiles(List<Tile> tiles) {
-		for(Tile t : tiles) {
-			swapTile(t);
-		}
+		this.tiles = tiles;
 		notifyObserver();
 	}
 
@@ -388,12 +392,7 @@ public class Room implements Subject {
 				t.setOccupied(true);
 				return true;
 			}
-		} /*
-			 * for (Tile t : adj) { if (!s.getMoved() && t.getTrav() && !t.getOccupied() &&
-			 * !s.checkOccupied(t.getX(), t.getY())) { tile.setOccupied(false);
-			 * s.move(t.getX(), t.getY()); s.setMoved(true); t.setOccupied(true); return
-			 * true; } }
-			 */
+		} 
 		return false;
 	}
 
