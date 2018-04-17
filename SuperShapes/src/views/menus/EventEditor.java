@@ -145,6 +145,7 @@ public class EventEditor extends JPanel implements ItemListener {
 			}
 		});
 		this.add(back);
+		//hi
 
 		newRoom = new JCheckBox("Add New Room");
 		newRoom.setBounds(100, 500, 150, 20);
