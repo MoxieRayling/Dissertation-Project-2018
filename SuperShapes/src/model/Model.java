@@ -286,7 +286,7 @@ public class Model implements Subject {
 		if (Math.abs(x) >= Math.abs(y) && resetPos) {
 			if (x > 0) {
 				if (room.getExits()[1] == -1) {
-					player.setLoc(0, room.getyLength() / 2);
+					player.setLoc(room.getxLength() - 1, room.getyLength() / 2);
 					player.setRespawnx(0);
 					player.setRespawny(room.getyLength() / 2);
 				} else {
@@ -296,7 +296,7 @@ public class Model implements Subject {
 				}
 			} else {
 				if (room.getExits()[3] == -1) {
-					player.setLoc(room.getxLength() - 1, room.getyLength() / 2);
+					player.setLoc(0, room.getyLength() / 2);
 					player.setRespawnx(room.getxLength() - 1);
 					player.setRespawny(room.getyLength() / 2);
 				} else {

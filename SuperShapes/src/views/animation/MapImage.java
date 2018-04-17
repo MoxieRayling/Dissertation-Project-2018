@@ -36,8 +36,8 @@ public class MapImage extends Image{
 					if (map[i][j].contains("K")) {
 						tile += "K";
 					}
-					if (map[i][j].contains("S")) {
-						tile += "S";
+					if (map[i][j].contains("C")) {
+						tile += "C";
 					}
 				}
 				g.drawString(tile, i * scale + getXPos() + x + scale / 4,

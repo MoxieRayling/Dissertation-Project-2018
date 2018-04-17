@@ -21,7 +21,6 @@ public class SaveMenu extends JPanel {
 
 	private int sizex = 200;
 	private int sizey = 200;
-	private String game = "";
 	private JComboBox<String> saves;
 	private JTextField newSaveText = new JTextField();
 	private JButton overwrite = new JButton("Overwrite");

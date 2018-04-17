@@ -107,7 +107,8 @@ public class Editor extends JPanel implements ItemListener {
 	private int[] size = { 11, 11 };
 	private JCheckBox newRoom;
 	private JCheckBox deleteRoom;
-
+	private JButton finish;
+	private JButton back;
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
@@ -122,20 +123,38 @@ public class Editor extends JPanel implements ItemListener {
 	}
 
 	private void initUI() {
+		finish = new JButton("Finish");
+		finish.setBounds(1000, 530, 100, 20);
+		finish.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.exportWorld();
+				w.mainMenu();
+			}
+		});
+		this.add(finish);
+		back = new JButton("Back");
+		back.setBounds(100, 530, 100, 20);
+		back.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.back();
+			}
+		});
+		this.add(back);
+		
 		newRoom = new JCheckBox("Add New Room");
 		newRoom.setBounds(100, 500, 150, 20);
+		newRoom.setOpaque(false);
 		this.add(newRoom);
 
 		deleteRoom = new JCheckBox("Delete Room");
 		deleteRoom.setBounds(300, 500, 150, 20);
-		deleteRoom.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		deleteRoom.setOpaque(false);
 		this.add(deleteRoom);
 
 		roomXSlider = new JSlider(3, 20, 11);
+		roomXSlider.setOpaque(false);
 		roomXSlider.setBounds(750, 500, 100, 20);
 		roomXSlider.addChangeListener(new ChangeListener() {
 
@@ -149,6 +168,7 @@ public class Editor extends JPanel implements ItemListener {
 		});
 		this.add(roomXSlider);
 		roomYSlider = new JSlider(3, 20, 11);
+		roomYSlider.setOpaque(false);
 		roomYSlider.setBounds(950, 500, 100, 20);
 		roomYSlider.addChangeListener(new ChangeListener() {
 
@@ -424,14 +444,18 @@ public class Editor extends JPanel implements ItemListener {
 		turretDirectionBox = new JComboBox<String>(directions);
 		turretOptions.add(turretDirectionBox);
 		turretRate = new JSlider(1, 11, 3);
+		turretRate.setOpaque(false);
 		turretOptions.add(turretRate);
 		turretDelay = new JSlider(0, 122, 0);
+		turretDelay.setOpaque(false);
 		turretOptions.add(turretDelay);
 
 		snakeSize = new JSlider(1, 122, 5);
+		snakeSize.setOpaque(false);
 		snakeOptions.add(snakeSize);
 
 		ghostPower = new JSlider(1, 122, 3);
+		ghostPower.setOpaque(false);
 		ghostOptions.add(ghostPower);
 
 		entityComponents.add(blockOptions);
@@ -448,7 +472,9 @@ public class Editor extends JPanel implements ItemListener {
 		entityImage.setVisible(false);
 
 		teleportX = new JSlider(0, 10, 0);
+		teleportX.setOpaque(false);
 		teleportY = new JSlider(0, 10, 0);
+		teleportY.setOpaque(false);
 		teleportOptions.add(teleportX);
 		teleportOptions.add(teleportY);
 		slideDirectionBox = new JComboBox<String>(directions);
@@ -626,7 +652,7 @@ public class Editor extends JPanel implements ItemListener {
 			switch (tilesBox.getSelectedItem().toString()) {
 			case "Empty":
 				result[1] = "empty " + selectedX + "," + selectedY + " " + tileImage.getSelectedItem() + " \""
-						+ tileText.getText() + " " + String.valueOf(tileText.getText().isEmpty());
+						+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 				break;
 			case "Wall":
 				result[1] = "wall " + selectedX + "," + selectedY + " " + tileImage.getSelectedItem() + " \""

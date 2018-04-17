@@ -577,11 +577,11 @@ public class FileManager {
 				int[] coords = idToCoords(line.split(" ")[1]);
 				if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
 					map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
-					if (line.contains("key")) {
+					if (line.contains("key ")) {
 						map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
 					}
-					if (line.contains("save")) {
-						map[coords[0] + 5 - x][coords[1] + 5 - y] += "S";
+					if (line.contains("coin ")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "C";
 					}
 				}
 			}
