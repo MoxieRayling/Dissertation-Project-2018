@@ -12,6 +12,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import controller.Constants;
+import model.tiles.Coin;
 import model.tiles.Hole;
 import model.tiles.Key;
 import model.tiles.Lock;
@@ -143,10 +144,17 @@ public class RoomImage extends Image {
 			} else if (t instanceof Key) {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				g.setColor(Color.BLACK);
 				g.drawString("K", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+			} else if (t instanceof Coin) {
+				g.setColor(Color.LIGHT_GRAY);
+				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				g.setColor(Color.BLACK);
+				g.drawString("C", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
 			} else if (t instanceof Lock) {
 				g.setColor(Color.LIGHT_GRAY);
 				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				g.setColor(Color.BLACK);
 				g.drawString("L", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
 			} else {
 				g.setColor(Color.LIGHT_GRAY);

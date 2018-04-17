@@ -23,10 +23,7 @@ public class Model implements Subject {
 	protected Observer v;
 	protected Player player;
 	private String roomId;
-	private int clock = 0;
 	private Boolean input = true;
-	private String text = "";
-	private String textToShow = "";
 	private String mode = "";
 	private int textLength = 50;
 	protected FileManager fileManager;
@@ -55,15 +52,6 @@ public class Model implements Subject {
 		notifyObserver();
 	}
 
-	public void setClock(int clock) {
-		this.clock = clock;
-		notifyObserver();
-	}
-
-	public int getClock() {
-		return clock;
-	}
-
 	public void loadGame() {
 		fileManager.overWriteWorking();
 		String[] saveData = fileManager.getSaveData().split(":");
@@ -75,7 +63,7 @@ public class Model implements Subject {
 			y = Integer.parseInt(saveData[1].split(",")[1]);
 			player.setRespawnx(Integer.parseInt(saveData[2].split(",")[0]));
 			player.setRespawny(Integer.parseInt(saveData[2].split(",")[1]));
-			setClock(Integer.parseInt(saveData[3]));
+			room.setClock(Integer.parseInt(saveData[3]));
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
@@ -243,9 +231,8 @@ public class Model implements Subject {
 			checkShield();
 			checkForDeath();
 			checkTile(room.getTile(player));
-			clock++;
-			if (!room.getTile(player).getTextRead())
-				this.setText(room.getTile(player).getText().replaceAll("_", " "));
+			room.incClock();
+			room.setText(room.getTile(player).getText().replaceAll("_", " "));
 			notifyObserver();
 			endTurn = false;
 		}
@@ -265,7 +252,9 @@ public class Model implements Subject {
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
 			fileManager.exportWorking(room.exportRoom());
 		} else if (t instanceof Coin) {
-
+			player.addCoin();
+			room.swapTile(new EmptyTile(player.getX(), player.getY()));
+			fileManager.exportWorking(room.exportRoom());
 		}
 
 	}
@@ -283,7 +272,17 @@ public class Model implements Subject {
 		int y = room.getY() - temp.getY();
 		setRoom(temp);
 		player.setTeleport(true);
-		if (Math.abs(x) >= Math.abs(y) && resetPos) {
+		if (resetPos) {
+			resetPos(x, y);
+		}
+		player.setTeleport(false);
+		player.setRoomId(room.getId());
+		room.updatePath(player.getX(), player.getY());
+		notifyObserver();
+	}
+
+	private void resetPos(int x, int y) {
+		if (Math.abs(x) >= Math.abs(y)) {
 			if (x > 0) {
 				if (room.getExits()[1] == -1) {
 					player.setLoc(room.getxLength() - 1, room.getyLength() / 2);
@@ -328,10 +327,6 @@ public class Model implements Subject {
 				}
 			}
 		}
-		player.setTeleport(false);
-		player.setRoomId(room.getId());
-		room.updatePath(player.getX(), player.getY());
-		notifyObserver();
 	}
 
 	public String getRoomId() {
@@ -379,26 +374,7 @@ public class Model implements Subject {
 		player.shield();
 	}
 
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-		setMode("text");
-		notifyObserver();
-	}
-
 	public void input(int i) {
-
-		if (mode == "game") {
-			gameInput(i);
-		} else if (mode == "text") {
-			textInput();
-		}
-	}
-
-	private void gameInput(int i) {
 		switch (i) {
 		case 37:
 			step('W');
@@ -431,25 +407,6 @@ public class Model implements Subject {
 
 	}
 
-	private void textInput() {
-		if (textToShow == "") {
-			setText("");
-			room.getTile(player).setTextRead(true);
-			fileManager.exportWorld(room.exportRoom());
-			mode = "game";
-			return;
-		}
-		if (textToShow.length() < textLength) {
-			setText(textToShow);
-			textToShow = "";
-		} else {
-			String text = textToShow.substring(0, textLength);
-			setText(textToShow.substring(0, text.lastIndexOf(" ")));
-			textToShow = textToShow.substring(text.lastIndexOf(" ") + 1);
-
-		}
-	}
-
 	public void newSaveData() {
 		fileManager.newSaveData();
 	}
@@ -471,10 +428,15 @@ public class Model implements Subject {
 	}
 
 	public void saveGame() {
-		fileManager.saveGame(room, player.toString(), clock);
+		fileManager.saveGame(room, player.toString(), room.getClock());
 	}
 
 	public void makeNewSave() {
 		fileManager.makeNewSave();
+	}
+
+	public void setTextRead() {
+		room.setText("");
+		room.getTile(player).setTextRead(true);
 	}
 }

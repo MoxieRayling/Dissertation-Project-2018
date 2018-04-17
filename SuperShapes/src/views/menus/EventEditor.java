@@ -46,7 +46,7 @@ import views.animation.SnakeImage;
 import views.animation.TurretImage;
 
 @SuppressWarnings("serial")
-public class Editor extends JPanel implements ItemListener {
+public class EventEditor extends JPanel implements ItemListener {
 	private Timer timer;
 	private Window w;
 	private int sizex = 1200;
@@ -109,8 +109,9 @@ public class Editor extends JPanel implements ItemListener {
 	private JCheckBox deleteRoom;
 	private JButton finish;
 	private JButton back;
+	private String eventName = "";
 
-	public Editor(Window w) {
+	public EventEditor(Window w) {
 		this.w = w;
 		this.setLayout(null);
 		initUI();
@@ -129,7 +130,8 @@ public class Editor extends JPanel implements ItemListener {
 		finish.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.exportWorld();
+				w.exportEvent(eventName);
+				//w.exportWorld();
 				w.mainMenu();
 			}
 		});
@@ -261,7 +263,7 @@ public class Editor extends JPanel implements ItemListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.exportWorld();
+				//w.exportWorld();
 			}
 		});
 		this.add(export);
@@ -301,7 +303,7 @@ public class Editor extends JPanel implements ItemListener {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					w.exportWorld();
+					//w.exportWorld();
 					selectedRoomX = x;
 					selectedRoomY = y;
 					if (newRoom.isSelected()) {
@@ -314,7 +316,7 @@ public class Editor extends JPanel implements ItemListener {
 					} else {
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					}
-					w.exportWorld();
+					//w.exportWorld();
 				}
 			});
 			this.add(b);

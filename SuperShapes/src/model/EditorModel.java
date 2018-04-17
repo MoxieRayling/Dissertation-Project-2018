@@ -73,4 +73,8 @@ public class EditorModel extends Model {
 		}
 	}
 
+	public void exportEvent(String event) {
+		fileManager.exportEvent(room.exportRoom(), event);
+	}
+
 }

@@ -25,6 +25,7 @@ public class Player extends Entity {
 	private int respawnx = 0;
 	private int respawny = 0;
 	private List<String> keys = new ArrayList<String>();
+	private int coins = 0;
 
 	public Player(String room, int x, int y, int lives) {
 		super(room, 1, x, y);
@@ -313,6 +314,15 @@ public class Player extends Entity {
 			}
 		}
 		return false;
+	}
+
+	public void addCoin() {
+		coins++;
+		notifyObserver();
+	}
+	
+	public int getCoins() {
+		return coins;
 	}
 
 }

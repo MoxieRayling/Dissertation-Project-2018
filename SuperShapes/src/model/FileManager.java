@@ -16,6 +16,7 @@ import model.entities.Ghost;
 import model.entities.Player;
 import model.entities.Snake;
 import model.entities.Turret;
+import model.tiles.Coin;
 import model.tiles.EmptyTile;
 import model.tiles.Hole;
 import model.tiles.Key;
@@ -351,6 +352,8 @@ public class FileManager {
 				return parseKey(params);
 			} else if (params[0].startsWith("lock")) {
 				return parseLock(params);
+			} else if (params[0].startsWith("coin")) {
+				return parseCoin(params);
 			}
 		}
 		return null;
@@ -464,6 +467,32 @@ public class FileManager {
 		return w;
 	}
 
+	public Tile parseCoin(String[] params) {
+		int x = 0;
+		int y = 0;
+		String[] coords = params[1].split(",");
+		try {
+			x = Integer.parseInt(coords[0]);
+			y = Integer.parseInt(coords[1]);
+		} catch (NumberFormatException e) {
+			System.out.println("rip wall ints");
+		}
+		Coin c = new Coin(x, y);
+
+		if (!params[2].equals("none")) {
+			c.setImage(params[2]);
+		}
+		if (!params[3].equals("\"")) {
+			c.setText(params[3].substring(1));
+		}
+		if (params[4].equals("true")) {
+			c.setTextRead(true);
+		} else {
+			c.setTextRead(false);
+		}
+		return c;
+	}
+
 	public Tile parseEmptyTile(String[] params) {
 		int x = 0;
 		int y = 0;
@@ -480,7 +509,7 @@ public class FileManager {
 		}
 		//System.out.println("p3 " +	params[3]);
 		if (!params[3].equals("")) {
-			t.setText(params[3].substring(1));
+			t.setText(params[3]);
 		}
 		if (params[4].equals("true")) {
 			t.setTextRead(true);
@@ -592,6 +621,8 @@ public class FileManager {
 	public void makeNewDir() {
 		File dir = new File(Constants.gameDir);
 		dir.mkdir();
+		dir = new File(Constants.gameDir + "/events");
+		dir.mkdir();
 		dir = new File(Constants.gameDir + "/saves");
 		dir.mkdir();
 		Constants.setSaveDir("save");
@@ -612,6 +643,8 @@ public class FileManager {
 		dir.mkdir();
 		dir = new File(Constants.gameDir + "/textures");
 		dir.mkdir();
+		dir = new File(Constants.gameDir + "/events");
+		dir.mkdir();
 		dir = new File(Constants.gameDir + "/saves");
 		dir.mkdir();
 		dir = new File(Constants.saveDir);
@@ -624,5 +657,21 @@ public class FileManager {
 
 	public void overWriteWorking() {
 		writeToFile(getWorldData(), Constants.saveDir + "/working.txt");
+	}
+
+	
+	public void exportEvent(String exportRoom, String event) {
+		
+	}
+	
+	public void removeFromEvent(String id, String event) {
+		List<String> world = getWorkingData();
+		for (String s : world) {
+			if (s.startsWith(id)) {
+				world.set(world.indexOf(s), "xxx");
+			}
+		}
+		world.remove("xxx");
+		writeToFile(world, Constants.gameDir + "/events/" + event + ".txt");
 	}
 }

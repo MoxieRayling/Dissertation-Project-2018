@@ -112,4 +112,12 @@ public class Controller {
 	public void endTurn() {
 		m.endTurn();
 	}
+
+	public void setTextRead() {
+		m.setTextRead();
+	}
+
+	public void exportEvent(String event) {
+		((EditorModel) m).exportEvent(event);
+	}
 }

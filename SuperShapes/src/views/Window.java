@@ -47,6 +47,7 @@ public class Window extends JFrame implements View {
 	private CreateMenu create;
 	private GameRulesMenu gameRules;
 	private GameOverMenu gameOver;
+	private String mode = "game";
 	private List<JPanel> history = new ArrayList<JPanel>();
 
 	public Window() {
@@ -66,21 +67,27 @@ public class Window extends JFrame implements View {
 		this.pack();
 		this.setVisible(true);
 		game.addKeyListener(new KeyListener() {
+
 			@Override
 			public void keyReleased(KeyEvent e) {
+				if (mode.equals("text")) {
+					game.nextText();
+				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (input) {
 					if (getContentPane().contains(game.getLocation())) {
-						if (e.getKeyChar() == 'm') {
-							map();
-						} else if (e.getKeyCode() == 27) {
-							pauseMenu();
-						} else {
-							c.Input(e.getKeyCode());
-							input = false;
+						if (mode.equals("game")) {
+							if (e.getKeyChar() == 'm') {
+								map();
+							} else if (e.getKeyCode() == 27) {
+								pauseMenu();
+							} else {
+								c.Input(e.getKeyCode());
+								input = false;
+							}
 						}
 					}
 				}
@@ -109,7 +116,7 @@ public class Window extends JFrame implements View {
 			public void componentResized(ComponentEvent arg0) {
 				game.setSize(frame.getWidth(), frame.getHeight());
 				if (c != null) {
-					//c.notifyObservers();
+					// c.notifyObservers();
 				}
 			}
 
@@ -135,7 +142,6 @@ public class Window extends JFrame implements View {
 		Object o = e.getSource();
 		if (o instanceof Model) {
 			setInput(((Model) o).getInput());
-			game.modelUpdate((Model) o);
 		} else if (o instanceof Room) {
 			game.roomUpdate((Room) o);
 			if (editor != null)
@@ -180,7 +186,7 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		gameOver.requestFocusInWindow();
 	}
-	
+
 	public void mainMenu() {
 		history.add(start);
 		this.setSize(start.getPreferredSize());
@@ -202,7 +208,7 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		ngMenu.requestFocusInWindow();
 	}
-	
+
 	public void createGame() {
 		history.add(create);
 		this.setSize(create.getPreferredSize());
@@ -387,7 +393,6 @@ public class Window extends JFrame implements View {
 	public void makeNewDir() {
 		c.makeNewDir();
 	}
-	
 
 	public void makeNewSave() {
 		c.makeNewSave();
@@ -399,5 +404,18 @@ public class Window extends JFrame implements View {
 
 	public void exit() {
 		System.exit(0);
+	}
+
+	public void setTextRead(boolean b) {
+		this.mode = "game";
+		c.setTextRead();
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public void exportEvent(String event) {
+		c.exportEvent(event);
 	}
 }

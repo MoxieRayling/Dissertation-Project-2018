@@ -31,7 +31,8 @@ public class CreateMenu extends JPanel {
 					Constants.setGameDir(newGame.getText());
 					Constants.setSaveDir("save");
 					w.makeNewDir();
-					w.gameRules();
+					//w.gameRules();
+					w.editor();
 				}
 			}
 		});

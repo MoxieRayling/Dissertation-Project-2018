@@ -28,6 +28,8 @@ public class Room implements Subject {
 	private int xLength = 11;
 	private int yLength = 11;
 	private int[] exits = { -1, -1, -1, -1 };
+	private int clock = 0;
+	private String text = "";
 	private Player player;
 	private String id;
 	private List<Entity> remove = new ArrayList<Entity>();
@@ -62,6 +64,15 @@ public class Room implements Subject {
 			}
 		}
 		this.addObserver(o);
+	}
+
+	public void incClock() {
+		this.clock++;
+		notifyObserver();
+	}
+
+	public int getClock() {
+		return clock;
 	}
 
 	public void setExit(int index, int coord) {
@@ -127,7 +138,7 @@ public class Room implements Subject {
 					System.out.println("text is:" + t.getText() + "!");
 					result += t.toString() + ":";
 				}
-			} else 
+			} else
 				result += t.toString() + ":";
 		}
 		return result;
@@ -523,5 +534,18 @@ public class Room implements Subject {
 
 	public List<Observer> getObservers() {
 		return observers;
+	}
+
+	public void setClock(int clock) {
+		this.clock = clock;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+		notifyObserver();
 	}
 }

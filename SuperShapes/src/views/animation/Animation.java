@@ -38,9 +38,11 @@ public class Animation extends JPanel {
 	private int rewindCooldown = 0;
 	private int fly = 0;
 	private int pause = 0;
+	private int coins = 0;
 	private Boolean shield = false;
 	private Window w;
-	private String text = "";
+	private String bufferText = "";
+	private String displayText = "";
 
 	public Animation(Window w) {
 		this.w = w;
@@ -83,6 +85,10 @@ public class Animation extends JPanel {
 	}
 
 	public void roomUpdate(Room r) {
+		if (!r.getText().equals("")) {
+			setBufferText(r.getText());
+			w.setMode("text");
+		}
 		if (roomId != r.getId()) {
 			setScale(Math.max(r.getxLength(), r.getyLength()));
 			List<Image> remove = new ArrayList<Image>();
@@ -104,6 +110,7 @@ public class Animation extends JPanel {
 	}
 
 	public void playerUpdate(Player play) {
+		coins = play.getCoins();
 		lives = play.getLives();
 		fly = play.getFly();
 		flyCooldown = play.getFlyCooldown();
@@ -128,11 +135,6 @@ public class Animation extends JPanel {
 		player.setNoCollide(play.getFly() > 0);
 		player.next(play.getX(), play.getY(), play.getTeleport());
 		player.setDead(play.getDead());
-	}
-
-	public void modelUpdate(Model model) {
-		clock = model.getClock();
-		text = model.getText();
 	}
 
 	public void entityUpdate(Entity e) {
@@ -284,11 +286,11 @@ public class Animation extends JPanel {
 		g.setColor(Color.BLACK);
 
 		drawHUD(g, columns, rows);
-		if (text != "") {
+		if (displayText != "") {
 			g.setColor(new Color(0, 0, 0, 200));
 			g.fillRect(scale, scale * room.getyLength(), scale * room.getxLength(), scale);
 			g.setColor(Color.WHITE);
-			g.drawString(text, scale + 20, scale * 11 + 20);
+			g.drawString(displayText, scale + 20, scale * 11 + 20);
 		}
 		timer.start();
 	}
@@ -297,6 +299,7 @@ public class Animation extends JPanel {
 		g.setColor(Color.WHITE);
 		g.drawString(String.valueOf("Lives: " + lives), columns[0], rows[0]);
 		g.drawString(String.valueOf("Steps: " + clock), columns[1], rows[0]);
+		g.drawString(String.valueOf("Coins: " + coins), columns[3], rows[0]);
 		if (Constants.flight) {
 			if (flyCooldown > 0) {
 				g.setColor(Color.RED);
@@ -347,6 +350,33 @@ public class Animation extends JPanel {
 	}
 
 	public void nextText() {
+		if (bufferText.equals("")) {
+			setDisplayText("");
+			w.setTextRead(true);
+		} else {
+			String text = getBufferText();
+			int end = 0;
+			if (text.length() >= 50) {
+				end = text.substring(0, 50).lastIndexOf(" ");
+				setDisplayText(text.substring(0, end));
+				setBufferText(text.substring(end + 1));
+			} else {
+				setDisplayText(text);
+				setBufferText("");
+			}
+		}
+	}
 
+	public String getBufferText() {
+		return bufferText;
+	}
+
+	private void setBufferText(String text) {
+		bufferText = text;
+		System.out.println("yes");
+	}
+
+	private void setDisplayText(String text) {
+		displayText = text;
 	}
 }

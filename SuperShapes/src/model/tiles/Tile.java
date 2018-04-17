@@ -43,7 +43,10 @@ public abstract class Tile {
 
 	public void setText(String text) {
 		this.text = text;
-		setTextRead(false);
+		if (text.equals(""))
+			setTextRead(true);
+		else
+			setTextRead(false);
 	}
 
 	public int getX() {

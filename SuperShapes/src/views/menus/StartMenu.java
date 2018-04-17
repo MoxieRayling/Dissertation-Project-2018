@@ -58,7 +58,8 @@ public class StartMenu extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				Constants.setGameDir((String) games.getSelectedItem());
 				Constants.setSaveDir("save");
-				w.gameRules();
+				//w.gameRules();
+				w.editor();
 			}
 		});
 		createGame.addActionListener(new ActionListener() {
