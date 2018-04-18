@@ -19,7 +19,9 @@ import model.Room;
 import model.entities.Entity;
 import model.entities.Player;
 import views.animation.Animation;
+import views.menus.CreateEntityMenu;
 import views.menus.CreateMenu;
+import views.menus.CreateTileMenu;
 import views.menus.Editor;
 import views.menus.EventEditor;
 import views.menus.GameOverMenu;
@@ -51,6 +53,8 @@ public class Window extends JFrame implements View {
 	private String mode = "game";
 	private List<JPanel> history = new ArrayList<JPanel>();
 	private EventEditor eventEditor;
+	private CreateEntityMenu ceMenu;
+	private CreateTileMenu ctMenu;
 
 	public Window() {
 		frame = this;
@@ -242,6 +246,34 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		editor.setMap();
 		editor.requestFocusInWindow();
+	}
+
+	public void createTileMenu() {
+		ctMenu = new CreateTileMenu(this);
+		history.add(ctMenu);
+		c.runEditor();
+		this.setSize(ctMenu.getPreferredSize());
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(ctMenu);
+		this.validate();
+		this.repaint();
+		ctMenu.requestFocusInWindow();
+
+	}
+
+	public void createEntityMenu() {
+		ceMenu = new CreateEntityMenu(this);
+		history.add(ceMenu);
+		c.runEditor();
+		this.setSize(ceMenu.getPreferredSize());
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(ceMenu);
+		this.validate();
+		this.repaint();
+		ceMenu.requestFocusInWindow();
+
 	}
 
 	public void eventEditor(String event) {

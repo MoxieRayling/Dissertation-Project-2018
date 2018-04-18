@@ -2,23 +2,30 @@ package views.menus;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
+
 import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
-public class CreateEntityMenu extends JPanel implements ItemListener {
+public class CreateEntityMenu extends JPanel {
 	private Window w;
-	private int sizex = 1200;
-	private int sizey = 600;
+	private int sizex = 200;
+	private int sizey = 400;
 	private int scale = 512 / 13;
 	private List<Component> blockOptions = new ArrayList<Component>();
 	private List<Component> snakeOptions = new ArrayList<Component>();
@@ -34,18 +41,34 @@ public class CreateEntityMenu extends JPanel implements ItemListener {
 	private JComboBox<String> entitiesBox;
 	private List<List<Component>> entityComponents = new ArrayList<List<Component>>();
 	private JComboBox<String> entityImage;
+	private JTextField name;
+	private JButton create;
+	private JButton back;
 
 	public CreateEntityMenu(Window w) {
 		this.w = w;
 		this.setLayout(null);
 		initUI();
+		for (Component c : blockOptions) {
+			c.setBounds(scale, scale * (blockOptions.indexOf(c) + 2), scale * 2, 20);
+			c.setVisible(true);
+		}
 	}
 
 	private void initUI() {
+		back = new JButton("Back");
+		back.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				w.back();
+			}
+		});
+		back.setBounds(scale, 300, scale * 2, 20);
+		this.add(back);
 
-		entities = new String[] { "None", "Block", "Snake", "Ghost", "Turret" };
+		entities = new String[] { "Block", "Snake", "Ghost", "Turret" };
 		entitiesBox = new JComboBox<String>(entities);
-		entitiesBox.setBounds(scale * 14, scale, scale * 2, 20);
+		entitiesBox.setBounds(scale, scale, scale * 2, 20);
 		entitiesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -53,28 +76,28 @@ public class CreateEntityMenu extends JPanel implements ItemListener {
 					hideEntityMenu();
 					switch (e.getItem().toString()) {
 					case "Block":
-						entityImage.setVisible(true);
+						for (Component c : blockOptions) {
+							c.setBounds(scale, scale * (blockOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setVisible(true);
+						}
 						break;
 					case "Snake":
 						for (Component c : snakeOptions) {
+							c.setBounds(scale, scale * (snakeOptions.indexOf(c) + 2), scale * 2, 20);
 							c.setVisible(true);
 						}
-						entityImage.setBounds(scale * 14, scale * (2 + snakeOptions.size()), 100, 20);
-						entityImage.setVisible(true);
 						break;
 					case "Turret":
 						for (Component c : turretOptions) {
+							c.setBounds(scale, scale * (turretOptions.indexOf(c) + 2), scale * 2, 20);
 							c.setVisible(true);
 						}
-						entityImage.setBounds(scale * 14, scale * (2 + turretOptions.size()), 100, 20);
-						entityImage.setVisible(true);
 						break;
 					case "Ghost":
 						for (Component c : ghostOptions) {
+							c.setBounds(scale, scale * (ghostOptions.indexOf(c) + 2), scale * 2, 20);
 							c.setVisible(true);
 						}
-						entityImage.setBounds(scale * 14, scale * (2 + ghostOptions.size()), 100, 20);
-						entityImage.setVisible(true);
 						break;
 					case "None":
 						break;
@@ -86,6 +109,22 @@ public class CreateEntityMenu extends JPanel implements ItemListener {
 		});
 		this.add(entitiesBox);
 
+		name = new JTextField();
+		create = new JButton("Create Entity");
+		create.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (!name.getText().equals(""))
+					generateEntity();
+			}
+		});
+		entityImage = new JComboBox<String>(getImages());
+
+		blockOptions.add(name);
+		blockOptions.add(entityImage);
+		blockOptions.add(create);
+
+		turretOptions.add(name);
 		directions = new String[] { "North", "East", "South", "West" };
 		turretDirectionBox = new JComboBox<String>(directions);
 		turretOptions.add(turretDirectionBox);
@@ -95,22 +134,31 @@ public class CreateEntityMenu extends JPanel implements ItemListener {
 		turretDelay = new JSlider(0, 122, 0);
 		turretDelay.setOpaque(false);
 		turretOptions.add(turretDelay);
+		turretOptions.add(entityImage);
+		turretOptions.add(create);
 
+		snakeOptions.add(name);
 		snakeSize = new JSlider(1, 122, 5);
 		snakeSize.setOpaque(false);
 		snakeOptions.add(snakeSize);
+		snakeOptions.add(entityImage);
+		snakeOptions.add(create);
 
+		ghostOptions.add(name);
 		ghostPower = new JSlider(1, 122, 3);
 		ghostPower.setOpaque(false);
 		ghostOptions.add(ghostPower);
+		ghostOptions.add(entityImage);
+		ghostOptions.add(create);
 
 		entityComponents.add(blockOptions);
 		entityComponents.add(snakeOptions);
 		entityComponents.add(turretOptions);
 		entityComponents.add(ghostOptions);
+
 		for (List<Component> l : entityComponents) {
 			for (Component c : l) {
-				c.setBounds(scale * 14, scale * (l.indexOf(c) + 2), scale * 2, 20);
+				c.setBounds(scale, scale * (l.indexOf(c) + 2), scale * 2, 20);
 				c.setVisible(false);
 				this.add(c);
 			}
@@ -143,43 +191,35 @@ public class CreateEntityMenu extends JPanel implements ItemListener {
 		}
 	}
 
-	private String generateTile() {
+	private void generateEntity() {
 		String result = "";
 		switch (entitiesBox.getSelectedItem().toString()) {
 		case "Block":
-			result= "block " + " " + entityImage.getSelectedItem();
+			result = name.getText() + " block " + entityImage.getSelectedItem();
 			break;
 		case "Snake":
-			result = "snake " + " " + snakeSize.getValue() + " "
-					+ entityImage.getSelectedItem();
+			result = name.getText() + " snake " + snakeSize.getValue() + " " + entityImage.getSelectedItem();
 			break;
 		case "Turret":
-			result = "turret " + " " + turretRate.getValue() + " "
+			result = name.getText() + " turret " + turretRate.getValue() + " "
 					+ turretDirectionBox.getSelectedItem().toString() + " " + turretDelay.getValue() + " "
 					+ entityImage.getSelectedItem();
 			break;
 		case "Ghost":
-			result = "ghost " + " " + ghostPower.getValue() + " "
-					+ entityImage.getSelectedItem();
+			result = name.getText() + " ghost " + ghostPower.getValue() + " " + entityImage.getSelectedItem();
 			break;
-		case "None":
-			result = "None";
 		default:
 			break;
 
 		}
-		return result;
+		String fileName = Constants.gameDir + "/entities.txt";
+		List<String> tiles = FileManager.readFromFile(fileName);
+		tiles.add(result);
+		FileManager.writeToFile(tiles, fileName);
 	}
-
 
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(sizex, sizey);
 	}
-
-	@Override
-	public void itemStateChanged(ItemEvent arg0) {
-
-	}
-
 }

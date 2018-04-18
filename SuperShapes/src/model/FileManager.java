@@ -39,7 +39,7 @@ public class FileManager {
 		return enemyCount;
 	}
 
-	private List<String> readFromFile(String fileName) {
+	public static List<String> readFromFile(String fileName) {
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -152,7 +152,7 @@ public class FileManager {
 		return entities;
 	}
 
-	private void writeToFile(String saveData, String fileName) {
+	public static void writeToFile(String saveData, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -163,7 +163,7 @@ public class FileManager {
 		}
 	}
 
-	private void writeToFile(List<String> lines, String fileName) {
+	public static void writeToFile(List<String> lines, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
