@@ -98,6 +98,14 @@ public class Player extends Entity {
 			xCoords[i] = xCoords[i - 1];
 			yCoords[i] = yCoords[i - 1];
 		}
+		if (x > getX())
+			setDirection('E');
+		if (x < getX())
+			setDirection('W');
+		if (y > getY())
+			setDirection('S');
+		if (y < getY())
+			setDirection('N');
 		xCoords[0] = x;
 		yCoords[0] = y;
 		setPX(getX());
@@ -320,7 +328,7 @@ public class Player extends Entity {
 		coins++;
 		notifyObserver();
 	}
-	
+
 	public int getCoins() {
 		return coins;
 	}

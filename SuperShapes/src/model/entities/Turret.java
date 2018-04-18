@@ -5,7 +5,6 @@ import model.Room;
 public class Turret extends Entity {
 	private int ratio;
 	private int count;
-	private char direction;
 	private Room room;
 	private int delay;
 
@@ -16,7 +15,7 @@ public class Turret extends Entity {
 		this.ratio = ratio;
 		this.count = 0;
 		this.delay = delay;
-		this.direction = direction;
+		setDirection(direction);
 		this.room = room;
 		this.deadly = false;
 	}
@@ -37,12 +36,8 @@ public class Turret extends Entity {
 		}
 	}
 
-	public char getDirection() {
-		return direction;
-	}
-
 	@Override
 	public String toString() {
-		return new String("turret " + getX() + "," + getY() + " " + ratio + " " + direction + " " + delay + " " + image);
+		return new String("turret " + getX() + "," + getY() + " " + ratio + " " + getDirection() + " " + delay + " " + image);
 	}
 }

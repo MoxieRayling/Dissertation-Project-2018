@@ -55,7 +55,7 @@ public class Animation extends JPanel {
 		this.sizey = sizey;
 		int divisor = 16;
 		if (room != null) {
-			divisor = room.getSize() + 4;
+			divisor = Math.max(room.getxLength(), room.getyLength());
 		}
 		setScale(divisor);
 	}
@@ -124,7 +124,7 @@ public class Animation extends JPanel {
 			img = play.getImage();
 		}
 		if (player == null) {
-			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId(), img);
+			player = new PlayerImage(play.getX(), play.getY(), scale, play.getRoomId(), img, play.getDirection());
 			images.add(player);
 		}
 		if (play.getFly() > 0) {
@@ -135,6 +135,7 @@ public class Animation extends JPanel {
 		player.setNoCollide(play.getFly() > 0);
 		player.next(play.getX(), play.getY(), play.getTeleport());
 		player.setDead(play.getDead());
+		player.setDirection(play.getDirection());
 	}
 
 	public void entityUpdate(Entity e) {
@@ -145,6 +146,7 @@ public class Animation extends JPanel {
 				exists = true;
 				image = i;
 				i.next(e.getX(), e.getY(), e.getTeleport());
+				i.setDirection(e.getDirection());
 			}
 		}
 		if (e.getDelete()) {
@@ -158,7 +160,8 @@ public class Animation extends JPanel {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId(), e.getImage()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), scale, b.getRoomId(), e.getImage(),
+					e.getDirection()));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
 			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), scale, t.getRoomId(), t.getDirection(),
@@ -169,10 +172,12 @@ public class Animation extends JPanel {
 					new ShotImage(s.getId(), s.getX(), s.getY(), scale, s.getRoomId(), s.getDirection(), e.getImage()));
 		} else if (e instanceof SnakeBody) {
 			SnakeBody sb = (SnakeBody) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId(), e.getImage()));
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), scale, sb.getRoomId(), e.getImage(),
+					e.getDirection()));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId(), e.getImage()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), scale, g.getRoomId(), e.getImage(),
+					e.getDirection()));
 		}
 	}
 

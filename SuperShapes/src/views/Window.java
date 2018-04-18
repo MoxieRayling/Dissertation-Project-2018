@@ -21,6 +21,7 @@ import model.entities.Player;
 import views.animation.Animation;
 import views.menus.CreateMenu;
 import views.menus.Editor;
+import views.menus.EventEditor;
 import views.menus.GameOverMenu;
 import views.menus.GameRulesMenu;
 import views.menus.LoadMenu;
@@ -49,6 +50,7 @@ public class Window extends JFrame implements View {
 	private GameOverMenu gameOver;
 	private String mode = "game";
 	private List<JPanel> history = new ArrayList<JPanel>();
+	private EventEditor eventEditor;
 
 	public Window() {
 		frame = this;
@@ -115,9 +117,6 @@ public class Window extends JFrame implements View {
 			@Override
 			public void componentResized(ComponentEvent arg0) {
 				game.setSize(frame.getWidth(), frame.getHeight());
-				if (c != null) {
-					// c.notifyObservers();
-				}
 			}
 
 			@Override
@@ -146,6 +145,8 @@ public class Window extends JFrame implements View {
 			game.roomUpdate((Room) o);
 			if (editor != null)
 				editor.roomUpdate((Room) o);
+			if (eventEditor != null)
+				eventEditor.roomUpdate((Room) o);
 		} else if (o instanceof Player) {
 			game.playerUpdate((Player) o);
 		} else if (o instanceof Entity) {
@@ -172,7 +173,6 @@ public class Window extends JFrame implements View {
 	public void loadGame() {
 		this.setResizable(true);
 		c.loadGame();
-		c.setMode("game");
 		returnToGame();
 	}
 
@@ -234,7 +234,6 @@ public class Window extends JFrame implements View {
 		editor = new Editor(this);
 		history.add(editor);
 		c.runEditor();
-		c.setMode("editor");
 		this.setSize(editor.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
@@ -243,6 +242,21 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		editor.setMap();
 		editor.requestFocusInWindow();
+	}
+
+	public void eventEditor(String event) {
+		eventEditor = new EventEditor(this);
+		eventEditor.setEventName(event);
+		history.add(eventEditor);
+		c.runEditor();
+		this.setSize(eventEditor.getPreferredSize());
+		this.setResizable(false);
+		this.getContentPane().removeAll();
+		this.getContentPane().add(eventEditor);
+		this.validate();
+		this.repaint();
+		eventEditor.setMap();
+		eventEditor.requestFocusInWindow();
 	}
 
 	public void pauseMenu() {

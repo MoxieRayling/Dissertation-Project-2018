@@ -109,12 +109,13 @@ public class Editor extends JPanel implements ItemListener {
 	private JCheckBox deleteRoom;
 	private JButton finish;
 	private JButton back;
+	private JTextField eventName;
+	private JButton makeEvent;
 
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
 		initUI();
-		this.setBackground(new Color(0x888888));
 		start();
 	}
 
@@ -124,6 +125,22 @@ public class Editor extends JPanel implements ItemListener {
 	}
 
 	private void initUI() {
+		eventName = new JTextField();
+		eventName.setBounds(800,530,100,20);
+		this.add(eventName);
+		
+		makeEvent = new JButton("Make Event");
+		makeEvent.setBounds(900,530,100,20);
+		makeEvent.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(!eventName.getText().equals("")) {
+					w.eventEditor(eventName.getText());
+				}
+			}
+		});
+		this.add(makeEvent);
+		
 		finish = new JButton("Finish");
 		finish.setBounds(1000, 530, 100, 20);
 		finish.addActionListener(new ActionListener() {
@@ -763,17 +780,17 @@ public class Editor extends JPanel implements ItemListener {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId(), e.getImage()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId(), e.getImage(), 'N'));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
 			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), roomScale, t.getRoomId(), t.getDirection(),
 					e.getImage()));
-		} else if (e instanceof SnakeBody) {
-			Snake sb = (Snake) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId(), e.getImage()));
+		} else if (e instanceof Snake) {
+			Snake s = (Snake) e;
+			images.add(new SnakeImage(s.getId(), s.getX(), s.getY(), roomScale, s.getRoomId(), e.getImage(), 'N'));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId(), e.getImage()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId(), e.getImage(), 'N'));
 		}
 	}
 

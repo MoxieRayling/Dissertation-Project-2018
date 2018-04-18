@@ -24,23 +24,12 @@ public class Model implements Subject {
 	protected Player player;
 	private String roomId;
 	private Boolean input = true;
-	private String mode = "";
-	private int textLength = 50;
 	protected FileManager fileManager;
 	private boolean endTurn = false;
 
 	public Model(Observer v) {
 		this.v = v;
 		fileManager = new FileManager();
-		mode = "game";
-	}
-
-	public String getMode() {
-		return mode;
-	}
-
-	public void setMode(String mode) {
-		this.mode = mode;
 	}
 
 	public Boolean getInput() {

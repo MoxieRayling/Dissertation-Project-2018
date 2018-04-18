@@ -26,10 +26,10 @@ public abstract class Image {
 	protected String room;
 	protected Boolean stationary = true;
 	private Boolean noCollide = false;
-	private String img = "";
-	protected BufferedImage image;
+	protected String img = "";
+	protected char direction;
 
-	public Image(int x, int y, int scale, String room, String img, String alt) {
+	public Image(int x, int y, int scale, String room, String img, char direction) {
 		this.xSpeed = 1;
 		this.ySpeed = 1;
 		this.scale = scale;
@@ -40,17 +40,8 @@ public abstract class Image {
 		yPos = y * scale;
 		xDest = x * scale;
 		yDest = y * scale;
-		String texture = alt;
-		if (img != "")
-			texture = img;
-		this.img = texture;
-		try {
-			File imgSrc = new File(Constants.gameDir + "/textures/" + img);
-			if (imgSrc.exists() && img != "")
-				image = ImageIO.read(imgSrc);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.img = img;
+		this.direction = direction;
 	}
 
 	public Image(int x, int y, int scale, String room) {
@@ -217,4 +208,12 @@ public abstract class Image {
 	}
 
 	public abstract void drawThis(Graphics2D g, int x, int y);
+
+	public char getDirection() {
+		return direction;
+	}
+
+	public void setDirection(char direction) {
+		this.direction = direction;
+	}
 }

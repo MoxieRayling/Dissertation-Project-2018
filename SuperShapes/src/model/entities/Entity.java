@@ -22,6 +22,7 @@ public abstract class Entity implements Subject {
 	private Boolean delete = false;
 	protected Boolean deadly = true;
 	protected String image = "";
+	private char direction;
 
 	public Entity(String roomId, int count, int x, int y) {
 		this.roomId = roomId;
@@ -30,6 +31,7 @@ public abstract class Entity implements Subject {
 		this.px = x;
 		this.py = y;
 		id = roomId + count;
+		this.direction = 'N';
 	}
 
 	public String getImage() {
@@ -38,6 +40,15 @@ public abstract class Entity implements Subject {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public char getDirection() {
+		return direction;
+	}
+
+	public void setDirection(char direction) {
+		this.direction = direction;
+		notifyObserver();
 	}
 
 	public Boolean getTeleport() {
@@ -107,6 +118,14 @@ public abstract class Entity implements Subject {
 	}
 
 	public void setLoc(int x, int y) {
+		if (x > getX())
+			setDirection('E');
+		if (x < getX())
+			setDirection('W');
+		if (y > getY())
+			setDirection('S');
+		if (y < getY())
+			setDirection('N');
 		setPX(getX());
 		setPY(getY());
 		setX(x);

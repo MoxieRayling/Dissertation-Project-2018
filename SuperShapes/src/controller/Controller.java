@@ -43,10 +43,6 @@ public class Controller {
 		((EditorModel) m).addToRoom(lines, x, y);
 	}
 
-	public void setMode(String mode) {
-		m.setMode(mode);
-	}
-
 	public void changeRoom(int x, int y) {
 		((EditorModel) m).changeRoom(x + "," + y);
 	}

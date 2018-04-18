@@ -41,7 +41,6 @@ public class GameOverMenu extends JPanel {
 		load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("yes");
 				w.loadMenu();
 			}
 		});

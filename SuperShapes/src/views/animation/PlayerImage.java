@@ -2,6 +2,7 @@ package views.animation;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -9,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import controller.Constants;
 
 public class PlayerImage extends Image {
 
@@ -18,8 +21,8 @@ public class PlayerImage extends Image {
 	private Boolean shield = false;
 	private Boolean flying = false;
 
-	public PlayerImage(int x, int y, int scale, String room, String img) {
-		super(x, y, scale, room,img,"player.png");
+	public PlayerImage(int x, int y, int scale, String room, String img, char direction) {
+		super(x, y, scale, room, img, direction);
 	}
 
 	public void setShrink(boolean b) {
@@ -95,17 +98,48 @@ public class PlayerImage extends Image {
 
 		int x = xCoord;
 		int y = yCoord;
-		if(flying) {
+		if (flying) {
 			g.setColor(new Color(0, 0, 0, 100));
 			g.fillOval(getXPos() + x, getYPos() + y, size, size);
-			y -= size/3;
+			y -= size / 3;
 		}
-		
+
 		if (shrink)
 			shrink();
-		if (image != null)
-			g.drawImage(image, getXPos() + x, getYPos() + y, size, size, null);
-		else {
+
+		BufferedImage image = Constants.getImage(img);
+		if (image != null) {
+			double scalex = (double) size / (double) image.getWidth();
+			double scaley = (double) size / (double) image.getHeight();
+
+			AffineTransform at = new AffineTransform();
+			switch (direction) {
+			case 'N':
+				at.translate(x + xPos, y + yPos);
+				at.scale(scalex, scaley);
+				break;
+			case 'E':
+				at.translate(x + scale + xPos, y + yPos);
+				at.rotate(Math.PI / 2);
+				at.scale(scalex, scaley);
+				break;
+			case 'S':
+				at.translate(x + scale + xPos, y + scale + yPos);
+				at.rotate(Math.PI);
+				at.scale(scalex, scaley);
+				break;
+			case 'W':
+				at.translate(x + xPos, y + scale + yPos);
+				at.rotate(3 * Math.PI / 2);
+				at.scale(scalex, scaley);
+				break;
+			default:
+				break;
+			}
+			if (image != null) {
+				g.drawImage(image, at, null);
+			}
+		} else {
 			g.setColor(Color.RED);
 			g.fillOval(getXPos() + x, getYPos() + y, size, size);
 			g.setColor(Color.BLACK);

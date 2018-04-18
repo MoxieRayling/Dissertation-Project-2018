@@ -507,8 +507,7 @@ public class FileManager {
 		if (!params[2].equals("none")) {
 			t.setImage(params[2]);
 		}
-		//System.out.println("p3 " +	params[3]);
-		if (!params[3].equals("")) {
+		if (!params[3].equals("") && !params[3].equals("\"")) {
 			t.setText(params[3]);
 		}
 		if (params[4].equals("true")) {
@@ -659,13 +658,15 @@ public class FileManager {
 		writeToFile(getWorldData(), Constants.saveDir + "/working.txt");
 	}
 
-	
-	public void exportEvent(String exportRoom, String event) {
-		
+	public void exportEvent(String room, String event) {
+		removeFromEvent(room.substring(0, 8), event);
+		List<String> eventRooms = getEventData(event);
+		eventRooms.add(room);
+		writeToFile(eventRooms, event);
 	}
-	
+
 	public void removeFromEvent(String id, String event) {
-		List<String> world = getWorkingData();
+		List<String> world = getEventData(event);
 		for (String s : world) {
 			if (s.startsWith(id)) {
 				world.set(world.indexOf(s), "xxx");
@@ -673,5 +674,9 @@ public class FileManager {
 		}
 		world.remove("xxx");
 		writeToFile(world, Constants.gameDir + "/events/" + event + ".txt");
+	}
+
+	private List<String> getEventData(String event) {
+		return readFromFile(Constants.gameDir + "/" + event + ".txt");
 	}
 }

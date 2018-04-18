@@ -7,12 +7,14 @@ public class Teleport extends Tile {
 
 	public Teleport(int x, int y, int xTele, int yTele) {
 		super(x, y);
+		this.xTele = xTele;
+		this.yTele = yTele;
 		setImage("teleport.png");
 	}
 
 	@Override
 	public String toString() {
-		return "tele " + x + "," + y + " " + xTele + " " + yTele + " " + image + " \"" + getText() + " " + getTextRead().toString();
+		return "tele " + x + "," + y + " " + xTele + "," + yTele + " " + image + " \"" + getText() + " " + getTextRead().toString();
 	}
 
 	public int getXTele() {

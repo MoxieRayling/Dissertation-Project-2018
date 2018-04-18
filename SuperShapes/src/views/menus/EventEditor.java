@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -26,13 +24,11 @@ import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import controller.Constants;
 import model.Room;
 import model.entities.Block;
 import model.entities.Entity;
 import model.entities.Ghost;
-import model.entities.Shot;
 import model.entities.Snake;
 import model.entities.SnakeBody;
 import model.entities.Turret;
@@ -107,9 +103,12 @@ public class EventEditor extends JPanel implements ItemListener {
 	private int[] size = { 11, 11 };
 	private JCheckBox newRoom;
 	private JCheckBox deleteRoom;
-	private JButton finish;
 	private JButton back;
 	private String eventName = "";
+
+	public void setEventName(String eventName) {
+		this.eventName = eventName;
+	}
 
 	public EventEditor(Window w) {
 		this.w = w;
@@ -125,17 +124,6 @@ public class EventEditor extends JPanel implements ItemListener {
 	}
 
 	private void initUI() {
-		finish = new JButton("Finish");
-		finish.setBounds(1000, 530, 100, 20);
-		finish.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				w.exportEvent(eventName);
-				//w.exportWorld();
-				w.mainMenu();
-			}
-		});
-		this.add(finish);
 		back = new JButton("Back");
 		back.setBounds(100, 530, 100, 20);
 		back.addActionListener(new ActionListener() {
@@ -145,7 +133,6 @@ public class EventEditor extends JPanel implements ItemListener {
 			}
 		});
 		this.add(back);
-		//hi
 
 		newRoom = new JCheckBox("Add New Room");
 		newRoom.setBounds(100, 500, 150, 20);
@@ -264,7 +251,7 @@ public class EventEditor extends JPanel implements ItemListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//w.exportWorld();
+				w.exportEvent(eventName);
 			}
 		});
 		this.add(export);
@@ -304,7 +291,7 @@ public class EventEditor extends JPanel implements ItemListener {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					//w.exportWorld();
+					w.exportEvent(eventName);
 					selectedRoomX = x;
 					selectedRoomY = y;
 					if (newRoom.isSelected()) {
@@ -317,7 +304,7 @@ public class EventEditor extends JPanel implements ItemListener {
 					} else {
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					}
-					//w.exportWorld();
+					w.exportEvent(eventName);
 				}
 			});
 			this.add(b);
@@ -766,17 +753,17 @@ public class EventEditor extends JPanel implements ItemListener {
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
 			Block b = (Block) e;
-			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId(), e.getImage()));
+			images.add(new BlockImage(b.getId(), b.getX(), b.getY(), roomScale, b.getRoomId(), e.getImage(), 'N'));
 		} else if (e instanceof Turret) {
 			Turret t = (Turret) e;
 			images.add(new TurretImage(t.getId(), t.getX(), t.getY(), roomScale, t.getRoomId(), t.getDirection(),
 					e.getImage()));
 		} else if (e instanceof SnakeBody) {
 			Snake sb = (Snake) e;
-			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId(), e.getImage()));
+			images.add(new SnakeImage(sb.getId(), sb.getX(), sb.getY(), roomScale, sb.getRoomId(), e.getImage(), 'N'));
 		} else if (e instanceof Ghost) {
 			Ghost g = (Ghost) e;
-			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId(), e.getImage()));
+			images.add(new GhostImage(g.getId(), g.getX(), g.getY(), roomScale, g.getRoomId(), e.getImage(), 'N'));
 		}
 	}
 

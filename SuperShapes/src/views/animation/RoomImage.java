@@ -86,79 +86,110 @@ public class RoomImage extends Image {
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
+			BufferedImage img = Constants.getImage(t.getImage());
 			if (t instanceof Wall) {
-				g.setColor(new Color(0x444444));
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
-			} else if (t instanceof Teleport) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
-
-				int[] xCoords = { 0, scale / 4, scale / 2, scale / 4 };
-				int[] yCoords = { scale / 4, 0, scale / 4, scale / 2 };
-				Polygon p = new Polygon(xCoords, yCoords, 4);
-				p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
-				g.setColor(Color.BLACK);
-				g.drawPolygon(p);
-
-			} else if (t instanceof Slide) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
-				int[] xCoords = { 0, 0, 0 };
-				int[] yCoords = { 0, 0, 0 };
-				switch (((Slide) t).getDirection()) {
-				case 'N':
-					xCoords[1] = scale / 4;
-					xCoords[2] = scale / 2;
-					yCoords[0] = scale / 2;
-					yCoords[2] = scale / 2;
-					break;
-				case 'E':
-					xCoords[1] = scale / 2;
-					yCoords[1] = scale / 4;
-					yCoords[2] = scale / 2;
-					break;
-				case 'S':
-					xCoords[1] = scale / 4;
-					xCoords[2] = scale / 2;
-					yCoords[1] = scale / 2;
-					break;
-				case 'W':
-					xCoords[0] = scale / 2;
-					xCoords[2] = scale / 2;
-					yCoords[1] = scale / 4;
-					yCoords[2] = scale / 2;
-					break;
-				default:
-					break;
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(new Color(0x444444));
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
 				}
-				Polygon p = new Polygon(xCoords, yCoords, 3);
-				p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
-				g.setColor(Color.BLACK);
-				g.drawPolygon(p);
+			} else if (t instanceof Teleport) {
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
 
+					int[] xCoords = { 0, scale / 4, scale / 2, scale / 4 };
+					int[] yCoords = { scale / 4, 0, scale / 4, scale / 2 };
+					Polygon p = new Polygon(xCoords, yCoords, 4);
+					p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
+					g.setColor(Color.BLACK);
+					g.drawPolygon(p);
+				}
+			} else if (t instanceof Slide) {
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+					int[] xCoords = { 0, 0, 0 };
+					int[] yCoords = { 0, 0, 0 };
+					switch (((Slide) t).getDirection()) {
+					case 'N':
+						xCoords[1] = scale / 4;
+						xCoords[2] = scale / 2;
+						yCoords[0] = scale / 2;
+						yCoords[2] = scale / 2;
+						break;
+					case 'E':
+						xCoords[1] = scale / 2;
+						yCoords[1] = scale / 4;
+						yCoords[2] = scale / 2;
+						break;
+					case 'S':
+						xCoords[1] = scale / 4;
+						xCoords[2] = scale / 2;
+						yCoords[1] = scale / 2;
+						break;
+					case 'W':
+						xCoords[0] = scale / 2;
+						xCoords[2] = scale / 2;
+						yCoords[1] = scale / 4;
+						yCoords[2] = scale / 2;
+						break;
+					default:
+						break;
+					}
+					Polygon p = new Polygon(xCoords, yCoords, 3);
+					p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
+					g.setColor(Color.BLACK);
+					g.drawPolygon(p);
+				}
 			} else if (t instanceof Hole) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
-				g.setColor(Color.BLACK);
-				g.fillOval(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+					g.setColor(Color.BLACK);
+					g.fillOval(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				}
 			} else if (t instanceof Key) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
-				g.setColor(Color.BLACK);
-				g.drawString("K", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+					g.setColor(Color.BLACK);
+					g.drawString("K", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				}
 			} else if (t instanceof Coin) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
-				g.setColor(Color.BLACK);
-				g.drawString("C", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+					g.setColor(Color.BLACK);
+					g.drawString("C", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				}
 			} else if (t instanceof Lock) {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
-				g.setColor(Color.BLACK);
-				g.drawString("L", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+					g.setColor(Color.BLACK);
+					g.drawString("L", t.getX() * scale + 10 + x, t.getY() * scale + 20 + y);
+				}
 			} else {
-				g.setColor(Color.LIGHT_GRAY);
-				g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				if (img != null) {
+					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+				} else {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(t.getX() * scale + x, t.getY() * scale + y, scale, scale);
+				}
 			}
 
 			g.setColor(Color.BLACK);
