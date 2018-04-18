@@ -111,7 +111,8 @@ public class Editor extends JPanel implements ItemListener {
 	private JButton back;
 	private JTextField eventName;
 	private JButton makeEvent;
-
+	
+	
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
