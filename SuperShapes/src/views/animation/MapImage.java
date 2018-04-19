@@ -27,7 +27,12 @@ public class MapImage extends Image{
 				if (map[i][j] == null) {
 					g.setColor(new Color(0x000000));
 					g.fillRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
-				} else if (map[i][j].startsWith("R")) {
+				} else if (map[i][j].contains("D")) {
+					g.setColor(new Color(0xff0000));
+					g.fillRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
+					g.setColor(new Color(0x000000));
+					g.drawRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
+				}else if (map[i][j].startsWith("R")) {
 					g.setColor(new Color(0x999999));
 					g.fillRect(i * scale + getXPos() + x, j * scale + getYPos() + y, scale, scale);
 					g.setColor(new Color(0x000000));

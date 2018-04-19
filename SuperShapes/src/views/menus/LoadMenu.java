@@ -19,8 +19,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class LoadMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 200;
+	private int sizex = 400;
+	private int sizey = 400;
 	private String game = "";
 	private JComboBox<String> saves;
 	private JButton loadSave = new JButton("Load Save");

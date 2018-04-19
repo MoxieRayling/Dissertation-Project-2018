@@ -11,6 +11,7 @@ public abstract class Tile {
 	private String text = "";
 	private Boolean textRead = false;
 	protected String image = "";
+	protected String event = "";
 
 	public Tile(int x, int y) {
 		this.x = x;
@@ -19,6 +20,14 @@ public abstract class Tile {
 		loc[1] = y;
 		this.trav = true;
 		textRead = true;
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
 	}
 
 	public String getImage() {

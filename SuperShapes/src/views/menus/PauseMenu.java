@@ -18,8 +18,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class PauseMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 200;
+	private int sizex = 400;
+	private int sizey = 400;
 	private JButton resume = new JButton("Resume");
 	private JButton save = new JButton("Save Game");
 	private JButton load = new JButton("Load Game");

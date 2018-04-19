@@ -16,7 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -42,7 +45,7 @@ public class EventEditor extends JPanel {
 	private Timer timer;
 	private Window w;
 	private int sizex = 1200;
-	private int sizey = 600;
+	private int sizey = 750;
 	private int scale = 512 / 13;
 	private int roomScale = 512 / 13;
 	private List<Image> images = new ArrayList<Image>();
@@ -80,6 +83,8 @@ public class EventEditor extends JPanel {
 	private JButton makeEntity;
 	private JButton makeTile;
 	private String eventName;
+	private JTextArea mapLines;
+	private JScrollPane scroll;
 
 	public EventEditor(Window w) {
 		this.w = w;
@@ -122,6 +127,13 @@ public class EventEditor extends JPanel {
 	}
 
 	private void initUI() {
+		mapLines = new JTextArea();
+		mapLines.setBounds(20, 600, 1160, 100);
+		scroll = new JScrollPane(mapLines);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scroll.setBounds(20, 600, 1160, 100);
+		this.add(scroll);
 		entities = FileManager.readFromFile(FileManager.getGameDir() + "/entities.txt");
 		String[] entityNames = new String[entities.size()];
 		for (String e : entities) {
@@ -176,11 +188,11 @@ public class EventEditor extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.exportEvent("");
+				w.exportEvent(eventName);
 			}
 		});
 		this.add(makeEvent);
-		
+
 		back = new JButton("Back");
 		back.setBounds(100, 530, 100, 20);
 		back.addActionListener(new ActionListener() {
@@ -338,20 +350,21 @@ public class EventEditor extends JPanel {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					w.exportEvent("");
+					w.exportEvent(eventName);
 					selectedRoomX = x;
 					selectedRoomY = y;
 					if (newRoom.isSelected()) {
 						w.addRoom(selectedRoomX - 5, selectedRoomY - 5);
-						map.setMap(w.getMap(mapCentreX, mapCentreY));
+						mapLines.append("added or changed room at " + (selectedRoomX - 5) + "," + (selectedRoomY - 5));
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					} else if (deleteRoom.isSelected()) {
-						w.deleteRoom(selectedRoomX - 5, selectedRoomY - 5);
-						map.setMap(w.getMap(mapCentreX, mapCentreY));
+						mapLines.append("deleted room at " + (selectedRoomX - 5) + "," + (selectedRoomY - 5));
+						w.eventRemoveRoom(eventName, (selectedRoomX - 5) + "," + (selectedRoomY - 5));
 					} else {
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					}
-					w.exportEvent("");
+					map.setMap(w.getEventMap(mapCentreX, mapCentreY, eventName));
+					w.exportEvent(eventName);
 				}
 			});
 			this.add(b);
@@ -605,6 +618,10 @@ public class EventEditor extends JPanel {
 		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();
+	}
+
+	public void setEvent(String event) {
+		this.eventName = event;
 	}
 
 }

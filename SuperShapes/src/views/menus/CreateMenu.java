@@ -13,8 +13,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class CreateMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 190;
+	private int sizex = 400;
+	private int sizey = 400;
 	private JTextField newGame;
 	private JButton make = new JButton("Make New Game");
 	private JButton exit = new JButton("Exit");
@@ -28,6 +28,7 @@ public class CreateMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!newGame.getText().isEmpty()) {
+					FileManager.makeNewDir();
 					FileManager.setGameDir(newGame.getText());
 					FileManager.setSaveDir("save");
 					w.makeNewDir();

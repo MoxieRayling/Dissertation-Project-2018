@@ -244,6 +244,9 @@ public class Model implements Subject {
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
 			fileManager.exportWorking(room.exportRoom());
 		}
+		if (!t.getEvent().equals("")) {
+			activateEvent(t.getEvent());
+		}
 
 	}
 
@@ -429,64 +432,62 @@ public class Model implements Subject {
 	}
 
 	private void activateEvent(String event) {
-		List<String> commands = fileManager.parseEvent(event);
-		for(String s : commands) {
-			if(s.startsWith("enable flight"))
+		List<String> commands = fileManager.parseEvent(event, roomId);
+		for (String s : commands) {
+			if (s.startsWith("room")) {
+				setRoom(fileManager.makeRoom(s.split(" ")[1], player, v));
+			} else if (s.startsWith("entities")) {
+				room.setEnemies(fileManager.parseEntities(s, 0, 0, room, v));
+			} else if (s.startsWith("tiles")) {
+				room.setTiles(fileManager.parseTiles(s));
+			} else if (s.startsWith("enable flight")) {
 				enableFlight();
-			if(s.startsWith("enable pause"))
+			} else if (s.startsWith("enable pause"))
 				enablePause();
-			if(s.startsWith("enable rewind"))
+			else if (s.startsWith("enable rewind"))
 				enableRewind();
-			if(s.startsWith("enable shield"))
+			else if (s.startsWith("enable shield"))
 				enableShield();
-			if(s.startsWith("disable flight"))
+			else if (s.startsWith("disable flight"))
 				disableFlight();
-			if(s.startsWith("disable pause"))
+			else if (s.startsWith("disable pause"))
 				disablePause();
-			if(s.startsWith("disable rewind"))
+			else if (s.startsWith("disable rewind"))
 				disableRewind();
-			if(s.startsWith("disable shield"))
+			else if (s.startsWith("disable shield"))
 				disableShield();
 		}
 	}
 
 	private void disableShield() {
-		GameRules.shield = true;
-		
+		GameRules.shield = false;
 	}
 
 	private void disableRewind() {
-		// TODO Auto-generated method stub
-		
+		GameRules.rewind = false;
 	}
 
 	private void disablePause() {
-		// TODO Auto-generated method stub
-		
+		GameRules.pause = false;
 	}
 
 	private void enableShield() {
-		// TODO Auto-generated method stub
-		
+		GameRules.shield = true;
 	}
 
 	private void enableRewind() {
-		// TODO Auto-generated method stub
-		
+		GameRules.rewind = true;
 	}
 
 	private void enablePause() {
-		// TODO Auto-generated method stub
-		
+		GameRules.pause = true;
 	}
 
 	private void disableFlight() {
-		// TODO Auto-generated method stub
-		
+		GameRules.flight = false;
 	}
 
 	private void enableFlight() {
-		// TODO Auto-generated method stub
-		
+		GameRules.flight = true;
 	}
 }

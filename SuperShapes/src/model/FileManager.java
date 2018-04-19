@@ -130,7 +130,7 @@ public class FileManager {
 		writeToFile(saveData, fileName);
 	}
 
-	public void newSaveData() {
+	public static void newSaveData() {
 		String fileName = saveDir + "/save.txt";
 		String saveData = "0,0:0,0:0,0:0";
 		writeToFile(saveData, fileName);
@@ -180,7 +180,23 @@ public class FileManager {
 		return r;
 	}
 
-	private List<Tile> parseTiles(String tileLine) {
+	public Room makeRoom(String id, Player player, Observer o) {
+		int[] coords = this.idToCoords(id);
+		enemyCount = 0;
+		String room = getRoomData(coords[0], coords[1]);
+		String[] params = room.split(";");
+		Room r = parseRoom(params[0].split(" "), player, o);
+		if (params[1].length() > 1)
+			r.setEnemies(parseEntities(params[1].substring(1), coords[0], coords[1], r, o));
+		if (params[2].length() > 1)
+			for (Tile t : parseTiles(params[2].substring(1))) {
+				r.swapTile(t);
+			}
+
+		return r;
+	}
+
+	public List<Tile> parseTiles(String tileLine) {
 		List<Tile> tiles = new ArrayList<Tile>();
 		String[] params = tileLine.split(":");
 		for (int i = 0; i < params.length; i++) {
@@ -189,7 +205,7 @@ public class FileManager {
 		return tiles;
 	}
 
-	private List<Entity> parseEntities(String entityLine, int x, int y, Room r, Observer o) {
+	public List<Entity> parseEntities(String entityLine, int x, int y, Room r, Observer o) {
 		String[] params = entityLine.split(":");
 		List<Entity> entities = new ArrayList<Entity>();
 		for (int i = 0; i < params.length; i++) {
@@ -676,7 +692,7 @@ public class FileManager {
 		return map;
 	}
 
-	public void makeNewDir() {
+	public static void makeNewDir() {
 		File dir = new File(gameDir);
 		dir.mkdir();
 		dir = new File(gameDir + "/events");
@@ -726,27 +742,30 @@ public class FileManager {
 	public void removeFromEvent(String id, String event) {
 		List<String> world = getEventData(event);
 		for (String s : world) {
-			if (s.startsWith(id)) {
+			if (s.startsWith("room " + id)) {
+				System.out.println(s);
 				world.set(world.indexOf(s), "xxx");
+				
 			}
 		}
 		world.remove("xxx");
 		writeToFile(world, gameDir + "/events/" + event + ".txt");
 	}
 
-	private List<String> getEventData(String event) {
+	private static List<String> getEventData(String event) {
 		return readFromFile(gameDir + "/events/" + event + ".txt");
 	}
 
-	public List<String> parseEvent(String event) {
+	public List<String> parseEvent(String event, String roomId) {
 		List<String> result = new ArrayList<String>();
-		List<String> eventData = this.getEventData(event);
+		List<String> eventData = getEventData(event);
 		for (String s : eventData) {
-			if (s.startsWith("enable") || s.startsWith("disable") || s.startsWith("gameover")) {
+			if (s.startsWith("enable") || s.startsWith("disable") || s.startsWith("gameover")
+					|| s.startsWith("room " + roomId) || s.startsWith("entities") || s.startsWith("tiles")) {
 				result.add(s);
 				eventData.set(eventData.indexOf(s), "xxx");
 			} else if (s.startsWith("delete")) {
-				this.removeRoomWorld(s.substring(12, 15));
+				removeRoomWorld(s.substring(12, 15));
 				eventData.set(eventData.indexOf(s), "xxx");
 			}
 		}
@@ -758,11 +777,58 @@ public class FileManager {
 	}
 
 	public static BufferedImage getImage(String img) {
-		for(String s : textureNames) {
-			if(s.equals(img)) {
+		for (String s : textureNames) {
+			if (s.equals(img)) {
 				return textures.get(textureNames.indexOf(s));
 			}
 		}
 		return null;
+	}
+
+	public String[][] getEventMap(int x, int y, String eventName) {
+		List<String> rooms = getEventData(eventName);
+		String[][] map = new String[11][11];
+		for (String line : rooms) {
+			if (!map.equals(new String[11][11]) && (line.startsWith("room") || line.startsWith("delete"))) {
+				int[] coords = idToCoords(line.split(" ")[1]);
+				if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
+					map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
+					if (line.contains("key ")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
+					}
+					if (line.contains("coin ")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "C";
+					}
+					System.out.println("here");
+					if (line.contains("delete")) {
+						System.out.println("and here");
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "D";
+					}
+				}
+			}
+		}
+		return map;
+	}
+
+	public static String[] getEvents() {
+
+		File file = new File(FileManager.getGameDir() + "/events");
+		String[] images = file.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File current, String name) {
+				return new File(current, name).isFile();
+			}
+		});
+		String[] result = new String[images.length + 1];
+		result[0] = "none";
+		for (int i = 1; i < images.length + 1; i++) {
+			result[i] = images[i - 1];
+		}
+		return result;
+	}
+
+	public void eventRemoveRoom(String eventName, String id) {
+		removeFromEvent(id, eventName);
+		writeToFile("delete " + id, gameDir + "/events/" + eventName + ".txt");
 	}
 }

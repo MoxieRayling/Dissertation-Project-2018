@@ -3,6 +3,7 @@ package views.animation;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -87,6 +88,12 @@ public class RoomImage extends Image {
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
 			BufferedImage img = FileManager.getImage(t.getImage());
+			double scalex = 0;
+			double scaley = 0;
+			if (img != null) {
+				scalex = (double) scale / (double) img.getWidth();
+				scaley = (double) scale / (double) img.getHeight();
+			}
 			if (t instanceof Wall) {
 				if (img != null) {
 					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
@@ -109,44 +116,57 @@ public class RoomImage extends Image {
 					g.drawPolygon(p);
 				}
 			} else if (t instanceof Slide) {
+				g.setColor(Color.LIGHT_GRAY);
+				g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
+				int[] xCoords = { 0, 0, 0 };
+				int[] yCoords = { 0, 0, 0 };
+				AffineTransform at = new AffineTransform();
+				switch (((Slide) t).getDirection()) {
+				case 'N':
+					xCoords[1] = scale / 4;
+					xCoords[2] = scale / 2;
+					yCoords[0] = scale / 2;
+					yCoords[2] = scale / 2;
+					at.translate(x + xPos + t.getX() * scale, y + yPos + t.getY() * scale);
+					at.scale(scalex, scaley);
+					break;
+				case 'E':
+					xCoords[1] = scale / 2;
+					yCoords[1] = scale / 4;
+					yCoords[2] = scale / 2;
+					at.translate(x + scale + xPos + t.getX() * scale, y + yPos + t.getY() * scale);
+					at.rotate(Math.PI / 2);
+					at.scale(scalex, scaley);
+					break;
+				case 'S':
+					xCoords[1] = scale / 4;
+					xCoords[2] = scale / 2;
+					yCoords[1] = scale / 2;
+					at.translate(x + scale + xPos + t.getX() * scale, y + scale + yPos + t.getY() * scale);
+					at.rotate(Math.PI);
+					at.scale(scalex, scaley);
+					break;
+				case 'W':
+					xCoords[0] = scale / 2;
+					xCoords[2] = scale / 2;
+					yCoords[1] = scale / 4;
+					yCoords[2] = scale / 2;
+					at.translate(x + xPos + t.getX() * scale, y + scale + yPos + t.getY() * scale);
+					at.rotate(3 * Math.PI / 2);
+					at.scale(scalex, scaley);
+					break;
+				default:
+					break;
+				}
 				if (img != null) {
-					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
+					g.drawImage(img, at, null);
 				} else {
-					g.setColor(Color.LIGHT_GRAY);
-					g.fillRect(t.getX() * scale + getXPos() + x, t.getY() * scale + getYPos() + y, scale, scale);
-					int[] xCoords = { 0, 0, 0 };
-					int[] yCoords = { 0, 0, 0 };
-					switch (((Slide) t).getDirection()) {
-					case 'N':
-						xCoords[1] = scale / 4;
-						xCoords[2] = scale / 2;
-						yCoords[0] = scale / 2;
-						yCoords[2] = scale / 2;
-						break;
-					case 'E':
-						xCoords[1] = scale / 2;
-						yCoords[1] = scale / 4;
-						yCoords[2] = scale / 2;
-						break;
-					case 'S':
-						xCoords[1] = scale / 4;
-						xCoords[2] = scale / 2;
-						yCoords[1] = scale / 2;
-						break;
-					case 'W':
-						xCoords[0] = scale / 2;
-						xCoords[2] = scale / 2;
-						yCoords[1] = scale / 4;
-						yCoords[2] = scale / 2;
-						break;
-					default:
-						break;
-					}
 					Polygon p = new Polygon(xCoords, yCoords, 3);
 					p.translate(t.getX() * scale + x + scale / 4, t.getY() * scale + y + scale / 4);
 					g.setColor(Color.BLACK);
 					g.drawPolygon(p);
 				}
+
 			} else if (t instanceof Hole) {
 				if (img != null) {
 					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);

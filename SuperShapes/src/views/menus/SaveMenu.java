@@ -19,8 +19,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class SaveMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 200;
+	private int sizex = 400;
+	private int sizey = 400;
 	private JComboBox<String> saves;
 	private JTextField newSaveText = new JTextField();
 	private JButton overwrite = new JButton("Overwrite");

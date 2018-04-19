@@ -22,7 +22,7 @@ public class EditorModel extends Model {
 			}
 		}
 		room.printEnemies();
-		if (lines[0] == "None")
+		if (lines[0] == "remove")
 			room.removeEntity(x, y);
 		Entity e = fileManager.parseEntity(lines[0], room, v);
 		if (e != null) {
@@ -75,6 +75,14 @@ public class EditorModel extends Model {
 
 	public void exportEvent(String event) {
 		fileManager.exportEvent(room.exportRoom(), event);
+	}
+
+	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
+		return fileManager.getEventMap(mapCentreX, mapCentreY, eventName);
+	}
+
+	public void eventRemoveRoom(String eventName, String id) {
+		fileManager.eventRemoveRoom(eventName, id);
 	}
 
 }

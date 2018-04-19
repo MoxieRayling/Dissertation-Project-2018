@@ -23,7 +23,7 @@ import views.Window;
 @SuppressWarnings("serial")
 public class CreateEntityMenu extends JPanel {
 	private Window w;
-	private int sizex = 200;
+	private int sizex = 400;
 	private int sizey = 400;
 	private int scale = 512 / 13;
 	private List<Component> blockOptions = new ArrayList<Component>();
@@ -114,7 +114,7 @@ public class CreateEntityMenu extends JPanel {
 		create.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (!name.getText().equals(""))
+				if (name.getText().trim().length() > 0)
 					generateEntity();
 			}
 		});
@@ -212,7 +212,7 @@ public class CreateEntityMenu extends JPanel {
 			break;
 
 		}
-		String fileName = FileManager.getGameDir()+ "/entities.txt";
+		String fileName = "parts/entities.txt";
 		List<String> tiles = FileManager.readFromFile(fileName);
 		tiles.add(result);
 		FileManager.writeToFile(tiles, fileName);

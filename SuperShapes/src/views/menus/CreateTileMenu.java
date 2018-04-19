@@ -25,7 +25,7 @@ import views.Window;
 @SuppressWarnings("serial")
 public class CreateTileMenu extends JPanel {
 	private Window w;
-	private int sizex = 200;
+	private int sizex = 400;
 	private int sizey = 400;
 	private int scale = 512 / 13;
 	private JComboBox<String> tilesBox;
@@ -166,11 +166,11 @@ public class CreateTileMenu extends JPanel {
 		this.add(tilesBox);
 
 		name = new JTextField();
-		create = new JButton("Create Entity");
+		create = new JButton("Create Tile");
 		create.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (!name.getText().equals(""))
+				if (name.getText().trim().length() > 0)
 					generateTile();
 			}
 		});
@@ -211,10 +211,13 @@ public class CreateTileMenu extends JPanel {
 		holeOptions.add(tileText);
 
 		keyOptions.add(name);
+		key = new JTextField();
+		keyOptions.add(key);
 		keyOptions.add(tileImage);
 		keyOptions.add(tileText);
 
 		lockOptions.add(name);
+		lockOptions.add(key);
 		lockOptions.add(tileImage);
 		lockOptions.add(tileText);
 
@@ -311,7 +314,7 @@ public class CreateTileMenu extends JPanel {
 		default:
 			break;
 		}
-		String fileName = FileManager.getGameDir() + "/tiles.txt";
+		String fileName = "parts/tiles.txt";
 		List<String> tiles = FileManager.readFromFile(fileName);
 		tiles.add(result);
 		FileManager.writeToFile(tiles, fileName);

@@ -19,8 +19,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class StartMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 250;
+	private int sizex = 400;
+	private int sizey = 400;
 	private JComboBox<String> games;
 	private JButton selectGame = new JButton("Select Game");
 	private JButton editGame = new JButton("Edit Game");

@@ -14,8 +14,8 @@ import views.Window;
 @SuppressWarnings("serial")
 public class GameOverMenu extends JPanel {
 
-	private int sizex = 200;
-	private int sizey = 200;
+	private int sizex = 400;
+	private int sizey = 400;
 	private JLabel gameOver = new JLabel("Game Over");
 	private JButton load = new JButton("Load Game");
 	private JButton menu = new JButton("Main Menu");

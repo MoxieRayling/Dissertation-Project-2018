@@ -24,7 +24,6 @@ import views.menus.CreateTileMenu;
 import views.menus.Editor;
 import views.menus.EventEditor;
 import views.menus.GameOverMenu;
-import views.menus.GameRulesMenu;
 import views.menus.LoadMenu;
 import views.menus.MapView;
 import views.menus.NewGameMenu;
@@ -47,7 +46,6 @@ public class Window extends JFrame implements View {
 	private JFrame frame;
 	private Boolean input = true;
 	private CreateMenu create;
-	private GameRulesMenu gameRules;
 	private GameOverMenu gameOver;
 	private String mode = "game";
 	private List<JPanel> history = new ArrayList<JPanel>();
@@ -60,7 +58,6 @@ public class Window extends JFrame implements View {
 		start = new StartMenu(this);
 		game = new Animation(this);
 		create = new CreateMenu(this);
-		gameRules = new GameRulesMenu(this);
 		pause = new PauseMenu(this);
 		load = new LoadMenu(this);
 		save = new SaveMenu(this);
@@ -223,16 +220,6 @@ public class Window extends JFrame implements View {
 		create.requestFocusInWindow();
 	}
 
-	public void gameRules() {
-		history.add(gameRules);
-		this.setSize(gameRules.getPreferredSize());
-		this.getContentPane().removeAll();
-		this.getContentPane().add(gameRules);
-		this.validate();
-		this.repaint();
-		gameRules.requestFocusInWindow();
-	}
-
 	public void editor() {
 		editor = new Editor(this);
 		history.add(editor);
@@ -275,8 +262,9 @@ public class Window extends JFrame implements View {
 
 	}
 
-	public void eventEditor() {
+	public void eventEditor(String event) {
 		eventEditor = new EventEditor(this);
+		eventEditor.setEvent(event);
 		history.add(eventEditor);
 		c.runEditor();
 		this.setSize(eventEditor.getPreferredSize());
@@ -464,9 +452,14 @@ public class Window extends JFrame implements View {
 	}
 
 	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
-		return null;
+		return c.getEventMap(mapCentreX, mapCentreY, eventName);
 	}
+
 	public void refreshEditor() {
 		editor.refresh();
+	}
+
+	public void eventRemoveRoom(String eventName, String id) {
+		c.eventRemoveRoom(eventName, id);
 	}
 }

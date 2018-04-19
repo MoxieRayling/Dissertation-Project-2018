@@ -116,4 +116,12 @@ public class Controller {
 	public void exportEvent(String event) {
 		((EditorModel) m).exportEvent(event);
 	}
+
+	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
+		return ((EditorModel) m).getEventMap(mapCentreX, mapCentreY, eventName);
+	}
+
+	public void eventRemoveRoom(String eventName, String id) {
+		((EditorModel) m).eventRemoveRoom(eventName, id);
+	}
 }

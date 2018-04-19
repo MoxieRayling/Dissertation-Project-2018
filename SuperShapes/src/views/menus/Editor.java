@@ -16,7 +16,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -42,7 +46,7 @@ public class Editor extends JPanel {
 	private Timer timer;
 	private Window w;
 	private int sizex = 1200;
-	private int sizey = 600;
+	private int sizey = 750;
 	private int scale = 512 / 13;
 	private int roomScale = 512 / 13;
 	private List<Image> images = new ArrayList<Image>();
@@ -73,16 +77,18 @@ public class Editor extends JPanel {
 	private JCheckBox deleteRoom;
 	private JButton finish;
 	private JButton back;
-	private JButton makeEvent;
 	private List<String> entities = new ArrayList<String>();
 	private List<String> tiles = new ArrayList<String>();
-	private List<String> events = new ArrayList<String>();
 	private JComboBox<String> entityList;
 	private JComboBox<String> tileList;
 	private JComboBox<String> eventList;
 	private JCheckBox paintEvent;
 	private JButton makeEntity;
 	private JButton makeTile;
+	private JButton makeEvent;
+	private JTextField eventName;
+	private JTextArea mapLines;
+	private JScrollPane scroll;
 
 	public Editor(Window w) {
 		this.w = w;
@@ -99,6 +105,14 @@ public class Editor extends JPanel {
 
 	private void initUI() {
 		refresh();
+
+		mapLines = new JTextArea();
+		mapLines.setBounds(20, 600, 1160, 100);
+		scroll = new JScrollPane(mapLines);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scroll.setBounds(20, 600, 1160, 100);
+		this.add(scroll);
 
 		paintEntity = new JCheckBox("Add Entity");
 		paintEntity.setContentAreaFilled(false);
@@ -135,13 +149,18 @@ public class Editor extends JPanel {
 		});
 		this.add(makeTile);
 
+		eventName = new JTextField();
+		eventName.setBounds(scale * 14, scale * 9, scale * 3, 20);
+		this.add(eventName);
+
 		makeEvent = new JButton("Make Event");
-		makeEvent.setBounds(scale * 14, scale * 9, scale * 3, 20);
+		makeEvent.setBounds(scale * 14, scale * 10, scale * 3, 20);
 		makeEvent.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.eventEditor();
+				if (eventName.getText().trim().length() > 0)
+					w.eventEditor(eventName.getText().trim());
 			}
 		});
 		this.add(makeEvent);
@@ -495,10 +514,15 @@ public class Editor extends JPanel {
 	private String[] generateTile(int x, int y) {
 		String[] result = new String[2];
 		for (String s : entities) {
-			if (paintEntity.isSelected() && s.startsWith(entityList.getSelectedItem().toString())) {
-				result[0] = s.substring(s.indexOf(" ") + 1);
-				result[0] = result[0].substring(0, result[0].indexOf(" ")) + " " + x + "," + y + " "
-						+ result[0].substring(result[0].indexOf(" ") + 1);
+			if (paintEntity.isSelected()) {
+				if(entityList.getSelectedItem().toString().equals("remove")) {
+					result[0] = "remove";
+				}
+				else if (s.startsWith(entityList.getSelectedItem().toString())) {
+					result[0] = s.substring(s.indexOf(" ") + 1);
+					result[0] = result[0].substring(0, result[0].indexOf(" ")) + " " + x + "," + y + " "
+							+ result[0].substring(result[0].indexOf(" ") + 1);
+				}
 			}
 		}
 		System.out.println("entity " + result[0]);
@@ -599,17 +623,18 @@ public class Editor extends JPanel {
 	}
 
 	public void refresh() {
-		entities = FileManager.readFromFile(FileManager.getGameDir() + "/entities.txt");
-		String[] entityNames = new String[entities.size()];
+		entities = FileManager.readFromFile("parts/entities.txt");
+		String[] entityNames = new String[entities.size() + 1];
+		entityNames[0] = "remove";
 		for (String e : entities) {
-			entityNames[entities.indexOf(e)] = e.substring(0, e.indexOf(" "));
+			entityNames[entities.indexOf(e) + 1] = e.substring(0, e.indexOf(" "));
 		}
 		entityList = new JComboBox<String>(entityNames);
 		entityList.setBounds(scale * 14, scale * 2, scale * 3, 20);
 		add(entityList);
 		this.add(entityList);
 
-		tiles = FileManager.readFromFile(FileManager.getGameDir() + "/tiles.txt");
+		tiles = FileManager.readFromFile("parts/tiles.txt");
 		String[] tileNames = new String[tiles.size()];
 		for (String e : tiles) {
 			tileNames[tiles.indexOf(e)] = e.substring(0, e.indexOf(" "));
@@ -619,12 +644,11 @@ public class Editor extends JPanel {
 		add(tileList);
 		this.add(entityList);
 
-		events = FileManager.readFromFile(FileManager.getGameDir() + "/events.txt");
-		String[] eventNames = new String[events.size()];
-		for (String e : events) {
-			eventNames[events.indexOf(e)] = e.substring(0, e.indexOf(" "));
+		String[] eventNames = FileManager.getEvents();
+		for (int i = 0; i < eventNames.length - 1; i++) {
+			// eventNames[i] = eventNames[i].substring(0, eventNames[i].length() - 5);
 		}
-		eventList = new JComboBox<String>(tileNames);
+		eventList = new JComboBox<String>(eventNames);
 		eventList.setBounds(scale * 14, scale * 7, scale * 3, 20);
 		add(eventList);
 		this.add(entityList);
