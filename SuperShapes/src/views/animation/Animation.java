@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import controller.Constants;
+
+import model.GameRules;
 import model.Model;
 import model.Room;
 import model.entities.Block;
@@ -305,7 +306,7 @@ public class Animation extends JPanel {
 		g.drawString(String.valueOf("Lives: " + lives), columns[0], rows[0]);
 		g.drawString(String.valueOf("Steps: " + clock), columns[1], rows[0]);
 		g.drawString(String.valueOf("Coins: " + coins), columns[3], rows[0]);
-		if (Constants.flight) {
+		if (GameRules.flight) {
 			if (flyCooldown > 0) {
 				g.setColor(Color.RED);
 				g.drawString(String.valueOf("Fly " + flyCooldown), columns[1], rows[1]);
@@ -318,7 +319,7 @@ public class Animation extends JPanel {
 				g.drawString(String.valueOf("Fly " + fly), columns[1], rows[1]);
 			}
 		}
-		if (Constants.pause) {
+		if (GameRules.pause) {
 			if (pauseCooldown > 0) {
 				g.setColor(Color.RED);
 				g.drawString(String.valueOf("Pause " + pauseCooldown), columns[0], rows[1]);
@@ -331,7 +332,7 @@ public class Animation extends JPanel {
 				g.drawString(String.valueOf("Pause " + pause), columns[0], rows[1]);
 			}
 		}
-		if (Constants.rewind) {
+		if (GameRules.rewind) {
 			if (rewindCooldown > 0) {
 				g.setColor(Color.RED);
 				g.drawString(String.valueOf("Rewind " + rewindCooldown), columns[2], rows[1]);
@@ -340,7 +341,7 @@ public class Animation extends JPanel {
 				g.drawString(String.valueOf("'R' to Rewind "), columns[2], rows[1]);
 			}
 		}
-		if (Constants.shield) {
+		if (GameRules.shield) {
 			if (shieldCooldown > 0) {
 				g.setColor(Color.RED);
 				g.drawString(String.valueOf("Shield " + shieldCooldown), columns[3], rows[1]);

@@ -13,7 +13,6 @@ import java.awt.event.ItemListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import controller.Constants;
 import views.Window;
 import views.animation.MapImage;
 

@@ -13,7 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -54,11 +54,11 @@ public class SaveMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String save = newSaveText.getText();
-				Constants.setSaveDir(save);
-				File file = new File(Constants.saveDir + "/save.txt");
+				FileManager.setSaveDir(save);
+				File file = new File(FileManager.getSaveDir() + "/save.txt");
 				if (file.exists()) {
 				} else if (!newSaveText.getText().isEmpty()) {
-					Constants.setSaveDir(save);
+					FileManager.setSaveDir(save);
 					w.saveGame(save);
 					w.back();
 				}
@@ -73,7 +73,7 @@ public class SaveMenu extends JPanel {
 	}
 
 	private String[] getSaves() {
-		File file = new File(Constants.gameDir + "/saves");
+		File file = new File(FileManager.getGameDir() + "/saves");
 		String[] directories = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File current, String name) {

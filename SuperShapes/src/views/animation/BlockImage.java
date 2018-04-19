@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-import controller.Constants;
+import model.FileManager;
 
 public class BlockImage extends Image {
 	public BlockImage(String id, int x, int y, int scale, String room, String img, char direction) {
@@ -15,7 +15,7 @@ public class BlockImage extends Image {
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
-		BufferedImage image = Constants.getImage(img);
+		BufferedImage image = FileManager.getImage(img);
 		if (image != null) {
 			double scalex = (double) scale / (double) image.getWidth();
 			double scaley = (double) scale / (double) image.getHeight();

@@ -7,7 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -28,8 +28,8 @@ public class CreateMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!newGame.getText().isEmpty()) {
-					Constants.setGameDir(newGame.getText());
-					Constants.setSaveDir("save");
+					FileManager.setGameDir(newGame.getText());
+					FileManager.setSaveDir("save");
 					w.makeNewDir();
 					//w.gameRules();
 					w.editor();

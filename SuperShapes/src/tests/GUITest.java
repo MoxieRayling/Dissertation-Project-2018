@@ -1,6 +1,5 @@
 package tests;
 
-import controller.Constants;
 import controller.Controller;
 import model.Model;
 import views.Window;

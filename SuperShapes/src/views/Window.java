@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import controller.Constants;
 import controller.Controller;
 import model.Model;
 import model.Room;
@@ -276,9 +275,8 @@ public class Window extends JFrame implements View {
 
 	}
 
-	public void eventEditor(String event) {
+	public void eventEditor() {
 		eventEditor = new EventEditor(this);
-		eventEditor.setEventName(event);
 		history.add(eventEditor);
 		c.runEditor();
 		this.setSize(eventEditor.getPreferredSize());
@@ -463,5 +461,12 @@ public class Window extends JFrame implements View {
 
 	public void exportEvent(String event) {
 		c.exportEvent(event);
+	}
+
+	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
+		return null;
+	}
+	public void refreshEditor() {
+		editor.refresh();
 	}
 }

@@ -2,7 +2,6 @@ package model;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
-import controller.Constants;
 import model.entities.Entity;
 import model.entities.Ghost;
 import model.entities.Player;
@@ -427,5 +426,67 @@ public class Model implements Subject {
 	public void setTextRead() {
 		room.setText("");
 		room.getTile(player).setTextRead(true);
+	}
+
+	private void activateEvent(String event) {
+		List<String> commands = fileManager.parseEvent(event);
+		for(String s : commands) {
+			if(s.startsWith("enable flight"))
+				enableFlight();
+			if(s.startsWith("enable pause"))
+				enablePause();
+			if(s.startsWith("enable rewind"))
+				enableRewind();
+			if(s.startsWith("enable shield"))
+				enableShield();
+			if(s.startsWith("disable flight"))
+				disableFlight();
+			if(s.startsWith("disable pause"))
+				disablePause();
+			if(s.startsWith("disable rewind"))
+				disableRewind();
+			if(s.startsWith("disable shield"))
+				disableShield();
+		}
+	}
+
+	private void disableShield() {
+		GameRules.shield = true;
+		
+	}
+
+	private void disableRewind() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void disablePause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void enableShield() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void enableRewind() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void enablePause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void disableFlight() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void enableFlight() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 
-import controller.Constants;
 
 public class MapImage extends Image{
 

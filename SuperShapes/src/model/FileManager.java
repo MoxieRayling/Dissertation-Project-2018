@@ -1,15 +1,19 @@
 package model;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import controller.Constants;
+
+import javax.imageio.ImageIO;
+
 import model.entities.Block;
 import model.entities.Entity;
 import model.entities.Ghost;
@@ -29,9 +33,51 @@ import observers.Observer;
 
 public class FileManager {
 
+	private static String gameDir = "games/game1";
+	private static String saveDir = "save";
+	private static List<String> textureNames = new ArrayList<String>();
+	private static List<BufferedImage> textures = new ArrayList<BufferedImage>();
 	private int enemyCount = 0;
 
 	public FileManager() {
+	}
+
+	public static String getGameDir() {
+		return gameDir;
+	}
+
+	public static String getSaveDir() {
+		return saveDir;
+	}
+
+	public static void setGameDir(String gameFile) {
+		gameDir = "games/" + gameFile;
+		setImages();
+	}
+
+	public static void setSaveDir(String save) {
+		saveDir = gameDir + "/saves/" + save;
+	}
+
+	public static void setImages() {
+		File file = new File(gameDir + "/textures");
+		String[] files = file.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File current, String name) {
+				return new File(current, name).isFile();
+			}
+		});
+		textureNames.clear();
+		textures.clear();
+		for (int i = 0; i < files.length; i++) {
+			textureNames.add(files[i]);
+			File imgSrc = new File(gameDir + "/textures/" + files[i]);
+			try {
+				textures.add(ImageIO.read(imgSrc));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private int getEnemyCount() {
@@ -59,33 +105,33 @@ public class FileManager {
 	}
 
 	public String getSaveData() {
-		String fileName = Constants.saveDir + "/save.txt";
+		String fileName = saveDir + "/save.txt";
 		return readFromFile(fileName).get(0);
 	}
 
 	public List<String> getWorldData() {
-		String fileName = Constants.saveDir + "/world.txt";
+		String fileName = saveDir + "/world.txt";
 		return readFromFile(fileName);
 	}
 
 	public List<String> getWorkingData() {
-		String fileName = Constants.saveDir + "/working.txt";
+		String fileName = saveDir + "/working.txt";
 		return readFromFile(fileName);
 	}
 
 	public List<String> getMasterData() {
-		String fileName = Constants.gameDir + "/master.txt";
+		String fileName = gameDir + "/master.txt";
 		return readFromFile(fileName);
 	}
 
 	public void saveGame(Room r, String playerData, int clock) {
-		String fileName = Constants.saveDir + "/save.txt";
+		String fileName = saveDir + "/save.txt";
 		String saveData = r.getId() + ":" + playerData + ":" + clock;
 		writeToFile(saveData, fileName);
 	}
 
 	public void newSaveData() {
-		String fileName = Constants.saveDir + "/save.txt";
+		String fileName = saveDir + "/save.txt";
 		String saveData = "0,0:0,0:0,0:0";
 		writeToFile(saveData, fileName);
 	}
@@ -169,7 +215,8 @@ public class FileManager {
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 			for (String l : lines) {
 				bufferedWriter.write(l);
-				bufferedWriter.newLine();
+				if (!(lines.indexOf(l) == lines.size() - 1))
+					bufferedWriter.newLine();
 			}
 			bufferedWriter.close();
 		} catch (IOException ex) {
@@ -197,7 +244,7 @@ public class FileManager {
 		return result;
 	}
 
-	public void removeRoom(String id) {
+	public void removeRoomWorking(String id) {
 		List<String> world = getWorkingData();
 		for (String s : world) {
 			if (s.startsWith("room " + id)) {
@@ -205,31 +252,43 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, Constants.saveDir + "/working.txt");
+		writeToFile(world, saveDir + "/working.txt");
+	}
+
+	public void removeRoomWorld(String id) {
+		List<String> world = getWorldData();
+		for (String s : world) {
+			if (s.startsWith("room " + id)) {
+				world.set(world.indexOf(s), "xxx");
+			}
+		}
+		world.remove("xxx");
+		writeToFile(world, saveDir + "/working.txt");
+		writeToFile(world, saveDir + "/world.txt");
 	}
 
 	public void exportWorking(String room) {
-		removeRoom(room.split(" ")[1]);
+		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.saveDir + "/working.txt");
+		writeToFile(lines, saveDir + "/working.txt");
 	}
 
 	public void exportWorld(String room) {
-		removeRoom(room.split(" ")[1]);
+		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.saveDir + "/working.txt");
-		writeToFile(lines, Constants.saveDir + "/world.txt");
+		writeToFile(lines, saveDir + "/working.txt");
+		writeToFile(lines, saveDir + "/world.txt");
 	}
 
 	public void exportMaster(String room) {
-		removeRoom(room.split(" ")[1]);
+		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, Constants.saveDir + "/working.txt");
-		writeToFile(lines, Constants.saveDir + "/world.txt");
-		writeToFile(lines, Constants.gameDir + "/master.txt");
+		writeToFile(lines, saveDir + "/working.txt");
+		writeToFile(lines, saveDir + "/world.txt");
+		writeToFile(lines, gameDir + "/master.txt");
 		System.out.println("exported");
 	}
 
@@ -618,51 +677,50 @@ public class FileManager {
 	}
 
 	public void makeNewDir() {
-		File dir = new File(Constants.gameDir);
+		File dir = new File(gameDir);
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/events");
+		dir = new File(gameDir + "/events");
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/saves");
+		dir = new File(gameDir + "/saves");
 		dir.mkdir();
-		Constants.setSaveDir("save");
-		dir = new File(Constants.saveDir);
+		setSaveDir("save");
+		dir = new File(saveDir);
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/textures");
+		dir = new File(gameDir + "/textures");
 		dir.mkdir();
 		List<String> world = new ArrayList<String>();
 		world.add("room 0,0 11,11 5,5,5,5;E;T");
-		writeToFile(world, Constants.saveDir + "/working.txt");
-		writeToFile(world, Constants.saveDir + "/world.txt");
-		writeToFile(world, Constants.gameDir + "/master.txt");
+		writeToFile(world, saveDir + "/working.txt");
+		writeToFile(world, saveDir + "/world.txt");
+		writeToFile(world, gameDir + "/master.txt");
 		newSaveData();
 	}
 
 	public void makeNewSave() {
-		File dir = new File(Constants.gameDir);
+		File dir = new File(gameDir);
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/textures");
+		dir = new File(gameDir + "/textures");
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/events");
+		dir = new File(gameDir + "/events");
 		dir.mkdir();
-		dir = new File(Constants.gameDir + "/saves");
+		dir = new File(gameDir + "/saves");
 		dir.mkdir();
-		dir = new File(Constants.saveDir);
+		dir = new File(saveDir);
 		dir.mkdir();
 		List<String> world = this.getMasterData();
-		writeToFile(world, Constants.saveDir + "/working.txt");
-		writeToFile(world, Constants.saveDir + "/world.txt");
+		writeToFile(world, saveDir + "/working.txt");
+		writeToFile(world, saveDir + "/world.txt");
 		newSaveData();
 	}
 
 	public void overWriteWorking() {
-		writeToFile(getWorldData(), Constants.saveDir + "/working.txt");
+		writeToFile(getWorldData(), saveDir + "/working.txt");
 	}
 
 	public void exportEvent(String room, String event) {
-		removeFromEvent(room.substring(0, 8), event);
 		List<String> eventRooms = getEventData(event);
 		eventRooms.add(room);
-		writeToFile(eventRooms, event);
+		writeToFile(eventRooms, gameDir + "/events/" + event + ".txt");
 	}
 
 	public void removeFromEvent(String id, String event) {
@@ -673,10 +731,38 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, Constants.gameDir + "/events/" + event + ".txt");
+		writeToFile(world, gameDir + "/events/" + event + ".txt");
 	}
 
 	private List<String> getEventData(String event) {
-		return readFromFile(Constants.gameDir + "/" + event + ".txt");
+		return readFromFile(gameDir + "/events/" + event + ".txt");
+	}
+
+	public List<String> parseEvent(String event) {
+		List<String> result = new ArrayList<String>();
+		List<String> eventData = this.getEventData(event);
+		for (String s : eventData) {
+			if (s.startsWith("enable") || s.startsWith("disable") || s.startsWith("gameover")) {
+				result.add(s);
+				eventData.set(eventData.indexOf(s), "xxx");
+			} else if (s.startsWith("delete")) {
+				this.removeRoomWorld(s.substring(12, 15));
+				eventData.set(eventData.indexOf(s), "xxx");
+			}
+		}
+		while (eventData.contains("xxx")) {
+			eventData.remove("xxx");
+		}
+		writeToFile(eventData, saveDir + "/world.txt");
+		return result;
+	}
+
+	public static BufferedImage getImage(String img) {
+		for(String s : textureNames) {
+			if(s.equals(img)) {
+				return textures.get(textureNames.indexOf(s));
+			}
+		}
+		return null;
 	}
 }

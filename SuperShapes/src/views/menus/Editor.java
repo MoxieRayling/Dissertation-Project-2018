@@ -1,40 +1,32 @@
 package views.menus;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import controller.Constants;
+import model.FileManager;
 import model.Room;
 import model.entities.Block;
 import model.entities.Entity;
 import model.entities.Ghost;
-import model.entities.Shot;
 import model.entities.Snake;
-import model.entities.SnakeBody;
 import model.entities.Turret;
 import views.Window;
 import views.animation.BlockImage;
@@ -46,7 +38,7 @@ import views.animation.SnakeImage;
 import views.animation.TurretImage;
 
 @SuppressWarnings("serial")
-public class Editor extends JPanel  {
+public class Editor extends JPanel {
 	private Timer timer;
 	private Window w;
 	private int sizex = 1200;
@@ -81,12 +73,21 @@ public class Editor extends JPanel  {
 	private JCheckBox deleteRoom;
 	private JButton finish;
 	private JButton back;
-	private JTextField eventName;
 	private JButton makeEvent;
+	private List<String> entities = new ArrayList<String>();
+	private List<String> tiles = new ArrayList<String>();
+	private List<String> events = new ArrayList<String>();
+	private JComboBox<String> entityList;
+	private JComboBox<String> tileList;
+	private JComboBox<String> eventList;
+	private JCheckBox paintEvent;
+	private JButton makeEntity;
+	private JButton makeTile;
 
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
+		this.setBackground(new Color(0xbbbbbb));
 		initUI();
 		start();
 	}
@@ -97,22 +98,50 @@ public class Editor extends JPanel  {
 	}
 
 	private void initUI() {
-		
-		
-		eventName = new JTextField();
-		eventName.setBounds(800, 530, 100, 20);
-		this.add(eventName);
+		refresh();
 
-		makeEvent = new JButton("Make Event");
-		makeEvent.setBounds(900, 530, 100, 20);
-		makeEvent.addActionListener(new ActionListener() {
+		paintEntity = new JCheckBox("Add Entity");
+		paintEntity.setContentAreaFilled(false);
+		paintEntity.setBounds(scale * 14, scale, scale * 3, 20);
+		this.add(paintEntity);
+
+		paintTile = new JCheckBox("Add Tile");
+		paintTile.setContentAreaFilled(false);
+		paintTile.setBounds(scale * 14, scale * 5, scale * 3, 20);
+		this.add(paintTile);
+
+		paintEvent = new JCheckBox("Add Event");
+		paintEvent.setContentAreaFilled(false);
+		paintEvent.setBounds(scale * 14, scale * 8, scale * 3, 20);
+		this.add(paintEvent);
+
+		makeEntity = new JButton("Make Entity");
+		makeEntity.setBounds(scale * 14, scale * 3, scale * 3, 20);
+		makeEntity.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (!eventName.getText().equals("")) {
-					w.eventEditor(eventName.getText());
-				}
-				System.out.println("here");
 				w.createEntityMenu();
+			}
+		});
+		this.add(makeEntity);
+
+		makeTile = new JButton("Make Tile");
+		makeTile.setBounds(scale * 14, scale * 6, scale * 3, 20);
+		makeTile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.createTileMenu();
+			}
+		});
+		this.add(makeTile);
+
+		makeEvent = new JButton("Make Event");
+		makeEvent.setBounds(scale * 14, scale * 9, scale * 3, 20);
+		makeEvent.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				w.eventEditor();
 			}
 		});
 		this.add(makeEvent);
@@ -267,7 +296,7 @@ public class Editor extends JPanel  {
 				public void actionPerformed(ActionEvent arg0) {
 					selectedX = x;
 					selectedY = y;
-					w.addToRoom(generateTile(), x, y);
+					w.addToRoom(generateTile(x, y), x, y);
 				}
 			});
 			this.add(b);
@@ -301,16 +330,6 @@ public class Editor extends JPanel  {
 			});
 			this.add(b);
 		}
-
-		paintEntity = new JCheckBox("Change Entity");
-		paintEntity.setContentAreaFilled(false);
-		paintEntity.setBounds(scale * 14, scale / 3, scale * 3, 20);
-		this.add(paintEntity);
-
-		paintTile = new JCheckBox("Change Tile");
-		paintTile.setContentAreaFilled(false);
-		paintTile.setBounds(scale * 14, scale * 6, scale * 3, 20);
-		this.add(paintTile);
 		initExits();
 	}
 
@@ -466,15 +485,32 @@ public class Editor extends JPanel  {
 				public void actionPerformed(ActionEvent arg0) {
 					selectedX = xTile;
 					selectedY = yTile;
-					w.addToRoom(generateTile(), xTile, yTile);
+					w.addToRoom(generateTile(xTile, yTile), xTile, yTile);
 				}
 			});
 			this.add(b);
 		}
 	}
 
-	private String[] generateTile() {
-		return null;
+	private String[] generateTile(int x, int y) {
+		String[] result = new String[2];
+		for (String s : entities) {
+			if (paintEntity.isSelected() && s.startsWith(entityList.getSelectedItem().toString())) {
+				result[0] = s.substring(s.indexOf(" ") + 1);
+				result[0] = result[0].substring(0, result[0].indexOf(" ")) + " " + x + "," + y + " "
+						+ result[0].substring(result[0].indexOf(" ") + 1);
+			}
+		}
+		System.out.println("entity " + result[0]);
+		for (String s : tiles) {
+			if (paintTile.isSelected() && s.startsWith(tileList.getSelectedItem().toString())) {
+				result[1] = s.substring(s.indexOf(" ") + 1);
+				result[1] = result[1].substring(0, result[1].indexOf(" ")) + " " + x + "," + y
+						+ result[1].substring(result[1].indexOf(" ") + 1);
+			}
+		}
+		System.out.println("tile " + result[1]);
+		return result;
 	}
 
 	public void createImage(Entity e) {
@@ -560,6 +596,38 @@ public class Editor extends JPanel  {
 		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
 
 		timer.start();
+	}
+
+	public void refresh() {
+		entities = FileManager.readFromFile(FileManager.getGameDir() + "/entities.txt");
+		String[] entityNames = new String[entities.size()];
+		for (String e : entities) {
+			entityNames[entities.indexOf(e)] = e.substring(0, e.indexOf(" "));
+		}
+		entityList = new JComboBox<String>(entityNames);
+		entityList.setBounds(scale * 14, scale * 2, scale * 3, 20);
+		add(entityList);
+		this.add(entityList);
+
+		tiles = FileManager.readFromFile(FileManager.getGameDir() + "/tiles.txt");
+		String[] tileNames = new String[tiles.size()];
+		for (String e : tiles) {
+			tileNames[tiles.indexOf(e)] = e.substring(0, e.indexOf(" "));
+		}
+		tileList = new JComboBox<String>(tileNames);
+		tileList.setBounds(scale * 14, scale * 4, scale * 3, 20);
+		add(tileList);
+		this.add(entityList);
+
+		events = FileManager.readFromFile(FileManager.getGameDir() + "/events.txt");
+		String[] eventNames = new String[events.size()];
+		for (String e : events) {
+			eventNames[events.indexOf(e)] = e.substring(0, e.indexOf(" "));
+		}
+		eventList = new JComboBox<String>(tileNames);
+		eventList.setBounds(scale * 14, scale * 7, scale * 3, 20);
+		add(eventList);
+		this.add(entityList);
 	}
 
 }

@@ -13,7 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -40,7 +40,7 @@ public class LoadMenu extends JPanel {
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Constants.setSaveDir((String) saves.getSelectedItem());
+				FileManager.setSaveDir((String) saves.getSelectedItem());
 				w.loadGame();
 			}
 		});
@@ -53,7 +53,7 @@ public class LoadMenu extends JPanel {
 	}
 	
 	private String[] getSaves() {
-		File file = new File(Constants.gameDir + "/saves");
+		File file = new File(FileManager.getGameDir() + "/saves");
 		String[] directories = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File current, String name) {

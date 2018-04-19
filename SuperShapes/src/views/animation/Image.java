@@ -8,8 +8,6 @@ import java.io.IOException;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 
-import controller.Constants;
-
 public abstract class Image {
 
 	protected String id;

@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import controller.Constants;
+import model.GameRules;
 import observers.Observer;
 
 public class Player extends Entity {
@@ -62,16 +62,16 @@ public class Player extends Entity {
 				setLastEntrance('S');
 		}
 		this.roomId = room;
-		if (Constants.PauseRoomCooldown) {
+		if (GameRules.PauseRoomCooldown) {
 			this.pauseCooldown = 0;
 		}
-		if (Constants.flightRoomCooldown) {
+		if (GameRules.flightRoomCooldown) {
 			this.flyCooldown = 0;
 		}
-		if (Constants.rewindRoomCooldown) {
+		if (GameRules.rewindRoomCooldown) {
 			this.rewindCooldown = 0;
 		}
-		if (Constants.shieldRoomCooldown) {
+		if (GameRules.shieldRoomCooldown) {
 			this.shieldCooldown = 0;
 		}
 	}
@@ -155,14 +155,14 @@ public class Player extends Entity {
 	}
 
 	public void fly() {
-		if (flyCooldown <= 0 && Constants.flight) {
+		if (flyCooldown <= 0 && GameRules.flight) {
 			fly = 3;
 			notifyObserver();
 		}
 	}
 
 	public void pauseTime() {
-		if (pauseCooldown <= 0 && Constants.pause) {
+		if (pauseCooldown <= 0 && GameRules.pause) {
 			pause = 3;
 			notifyObserver();
 		}
@@ -247,13 +247,13 @@ public class Player extends Entity {
 	}
 
 	public void rewind() {
-		if (rewindCooldown <= 0 && Constants.rewind) {
+		if (rewindCooldown <= 0 && GameRules.rewind) {
 			setTeleport(true);
 			setLoc(xCoords[4], yCoords[4]);
 
 			resetHistory();
 			setTeleport(false);
-			rewindCooldown = Constants.rewindCooldown;
+			rewindCooldown = GameRules.rewindCooldown;
 			notifyObserver();
 		}
 	}
@@ -267,14 +267,14 @@ public class Player extends Entity {
 	}
 
 	public void shield() {
-		if (shieldCooldown <= 0 && Constants.shield)
+		if (shieldCooldown <= 0 && GameRules.shield)
 			this.shield = true;
 		notifyObserver();
 	}
 
 	public void breakShield() {
 		this.shield = false;
-		shieldCooldown = Constants.shieldCooldown;
+		shieldCooldown = GameRules.shieldCooldown;
 		notifyObserver();
 	}
 
@@ -283,21 +283,21 @@ public class Player extends Entity {
 	}
 
 	private void flyDec() {
-		if (flyCooldown <= 0 && fly > 0 && !Constants.infFlight) {
+		if (flyCooldown <= 0 && fly > 0 && !GameRules.infFlight) {
 			fly--;
-			if (fly == 0 && !Constants.infFlight)
-				flyCooldown = Constants.flightCooldown;
+			if (fly == 0 && !GameRules.infFlight)
+				flyCooldown = GameRules.flightCooldown;
 		} else if (flyCooldown > 0)
 			flyCooldown--;
 		notifyObserver();
 	}
 
 	private void pauseDec() {
-		if (pauseCooldown <= 0 && pause > 0 && !Constants.infPause) {
+		if (pauseCooldown <= 0 && pause > 0 && !GameRules.infPause) {
 			pause--;
 			if (pause == 0)
-				pauseCooldown = Constants.pauseCooldown;
-		} else if (pauseCooldown > 0 && !Constants.infPause)
+				pauseCooldown = GameRules.pauseCooldown;
+		} else if (pauseCooldown > 0 && !GameRules.infPause)
 			pauseCooldown--;
 		notifyObserver();
 	}

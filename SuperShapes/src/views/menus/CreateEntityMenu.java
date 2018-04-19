@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 
-import controller.Constants;
 import model.FileManager;
 import views.Window;
 
@@ -61,6 +60,7 @@ public class CreateEntityMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				w.back();
+				w.refreshEditor();
 			}
 		});
 		back.setBounds(scale, 300, scale * 2, 20);
@@ -168,7 +168,7 @@ public class CreateEntityMenu extends JPanel {
 	}
 
 	private String[] getImages() {
-		File file = new File(Constants.gameDir + "/textures");
+		File file = new File(FileManager.getGameDir() + "/textures");
 		String[] images = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File current, String name) {
@@ -195,24 +195,24 @@ public class CreateEntityMenu extends JPanel {
 		String result = "";
 		switch (entitiesBox.getSelectedItem().toString()) {
 		case "Block":
-			result = name.getText() + " block " + entityImage.getSelectedItem();
+			result = name.getText().replaceAll(" ", "_") + " block " + entityImage.getSelectedItem();
 			break;
 		case "Snake":
-			result = name.getText() + " snake " + snakeSize.getValue() + " " + entityImage.getSelectedItem();
+			result = name.getText().replaceAll(" ", "_") + " snake " + snakeSize.getValue() + " " + entityImage.getSelectedItem();
 			break;
 		case "Turret":
-			result = name.getText() + " turret " + turretRate.getValue() + " "
+			result = name.getText().replaceAll(" ", "_") + " turret " + turretRate.getValue() + " "
 					+ turretDirectionBox.getSelectedItem().toString() + " " + turretDelay.getValue() + " "
 					+ entityImage.getSelectedItem();
 			break;
 		case "Ghost":
-			result = name.getText() + " ghost " + ghostPower.getValue() + " " + entityImage.getSelectedItem();
+			result = name.getText().replaceAll(" ", "_") + " ghost " + ghostPower.getValue() + " " + entityImage.getSelectedItem();
 			break;
 		default:
 			break;
 
 		}
-		String fileName = Constants.gameDir + "/entities.txt";
+		String fileName = FileManager.getGameDir()+ "/entities.txt";
 		List<String> tiles = FileManager.readFromFile(fileName);
 		tiles.add(result);
 		FileManager.writeToFile(tiles, fileName);

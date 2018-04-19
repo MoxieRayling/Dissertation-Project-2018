@@ -19,7 +19,6 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import controller.Constants;
 import model.FileManager;
 import views.Window;
 
@@ -71,6 +70,7 @@ public class CreateTileMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				w.back();
+				w.refreshEditor();
 			}
 		});
 		back.setBounds(scale, 300, scale * 3, 20);
@@ -246,7 +246,7 @@ public class CreateTileMenu extends JPanel {
 	}
 
 	private String[] getImages() {
-		File file = new File(Constants.gameDir + "/textures");
+		File file = new File(FileManager.getGameDir() + "/textures");
 		String[] images = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File current, String name) {
@@ -273,43 +273,45 @@ public class CreateTileMenu extends JPanel {
 		String result = "";
 		switch (tilesBox.getSelectedItem().toString()) {
 		case "Empty":
-			result = name.getText() + " empty " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " empty " + " " + tileImage.getSelectedItem() + " \""
 					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Wall":
-			result = name.getText() + " wall " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " wall " + " " + tileImage.getSelectedItem() + " \""
 					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Slide":
-			result = name.getText() + " slide " + " " + slideDirectionBox.getSelectedItem().toString() + " "
-					+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
-					+ String.valueOf(tileText.getText().isEmpty());
+			result = name.getText().replaceAll(" ", "_") + " slide " + " "
+					+ slideDirectionBox.getSelectedItem().toString() + " " + tileImage.getSelectedItem() + " \""
+					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Teleport":
-			result = name.getText() + " tele " + " " + teleportX.getValue() + "," + teleportY.getValue() + " "
-					+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
-					+ String.valueOf(tileText.getText().isEmpty());
+			result = name.getText().replaceAll(" ", "_") + " tele " + " " + teleportX.getValue() + ","
+					+ teleportY.getValue() + " " + tileImage.getSelectedItem() + " \""
+					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Hole":
-			result = name.getText() + " hole " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " hole " + " " + tileImage.getSelectedItem() + " \""
 					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Key":
-			result = name.getText() + " key " + " " + key.getText() + " " + tileImage.getSelectedItem() + " \""
-					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
+			result = name.getText().replaceAll(" ", "_") + " key " + " " + key.getText() + " "
+					+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
+					+ String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Lock":
-			result = name.getText() + " lock " + " " + key.getText() + " " + tileImage.getSelectedItem() + " \""
-					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
+			result = name.getText().replaceAll(" ", "_") + " lock " + " " + key.getText() + " "
+					+ tileImage.getSelectedItem() + " \"" + tileText.getText().replaceAll(" ", "_") + " "
+					+ String.valueOf(tileText.getText().isEmpty());
 			break;
 		case "Coin":
-			result = name.getText() + " coin " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " coin " + " " + tileImage.getSelectedItem() + " \""
 					+ tileText.getText().replaceAll(" ", "_") + " " + String.valueOf(tileText.getText().isEmpty());
 			break;
 		default:
 			break;
 		}
-		String fileName = Constants.gameDir + "/tiles.txt";
+		String fileName = FileManager.getGameDir() + "/tiles.txt";
 		List<String> tiles = FileManager.readFromFile(fileName);
 		tiles.add(result);
 		FileManager.writeToFile(tiles, fileName);

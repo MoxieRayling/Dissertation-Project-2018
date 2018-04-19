@@ -69,7 +69,7 @@ public class EditorModel extends Model {
 	public void deleteRoom(int x, int y) {
 		if (!(x == 0 && y == 0)) {
 			changeRoom("0,0");
-			fileManager.removeRoom(x + "," + y);
+			fileManager.removeRoomWorld(x + "," + y);
 		}
 	}
 

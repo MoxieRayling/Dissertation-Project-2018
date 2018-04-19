@@ -6,7 +6,7 @@ import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-import controller.Constants;
+import model.FileManager;
 
 public class TurretImage extends Image {
 
@@ -18,7 +18,7 @@ public class TurretImage extends Image {
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
-		BufferedImage image = Constants.getImage(img);
+		BufferedImage image = FileManager.getImage(img);
 		double scalex = 0;
 		double scaley = 0;
 		if (image != null) {

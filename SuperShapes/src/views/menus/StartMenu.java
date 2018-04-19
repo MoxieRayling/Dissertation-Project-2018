@@ -13,7 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -48,7 +48,7 @@ public class StartMenu extends JPanel {
 		selectGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Constants.setGameDir((String) games.getSelectedItem());
+				FileManager.setGameDir((String) games.getSelectedItem());
 				w.newGameMenu();
 			}
 		});
@@ -56,8 +56,8 @@ public class StartMenu extends JPanel {
 		editGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Constants.setGameDir((String) games.getSelectedItem());
-				Constants.setSaveDir("save");
+				FileManager.setGameDir((String) games.getSelectedItem());
+				FileManager.setSaveDir("save");
 				//w.gameRules();
 				w.editor();
 			}

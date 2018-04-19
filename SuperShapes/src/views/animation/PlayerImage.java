@@ -11,7 +11,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import controller.Constants;
+import model.FileManager;
+
 
 public class PlayerImage extends Image {
 
@@ -107,7 +108,7 @@ public class PlayerImage extends Image {
 		if (shrink)
 			shrink();
 
-		BufferedImage image = Constants.getImage(img);
+		BufferedImage image = FileManager.getImage(img);
 		if (image != null) {
 			double scalex = (double) size / (double) image.getWidth();
 			double scaley = (double) size / (double) image.getHeight();

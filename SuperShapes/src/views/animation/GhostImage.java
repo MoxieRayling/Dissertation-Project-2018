@@ -6,7 +6,7 @@ import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-import controller.Constants;
+import model.FileManager;
 
 public class GhostImage extends Image {
 
@@ -17,7 +17,7 @@ public class GhostImage extends Image {
 
 	@Override
 	public void drawThis(Graphics2D g, int x, int y) {
-		BufferedImage image = Constants.getImage(img);
+		BufferedImage image = FileManager.getImage(img);
 		if (image != null) {
 			double scalex = (double) scale / (double) image.getWidth();
 			double scaley = (double) scale / (double) image.getHeight();

@@ -13,7 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-import controller.Constants;
+import model.FileManager;
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -194,7 +194,7 @@ public class GameRulesMenu extends JPanel {
 				lines.add("pause room cooldown");
 		}	
 		
-		String fileName = Constants.gameDir + "/gamerules.txt";
+		String fileName = FileManager.getGameDir() + "/gamerules.txt";
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

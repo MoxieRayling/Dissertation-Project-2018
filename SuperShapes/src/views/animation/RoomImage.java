@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import controller.Constants;
+import model.FileManager;
 import model.tiles.Coin;
 import model.tiles.Hole;
 import model.tiles.Key;
@@ -86,7 +86,7 @@ public class RoomImage extends Image {
 		}
 		g.setColor(Color.BLACK);
 		for (Tile t : tiles) {
-			BufferedImage img = Constants.getImage(t.getImage());
+			BufferedImage img = FileManager.getImage(t.getImage());
 			if (t instanceof Wall) {
 				if (img != null) {
 					g.drawImage(img, t.getX() * scale + x, t.getY() * scale + y, scale, scale, null);
