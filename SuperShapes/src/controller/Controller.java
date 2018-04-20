@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.List;
+
 import model.EditorModel;
 import model.GameModel;
 import model.Model;
@@ -72,6 +74,10 @@ public class Controller {
 		return m.getY();
 	}
 
+	public void editor() {
+		this.m = new EditorModel(v);
+	}
+
 	public void setExit(int index, int coord) {
 		((EditorModel) m).setExit(index, coord);
 	}
@@ -111,17 +117,33 @@ public class Controller {
 
 	public void setTextRead() {
 		m.setTextRead();
+	}/*
+		 * 
+		 * public void exportEvent(String event) { ((EditorModel) m).exportEvent(event);
+		 * }
+		 * 
+		 * public String[][] getEventMap(int mapCentreX, int mapCentreY, String
+		 * eventName) { return ((EditorModel) m).getEventMap(mapCentreX, mapCentreY,
+		 * eventName); }
+		 * 
+		 * public void eventRemoveRoom(String eventName, String id) { ((EditorModel)
+		 * m).eventRemoveRoom(eventName, id); }
+		 */
+
+	public void createEntity(String entity) {
+		((EditorModel) m).createEntity(entity);
 	}
 
-	public void exportEvent(String event) {
-		((EditorModel) m).exportEvent(event);
+	public List<String> getEntities() {
+		return ((EditorModel) m).getEntities();
 	}
 
-	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
-		return ((EditorModel) m).getEventMap(mapCentreX, mapCentreY, eventName);
+	public void createTile(String tile) {
+		((EditorModel) m).createTile(tile);
 	}
 
-	public void eventRemoveRoom(String eventName, String id) {
-		((EditorModel) m).eventRemoveRoom(eventName, id);
+	public List<String> getTiles() {
+		return ((EditorModel) m).getTiles();
 	}
+
 }

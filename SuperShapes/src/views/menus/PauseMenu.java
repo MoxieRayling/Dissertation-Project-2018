@@ -23,7 +23,6 @@ public class PauseMenu extends JPanel {
 	private JButton resume = new JButton("Resume");
 	private JButton save = new JButton("Save Game");
 	private JButton load = new JButton("Load Game");
-	private JButton controls = new JButton("Controls");
 	private JButton exit = new JButton("Exit");
 	private List<Component> menu = new ArrayList<Component>();
 
@@ -33,7 +32,6 @@ public class PauseMenu extends JPanel {
 		menu.add(resume);
 		menu.add(save);
 		menu.add(load);
-		menu.add(controls);
 		menu.add(exit);
 
 		for (Component c : menu) {
@@ -57,12 +55,6 @@ public class PauseMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				w.loadMenu();
-			}
-		});
-		controls.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				w.controls();
 			}
 		});
 	}

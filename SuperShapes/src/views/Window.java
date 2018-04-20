@@ -22,7 +22,6 @@ import views.menus.CreateEntityMenu;
 import views.menus.CreateMenu;
 import views.menus.CreateTileMenu;
 import views.menus.Editor;
-import views.menus.EventEditor;
 import views.menus.GameOverMenu;
 import views.menus.LoadMenu;
 import views.menus.MapView;
@@ -49,7 +48,6 @@ public class Window extends JFrame implements View {
 	private GameOverMenu gameOver;
 	private String mode = "game";
 	private List<JPanel> history = new ArrayList<JPanel>();
-	private EventEditor eventEditor;
 	private CreateEntityMenu ceMenu;
 	private CreateTileMenu ctMenu;
 
@@ -140,19 +138,25 @@ public class Window extends JFrame implements View {
 	public void Update(ActionEvent e) {
 		Object o = e.getSource();
 		if (o instanceof Model) {
+			if(((Model) o).getEndGame()) {
+				endGameMenu();
+			}
 			setInput(((Model) o).getInput());
 		} else if (o instanceof Room) {
 			game.roomUpdate((Room) o);
 			if (editor != null)
 				editor.roomUpdate((Room) o);
-			if (eventEditor != null)
-				eventEditor.roomUpdate((Room) o);
 		} else if (o instanceof Player) {
 			game.playerUpdate((Player) o);
 		} else if (o instanceof Entity) {
 			game.entityUpdate((Entity) o);
 		}
 
+	}
+
+	private void endGameMenu() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -221,6 +225,7 @@ public class Window extends JFrame implements View {
 	}
 
 	public void editor() {
+		c.editor();
 		editor = new Editor(this);
 		history.add(editor);
 		c.runEditor();
@@ -260,21 +265,6 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		ceMenu.requestFocusInWindow();
 
-	}
-
-	public void eventEditor(String event) {
-		eventEditor = new EventEditor(this);
-		eventEditor.setEvent(event);
-		history.add(eventEditor);
-		c.runEditor();
-		this.setSize(eventEditor.getPreferredSize());
-		this.setResizable(false);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(eventEditor);
-		this.validate();
-		this.repaint();
-		eventEditor.setMap();
-		eventEditor.requestFocusInWindow();
 	}
 
 	public void pauseMenu() {
@@ -431,7 +421,8 @@ public class Window extends JFrame implements View {
 	}
 
 	public void endTurn() {
-		c.endTurn();
+		if (c != null)
+			c.endTurn();
 	}
 
 	public void exit() {
@@ -447,19 +438,32 @@ public class Window extends JFrame implements View {
 		this.mode = mode;
 	}
 
-	public void exportEvent(String event) {
-		c.exportEvent(event);
-	}
-
-	public String[][] getEventMap(int mapCentreX, int mapCentreY, String eventName) {
-		return c.getEventMap(mapCentreX, mapCentreY, eventName);
-	}
-
 	public void refreshEditor() {
 		editor.refresh();
 	}
+	/*
+	 * public void exportEvent(String event) { c.exportEvent(event); }
+	 * 
+	 * public String[][] getEventMap(int mapCentreX, int mapCentreY, String
+	 * eventName) { return c.getEventMap(mapCentreX, mapCentreY, eventName); }
+	 * 
+	 * public void eventRemoveRoom(String eventName, String id) {
+	 * c.eventRemoveRoom(eventName, id); }
+	 */
 
-	public void eventRemoveRoom(String eventName, String id) {
-		c.eventRemoveRoom(eventName, id);
+	public void createEntity(String entity) {
+		c.createEntity(entity);
+	}
+
+	public List<String> getEntities() {
+		return c.getEntities();
+	}
+
+	public void createTile(String tile) {
+		c.createTile(tile);
+	}
+
+	public List<String> getTiles() {
+		return c.getTiles();
 	}
 }

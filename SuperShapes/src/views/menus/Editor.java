@@ -2,6 +2,7 @@ package views.menus;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -12,9 +13,12 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -47,6 +51,8 @@ public class Editor extends JPanel {
 	private Window w;
 	private int sizex = 1200;
 	private int sizey = 750;
+	private int buttonSizex = 150;
+	private int buttonSizey = 40;
 	private int scale = 512 / 13;
 	private int roomScale = 512 / 13;
 	private List<Image> images = new ArrayList<Image>();
@@ -75,25 +81,26 @@ public class Editor extends JPanel {
 	private int[] size = { 11, 11 };
 	private JCheckBox newRoom;
 	private JCheckBox deleteRoom;
-	private JButton finish;
-	private JButton back;
+	private MenuButton finish;
+	private MenuButton back;
 	private List<String> entities = new ArrayList<String>();
 	private List<String> tiles = new ArrayList<String>();
 	private JComboBox<String> entityList;
 	private JComboBox<String> tileList;
-	private JComboBox<String> eventList;
+	// private JComboBox<String> eventList;
 	private JCheckBox paintEvent;
-	private JButton makeEntity;
-	private JButton makeTile;
-	private JButton makeEvent;
-	private JTextField eventName;
+	private MenuButton makeEntity;
+	private MenuButton makeTile;
+	// private JButton makeEvent;
+	// private JTextField eventName;
 	private JTextArea mapLines;
 	private JScrollPane scroll;
+	private List<JComponent> menu = new ArrayList<JComponent>();
 
 	public Editor(Window w) {
 		this.w = w;
 		this.setLayout(null);
-		this.setBackground(new Color(0xbbbbbb));
+		this.setBackground(new Color(0x990000));
 		initUI();
 		start();
 	}
@@ -116,21 +123,18 @@ public class Editor extends JPanel {
 
 		paintEntity = new JCheckBox("Add Entity");
 		paintEntity.setContentAreaFilled(false);
-		paintEntity.setBounds(scale * 14, scale, scale * 3, 20);
 		this.add(paintEntity);
 
 		paintTile = new JCheckBox("Add Tile");
 		paintTile.setContentAreaFilled(false);
-		paintTile.setBounds(scale * 14, scale * 5, scale * 3, 20);
 		this.add(paintTile);
+		/*
+		 * paintEvent = new JCheckBox("Add Event");
+		 * paintEvent.setContentAreaFilled(false); paintEvent.setBounds(scale * 14,
+		 * scale * 8, scale * 3, 20); this.add(paintEvent);
+		 */
 
-		paintEvent = new JCheckBox("Add Event");
-		paintEvent.setContentAreaFilled(false);
-		paintEvent.setBounds(scale * 14, scale * 8, scale * 3, 20);
-		this.add(paintEvent);
-
-		makeEntity = new JButton("Make Entity");
-		makeEntity.setBounds(scale * 14, scale * 3, scale * 3, 20);
+		makeEntity = new MenuButton("Make Entity");
 		makeEntity.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -139,8 +143,7 @@ public class Editor extends JPanel {
 		});
 		this.add(makeEntity);
 
-		makeTile = new JButton("Make Tile");
-		makeTile.setBounds(scale * 14, scale * 6, scale * 3, 20);
+		makeTile = new MenuButton("Make Tile");
 		makeTile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -149,24 +152,43 @@ public class Editor extends JPanel {
 		});
 		this.add(makeTile);
 
-		eventName = new JTextField();
-		eventName.setBounds(scale * 14, scale * 9, scale * 3, 20);
-		this.add(eventName);
-
-		makeEvent = new JButton("Make Event");
-		makeEvent.setBounds(scale * 14, scale * 10, scale * 3, 20);
-		makeEvent.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (eventName.getText().trim().length() > 0)
-					w.eventEditor(eventName.getText().trim());
+		menu.add(entityList);
+		menu.add(paintEntity);
+		menu.add(makeEntity);
+		menu.add(tileList);
+		menu.add(paintTile);
+		menu.add(makeTile);
+		for (JComponent b : menu) {
+			b.setBounds(sizex / 2 - buttonSizex / 2, menu.indexOf(b) * (buttonSizey + 20) + scale * 2, buttonSizex,
+					buttonSizey);
+			b.setFont(new Font("Arial", Font.PLAIN, 20));
+			b.setBackground(new Color(0x660000));
+			b.setForeground(new Color(0x000000).brighter());
+			b.setBorder(null);
+			if (b instanceof MenuButton) {
+				((MenuButton) b).setHoverBackgroundColor(new Color(0x990000).brighter());
+				((MenuButton) b).setPressedBackgroundColor(new Color(0xff2222));
 			}
-		});
-		this.add(makeEvent);
-
-		finish = new JButton("Finish");
-		finish.setBounds(1000, 530, 100, 20);
+		}
+		/*
+		 * eventName = new JTextField(); eventName.setBounds(scale * 14, scale * 9,
+		 * scale * 3, 20); this.add(eventName);
+		 * 
+		 * makeEvent = new JButton("Make Event"); makeEvent.setBounds(scale * 14, scale
+		 * * 10, scale * 3, 20); makeEvent.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent arg0) { if
+		 * (eventName.getText().trim().length() > 0)
+		 * w.eventEditor(eventName.getText().trim()); } }); this.add(makeEvent);
+		 */
+		finish = new MenuButton("Finish");
+		finish.setBounds(1000, 550, buttonSizex, buttonSizey);
+		finish.setFont(new Font("Arial", Font.PLAIN, 20));
+		finish.setBackground(new Color(0x660000));
+		finish.setForeground(new Color(0x000000).brighter());
+		finish.setBorder(null);
+		finish.setHoverBackgroundColor(new Color(0x990000).brighter());
+		finish.setPressedBackgroundColor(new Color(0xff2222));
 		finish.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -175,8 +197,14 @@ public class Editor extends JPanel {
 			}
 		});
 		this.add(finish);
-		back = new JButton("Back");
-		back.setBounds(100, 530, 100, 20);
+		back = new MenuButton("Back");
+		back.setBounds(50, 550, buttonSizex, buttonSizey);
+		back.setFont(new Font("Arial", Font.PLAIN, 20));
+		back.setBackground(new Color(0x660000));
+		back.setForeground(new Color(0x000000).brighter());
+		back.setBorder(null);
+		back.setHoverBackgroundColor(new Color(0x990000).brighter());
+		back.setPressedBackgroundColor(new Color(0xff2222));
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -186,18 +214,38 @@ public class Editor extends JPanel {
 		this.add(back);
 
 		newRoom = new JCheckBox("Add New Room");
-		newRoom.setBounds(100, 500, 150, 20);
+		newRoom.setBounds(50, 500, buttonSizex, buttonSizey);
+		newRoom.setFont(new Font("Arial", Font.PLAIN, 18));
+		newRoom.setBackground(new Color(0x660000));
+		newRoom.setForeground(new Color(0x000000).brighter());
+		newRoom.setBorder(null);
 		newRoom.setOpaque(false);
 		this.add(newRoom);
 
 		deleteRoom = new JCheckBox("Delete Room");
-		deleteRoom.setBounds(300, 500, 150, 20);
+		deleteRoom.setBounds(300, 500, buttonSizex, buttonSizey);
+		deleteRoom.setFont(new Font("Arial", Font.PLAIN, 18));
+		deleteRoom.setBackground(new Color(0x660000));
+		deleteRoom.setForeground(new Color(0x000000).brighter());
+		deleteRoom.setBorder(null);
 		deleteRoom.setOpaque(false);
 		this.add(deleteRoom);
 
+		JLabel roomX = new JLabel("Room width: 11");
+		roomX.setBounds(810, 490, buttonSizex, buttonSizey);
+		roomX.setFont(new Font("Arial", Font.PLAIN, 18));
+		roomX.setForeground(Color.BLACK);
+		this.add(roomX);
+
+		JLabel roomY = new JLabel("Room height: 11");
+		roomY.setBounds(1050, 490, buttonSizex, buttonSizey);
+		roomY.setFont(new Font("Arial", Font.PLAIN, 18));
+		roomY.setForeground(Color.BLACK);
+		this.add(roomY);
+		
 		roomXSlider = new JSlider(3, 20, 11);
 		roomXSlider.setOpaque(false);
-		roomXSlider.setBounds(750, 500, 100, 20);
+		roomXSlider.setBounds(710, 500, 100, 20);
 		roomXSlider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -206,6 +254,7 @@ public class Editor extends JPanel {
 				if (selectedX > size[0])
 					selectedX = size[0] - 1;
 				w.setRoomSize(size);
+				roomX.setText("Room width: "+ roomXSlider.getValue());
 			}
 		});
 		this.add(roomXSlider);
@@ -220,6 +269,7 @@ public class Editor extends JPanel {
 				if (selectedY > size[1])
 					selectedY = size[1] - 1;
 				w.setRoomSize(size);
+				roomY.setText("Room height: "+ roomYSlider.getValue());
 			}
 		});
 		this.add(roomYSlider);
@@ -323,7 +373,7 @@ public class Editor extends JPanel {
 		for (JButton b : roomButtons) {
 			int x = roomButtons.indexOf(b) % 11;
 			int y = roomButtons.indexOf(b) / 11;
-			b.setBounds(scale * (x + 1), scale * (y + 1), scale, scale);
+			b.setBounds(scale * (x + 1), scale * (y + 2), scale, scale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -360,9 +410,9 @@ public class Editor extends JPanel {
 			} else {
 				nExitButtons.get(i).setVisible(true);
 				sExitButtons.get(i).setVisible(true);
-				nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale, roomScale,
+				nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale * 2, roomScale,
 						roomScale / 2);
-				sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, room.getyLength() * roomScale + scale,
+				sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, room.getyLength() * roomScale + scale * 2,
 						roomScale, roomScale / 2);
 			}
 			if (i >= room.getyLength()) {
@@ -371,9 +421,9 @@ public class Editor extends JPanel {
 			} else {
 				eExitButtons.get(i).setVisible(true);
 				wExitButtons.get(i).setVisible(true);
-				wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale, roomScale / 2,
+				wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale * 2, roomScale / 2,
 						roomScale);
-				eExitButtons.get(i).setBounds(700 + scale + roomScale * room.getxLength(), roomScale * i + scale,
+				eExitButtons.get(i).setBounds(700 + scale + roomScale * room.getxLength(), roomScale * i + scale * 2,
 						roomScale / 2, roomScale);
 			}
 		}
@@ -383,7 +433,7 @@ public class Editor extends JPanel {
 		for (int i = 0; i < 20; i++) {
 			int x = i;
 			nExitButtons.add(new JButton());
-			nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale, roomScale,
+			nExitButtons.get(i).setBounds(roomScale * i + 700 + scale, -roomScale / 2 + scale * 2, roomScale,
 					roomScale / 2);
 			nExitButtons.get(i).setOpaque(false);
 			nExitButtons.get(i).setContentAreaFilled(false);
@@ -397,7 +447,7 @@ public class Editor extends JPanel {
 			this.add(nExitButtons.get(i));
 
 			sExitButtons.add(new JButton());
-			sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, 20 * roomScale + scale, roomScale,
+			sExitButtons.get(i).setBounds(roomScale * i + 700 + scale, 20 * roomScale + scale * 2, roomScale,
 					roomScale / 2);
 			sExitButtons.get(i).setOpaque(false);
 			sExitButtons.get(i).setContentAreaFilled(false);
@@ -411,7 +461,8 @@ public class Editor extends JPanel {
 			this.add(sExitButtons.get(i));
 
 			wExitButtons.add(new JButton());
-			wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale, roomScale / 2, roomScale);
+			wExitButtons.get(i).setBounds(700 + scale - roomScale / 2, roomScale * i + scale * 2, roomScale / 2,
+					roomScale);
 			wExitButtons.get(i).setOpaque(false);
 			wExitButtons.get(i).setContentAreaFilled(false);
 			wExitButtons.get(i).setBorderPainted(false);
@@ -424,7 +475,7 @@ public class Editor extends JPanel {
 			this.add(wExitButtons.get(i));
 
 			eExitButtons.add(new JButton());
-			eExitButtons.get(i).setBounds(700 + scale + roomScale * 20, roomScale * i + scale, roomScale / 2,
+			eExitButtons.get(i).setBounds(700 + scale + roomScale * 20, roomScale * i + scale * 2, roomScale / 2,
 					roomScale);
 			eExitButtons.get(i).setOpaque(false);
 			eExitButtons.get(i).setContentAreaFilled(false);
@@ -494,7 +545,7 @@ public class Editor extends JPanel {
 		for (JButton b : tileButtons) {
 			int xTile = tileButtons.indexOf(b) % x;
 			int yTile = tileButtons.indexOf(b) / x;
-			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale, roomScale, roomScale);
+			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale * 2, roomScale, roomScale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
@@ -515,10 +566,9 @@ public class Editor extends JPanel {
 		String[] result = new String[2];
 		for (String s : entities) {
 			if (paintEntity.isSelected()) {
-				if(entityList.getSelectedItem().toString().equals("remove")) {
+				if (entityList.getSelectedItem().toString().equals("remove")) {
 					result[0] = "remove";
-				}
-				else if (s.startsWith(entityList.getSelectedItem().toString())) {
+				} else if (s.startsWith(entityList.getSelectedItem().toString())) {
 					result[0] = s.substring(s.indexOf(" ") + 1);
 					result[0] = result[0].substring(0, result[0].indexOf(" ")) + " " + x + "," + y + " "
 							+ result[0].substring(result[0].indexOf(" ") + 1);
@@ -608,50 +658,60 @@ public class Editor extends JPanel {
 			if (i != null) {
 				if (i instanceof MapImage) {
 					g.setColor(new Color(0x000000));
-					g.drawRect(scale, scale, scale * 11, scale * 11);
-					i.drawThis(g, scale, scale);
+					g.drawRect(scale, scale * 2, scale * 11, scale * 11);
+					i.drawThis(g, scale, scale * 2);
 				} else {
-					i.drawThis(g, scale + 700, scale);
+					i.drawThis(g, scale + 700, scale * 2);
 				}
 			}
 		}
 		g.setColor(Color.RED);
-		g.drawRect(selectedX * roomScale + 700 + scale, selectedY * roomScale + scale, roomScale, roomScale);
-		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 1) * scale, scale, scale);
+		g.drawRect(selectedX * roomScale + 700 + scale, selectedY * roomScale + scale * 2, roomScale, roomScale);
+		g.drawRect((selectedRoomX + 1) * scale, (selectedRoomY + 2) * scale, scale, scale);
 
 		timer.start();
 	}
 
 	public void refresh() {
-		entities = FileManager.readFromFile("parts/entities.txt");
+		entities = w.getEntities();
 		String[] entityNames = new String[entities.size() + 1];
 		entityNames[0] = "remove";
 		for (String e : entities) {
 			entityNames[entities.indexOf(e) + 1] = e.substring(0, e.indexOf(" "));
 		}
 		entityList = new JComboBox<String>(entityNames);
-		entityList.setBounds(scale * 14, scale * 2, scale * 3, 20);
-		add(entityList);
+		for (int i = 0; i < entityList.getComponentCount(); i++) {
+			if (entityList.getComponent(i) instanceof JComponent) {
+				((JComponent) entityList.getComponent(i)).setBorder(null);
+			}
+			if (entityList.getComponent(i) instanceof AbstractButton) {
+				((AbstractButton) entityList.getComponent(i)).setBorderPainted(false);
+			}
+		}
 		this.add(entityList);
 
-		tiles = FileManager.readFromFile("parts/tiles.txt");
+		tiles = w.getTiles();
 		String[] tileNames = new String[tiles.size()];
 		for (String e : tiles) {
 			tileNames[tiles.indexOf(e)] = e.substring(0, e.indexOf(" "));
 		}
 		tileList = new JComboBox<String>(tileNames);
-		tileList.setBounds(scale * 14, scale * 4, scale * 3, 20);
-		add(tileList);
-		this.add(entityList);
-
-		String[] eventNames = FileManager.getEvents();
-		for (int i = 0; i < eventNames.length - 1; i++) {
-			// eventNames[i] = eventNames[i].substring(0, eventNames[i].length() - 5);
+		for (int i = 0; i < tileList.getComponentCount(); i++) {
+			if (tileList.getComponent(i) instanceof JComponent) {
+				((JComponent) tileList.getComponent(i)).setBorder(null);
+			}
+			if (tileList.getComponent(i) instanceof AbstractButton) {
+				((AbstractButton) tileList.getComponent(i)).setBorderPainted(false);
+			}
 		}
-		eventList = new JComboBox<String>(eventNames);
-		eventList.setBounds(scale * 14, scale * 7, scale * 3, 20);
-		add(eventList);
-		this.add(entityList);
+		this.add(tileList);
+		/*
+		 * String[] eventNames = FileManager.getEvents(); for (int i = 0; i <
+		 * eventNames.length - 1; i++) { // eventNames[i] = eventNames[i].substring(0,
+		 * eventNames[i].length() - 5); } /*eventList = new
+		 * JComboBox<String>(eventNames); eventList.setBounds(scale * 14, scale * 7,
+		 * scale * 3, 20); add(eventList); this.add(eventList);
+		 */
 	}
 
 }

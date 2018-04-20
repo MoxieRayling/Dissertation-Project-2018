@@ -12,6 +12,7 @@ public abstract class Tile {
 	private Boolean textRead = false;
 	protected String image = "";
 	protected String event = "";
+	private String command = "";
 
 	public Tile(int x, int y) {
 		this.x = x;
@@ -103,4 +104,12 @@ public abstract class Tile {
 	}
 
 	public abstract String toString();
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
 }

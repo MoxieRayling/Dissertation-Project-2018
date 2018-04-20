@@ -85,7 +85,7 @@ public class FileManager {
 		return enemyCount;
 	}
 
-	public static List<String> readFromFile(String fileName) {
+	public List<String> readFromFile(String fileName) {
 		String line = null;
 		List<String> lines = new ArrayList<String>();
 		try {
@@ -214,7 +214,7 @@ public class FileManager {
 		return entities;
 	}
 
-	public static void writeToFile(String saveData, String fileName) {
+	private static void writeToFile(String saveData, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -225,7 +225,7 @@ public class FileManager {
 		}
 	}
 
-	public static void writeToFile(List<String> lines, String fileName) {
+	private static void writeToFile(List<String> lines, String fileName) {
 		try {
 			FileWriter fileWriter = new FileWriter(fileName);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -733,49 +733,6 @@ public class FileManager {
 		writeToFile(getWorldData(), saveDir + "/working.txt");
 	}
 
-	public void exportEvent(String room, String event) {
-		List<String> eventRooms = getEventData(event);
-		eventRooms.add(room);
-		writeToFile(eventRooms, gameDir + "/events/" + event + ".txt");
-	}
-
-	public void removeFromEvent(String id, String event) {
-		List<String> world = getEventData(event);
-		for (String s : world) {
-			if (s.startsWith("room " + id)) {
-				System.out.println(s);
-				world.set(world.indexOf(s), "xxx");
-				
-			}
-		}
-		world.remove("xxx");
-		writeToFile(world, gameDir + "/events/" + event + ".txt");
-	}
-
-	private static List<String> getEventData(String event) {
-		return readFromFile(gameDir + "/events/" + event + ".txt");
-	}
-
-	public List<String> parseEvent(String event, String roomId) {
-		List<String> result = new ArrayList<String>();
-		List<String> eventData = getEventData(event);
-		for (String s : eventData) {
-			if (s.startsWith("enable") || s.startsWith("disable") || s.startsWith("gameover")
-					|| s.startsWith("room " + roomId) || s.startsWith("entities") || s.startsWith("tiles")) {
-				result.add(s);
-				eventData.set(eventData.indexOf(s), "xxx");
-			} else if (s.startsWith("delete")) {
-				removeRoomWorld(s.substring(12, 15));
-				eventData.set(eventData.indexOf(s), "xxx");
-			}
-		}
-		while (eventData.contains("xxx")) {
-			eventData.remove("xxx");
-		}
-		writeToFile(eventData, saveDir + "/world.txt");
-		return result;
-	}
-
 	public static BufferedImage getImage(String img) {
 		for (String s : textureNames) {
 			if (s.equals(img)) {
@@ -785,50 +742,19 @@ public class FileManager {
 		return null;
 	}
 
-	public String[][] getEventMap(int x, int y, String eventName) {
-		List<String> rooms = getEventData(eventName);
-		String[][] map = new String[11][11];
-		for (String line : rooms) {
-			if (!map.equals(new String[11][11]) && (line.startsWith("room") || line.startsWith("delete"))) {
-				int[] coords = idToCoords(line.split(" ")[1]);
-				if (coords[0] >= x - 5 && coords[0] <= x + 5 && coords[1] >= y - 5 && coords[1] <= y + 5) {
-					map[coords[0] + 5 - x][coords[1] + 5 - y] = "R";
-					if (line.contains("key ")) {
-						map[coords[0] + 5 - x][coords[1] + 5 - y] += "K";
-					}
-					if (line.contains("coin ")) {
-						map[coords[0] + 5 - x][coords[1] + 5 - y] += "C";
-					}
-					System.out.println("here");
-					if (line.contains("delete")) {
-						System.out.println("and here");
-						map[coords[0] + 5 - x][coords[1] + 5 - y] += "D";
-					}
-				}
-			}
-		}
-		return map;
+	public void createEntity(String entity) {
+		writeToFile(entity, "parts/entities.txt");
 	}
 
-	public static String[] getEvents() {
-
-		File file = new File(FileManager.getGameDir() + "/events");
-		String[] images = file.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File current, String name) {
-				return new File(current, name).isFile();
-			}
-		});
-		String[] result = new String[images.length + 1];
-		result[0] = "none";
-		for (int i = 1; i < images.length + 1; i++) {
-			result[i] = images[i - 1];
-		}
-		return result;
+	public List<String> getEntities() {
+		return readFromFile("parts/entities.txt");
 	}
 
-	public void eventRemoveRoom(String eventName, String id) {
-		removeFromEvent(id, eventName);
-		writeToFile("delete " + id, gameDir + "/events/" + eventName + ".txt");
+	public void createTile(String tile) {
+		writeToFile(tile, "parts/tiles.txt");
+	}
+
+	public List<String> getTiles() {
+		return readFromFile("parts/tiles.txt");
 	}
 }

@@ -3,6 +3,7 @@ package views.menus;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,12 +13,17 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 import model.FileManager;
 import views.Window;
@@ -27,45 +33,55 @@ public class CreateTileMenu extends JPanel {
 	private Window w;
 	private int sizex = 400;
 	private int sizey = 400;
+	private int buttonSizex = 150;
+	private int buttonSizey = 40;
+	private JLabel title;
 	private int scale = 512 / 13;
 	private JComboBox<String> tilesBox;
 	private String[] tiles;
-	private List<Component> emptyOptions = new ArrayList<Component>();
-	private List<Component> wallOptions = new ArrayList<Component>();
-	private List<Component> slideOptions = new ArrayList<Component>();
+	private List<JComponent> emptyOptions = new ArrayList<JComponent>();
+	private List<JComponent> wallOptions = new ArrayList<JComponent>();
+	private List<JComponent> slideOptions = new ArrayList<JComponent>();
 	private String[] directions = new String[] { "North", "East", "South", "West" };
 	private JComboBox<String> slideDirectionBox;
-	private List<Component> teleOptions = new ArrayList<Component>();
+	private List<JComponent> teleOptions = new ArrayList<JComponent>();
 	private JSlider teleportX;
 	private JSlider teleportY;
-	private List<Component> holeOptions = new ArrayList<Component>();
-	private List<Component> keyOptions = new ArrayList<Component>();
+	private List<JComponent> holeOptions = new ArrayList<JComponent>();
+	private List<JComponent> keyOptions = new ArrayList<JComponent>();
 	private JTextField key;
-	private List<Component> lockOptions = new ArrayList<Component>();
-	private List<Component> coinOptions = new ArrayList<Component>();
-	private List<List<Component>> tileComponents = new ArrayList<List<Component>>();
+	private List<JComponent> lockOptions = new ArrayList<JComponent>();
+	private List<JComponent> coinOptions = new ArrayList<JComponent>();
+	private List<List<JComponent>> tileComponents = new ArrayList<List<JComponent>>();
 	private JComboBox<String> tileImage;
 	private JTextArea tileText;
 	private JTextField name;
-	private JButton create;
-	private JButton back;
+	private MenuButton create;
+	private MenuButton back;
 
 	public CreateTileMenu(Window w) {
 		this.w = w;
 		this.setLayout(null);
-		this.setBackground(new Color(0xbbbbbb));
+		this.setBackground(new Color(0x990000));
 		initUI();
-		for (Component c : emptyOptions) {
-			c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 20);
-			if (c instanceof JTextArea) {
-				c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+		for (JComponent b : emptyOptions) {
+			b.setBounds(sizex / 2 - buttonSizex / 2, emptyOptions.indexOf(b) * buttonSizey + 100, buttonSizex,
+					buttonSizey);
+			b.setFont(new Font("Arial", Font.PLAIN, 20));
+			b.setBackground(new Color(0x660000));
+			b.setForeground(new Color(0x000000).brighter());
+			b.setBorder(null);
+			if (b instanceof MenuButton) {
+				((MenuButton) b).setHoverBackgroundColor(new Color(0x990000).brighter());
+				((MenuButton) b).setPressedBackgroundColor(new Color(0xff2222));
 			}
-			c.setVisible(true);
+
+			b.setVisible(true);
 		}
 	}
 
 	private void initUI() {
-		back = new JButton("Back");
+		back = new MenuButton("Back");
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -73,12 +89,18 @@ public class CreateTileMenu extends JPanel {
 				w.refreshEditor();
 			}
 		});
-		back.setBounds(scale, 300, scale * 3, 20);
 		this.add(back);
 
 		tiles = new String[] { "Empty", "Wall", "Slide", "Teleport", "Hole", "Key", "Lock", "Coin" };
 		tilesBox = new JComboBox<String>(tiles);
-		tilesBox.setBounds(scale, scale, scale * 3, 20);
+		for (int i = 0; i < tilesBox.getComponentCount(); i++) {
+			if (tilesBox.getComponent(i) instanceof JComponent) {
+				((JComponent) tilesBox.getComponent(i)).setBorder(null);
+			}
+			if (tilesBox.getComponent(i) instanceof AbstractButton) {
+				((AbstractButton) tilesBox.getComponent(i)).setBorderPainted(false);
+			}
+		}
 		tilesBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -87,72 +109,104 @@ public class CreateTileMenu extends JPanel {
 					switch (e.getItem().toString()) {
 					case "Empty":
 						for (Component c : emptyOptions) {
-							c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, emptyOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, emptyOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Wall":
 						for (Component c : wallOptions) {
-							c.setBounds(scale, scale * (wallOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, wallOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, wallOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Slide":
 						for (Component c : slideOptions) {
-							c.setBounds(scale, scale * (slideOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, slideOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, slideOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Teleport":
 						for (Component c : teleOptions) {
-							c.setBounds(scale, scale * (teleOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, teleOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, teleOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Hole":
 						for (Component c : holeOptions) {
-							c.setBounds(scale, scale * (holeOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, holeOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, holeOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Key":
 						for (Component c : keyOptions) {
-							c.setBounds(scale, scale * (keyOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, keyOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, keyOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Lock":
 						for (Component c : lockOptions) {
-							c.setBounds(scale, scale * (lockOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, lockOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, lockOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
 						break;
 					case "Coin":
 						for (Component c : coinOptions) {
-							c.setBounds(scale, scale * (coinOptions.indexOf(c) + 2), scale * 2, 20);
+							c.setBounds(sizex / 2 - buttonSizex / 2, coinOptions.indexOf(c) * buttonSizey + 100,
+									buttonSizex, buttonSizey);
+
 							if (c instanceof JTextArea) {
-								c.setBounds(scale, scale * (emptyOptions.indexOf(c) + 2), scale * 3, 80);
+								c.setBounds(sizex / 2 - buttonSizex / 2, coinOptions.indexOf(c) * buttonSizey + 100,
+										buttonSizex, buttonSizey);
+
 							}
 							c.setVisible(true);
 						}
@@ -166,7 +220,11 @@ public class CreateTileMenu extends JPanel {
 		this.add(tilesBox);
 
 		name = new JTextField();
-		create = new JButton("Create Tile");
+		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
+		name.setBorder(border);
+		name.setBackground(new Color(0xffffff));
+		name.setText("tile " + (tilesBox.getItemCount() + 1));
+		create = new MenuButton("Create Tile");
 		create.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -177,25 +235,37 @@ public class CreateTileMenu extends JPanel {
 		create.setBounds(scale, 270, scale * 3, 20);
 		this.add(create);
 		tileImage = new JComboBox<String>(getImages());
+		for (int i = 0; i < tileImage.getComponentCount(); i++) {
+			if (tileImage.getComponent(i) instanceof JComponent) {
+				((JComponent) tileImage.getComponent(i)).setBorder(null);
+			}
+			if (tileImage.getComponent(i) instanceof AbstractButton) {
+				((AbstractButton) tileImage.getComponent(i)).setBorderPainted(false);
+			}
+		}
 		tileText = new JTextArea();
 		tileText.setWrapStyleWord(true);
 		tileText.setLineWrap(true);
 		;
 
+		emptyOptions.add(tilesBox);
 		emptyOptions.add(name);
 		emptyOptions.add(tileImage);
 		emptyOptions.add(tileText);
 
+		wallOptions.add(tilesBox);
 		wallOptions.add(name);
 		wallOptions.add(tileImage);
 		wallOptions.add(tileText);
 
+		slideOptions.add(tilesBox);
 		slideOptions.add(name);
 		slideDirectionBox = new JComboBox<String>(directions);
 		slideOptions.add(slideDirectionBox);
 		slideOptions.add(tileImage);
 		slideOptions.add(tileText);
 
+		teleOptions.add(tilesBox);
 		teleOptions.add(name);
 		teleportX = new JSlider(0, 10, 0);
 		teleportX.setOpaque(false);
@@ -206,21 +276,27 @@ public class CreateTileMenu extends JPanel {
 		teleOptions.add(tileImage);
 		teleOptions.add(tileText);
 
+		holeOptions.add(tilesBox);
 		holeOptions.add(name);
 		holeOptions.add(tileImage);
 		holeOptions.add(tileText);
 
+		keyOptions.add(tilesBox);
 		keyOptions.add(name);
 		key = new JTextField();
+		key.setBorder(border);
+		key.setBackground(new Color(0xffffff));
 		keyOptions.add(key);
 		keyOptions.add(tileImage);
 		keyOptions.add(tileText);
 
+		lockOptions.add(tilesBox);
 		lockOptions.add(name);
 		lockOptions.add(key);
 		lockOptions.add(tileImage);
 		lockOptions.add(tileText);
 
+		coinOptions.add(tilesBox);
 		coinOptions.add(name);
 		coinOptions.add(tileImage);
 		coinOptions.add(tileText);
@@ -234,19 +310,31 @@ public class CreateTileMenu extends JPanel {
 		tileComponents.add(lockOptions);
 		tileComponents.add(coinOptions);
 
-		for (List<Component> l : tileComponents) {
-			for (Component c : l) {
-				c.setBounds(scale, scale * (l.indexOf(c) + 2), scale * 3, 20);
-				if (c instanceof JTextArea) {
-					c.setBounds(scale, scale * (l.indexOf(c) + 2), scale * 3, 80);
+		for (List<JComponent> l : tileComponents) {
+			l.add(this.create);
+			l.add(this.back);
+			for (JComponent b : l) {
+				b.setBounds(sizex / 2 - buttonSizex / 2, l.indexOf(b) * buttonSizey + 100, buttonSizex, buttonSizey);
+				b.setFont(new Font("Arial", Font.PLAIN, 20));
+				b.setBackground(new Color(0x660000));
+				b.setForeground(new Color(0x000000).brighter());
+				b.setBorder(null);
+				if (b instanceof MenuButton) {
+					((MenuButton) b).setHoverBackgroundColor(new Color(0x990000).brighter());
+					((MenuButton) b).setPressedBackgroundColor(new Color(0xff2222));
 				}
-				c.setVisible(false);
-				this.add(c);
+
+				this.add(b);
 			}
 		}
+		name.setBorder(border);
+		name.setBackground(new Color(0xffffff));
+		name.setText("tile " + (tilesBox.getItemCount() + 1));
 		tileImage.setVisible(false);
 
 	}
+
+	
 
 	private String[] getImages() {
 		File file = new File(FileManager.getGameDir() + "/textures");
@@ -265,8 +353,8 @@ public class CreateTileMenu extends JPanel {
 	}
 
 	private void hideTileMenu() {
-		for (List<Component> l : tileComponents) {
-			for (Component c : l) {
+		for (List<JComponent> l : tileComponents) {
+			for (JComponent c : l) {
 				c.setVisible(false);
 			}
 		}
@@ -314,10 +402,7 @@ public class CreateTileMenu extends JPanel {
 		default:
 			break;
 		}
-		String fileName = "parts/tiles.txt";
-		List<String> tiles = FileManager.readFromFile(fileName);
-		tiles.add(result);
-		FileManager.writeToFile(tiles, fileName);
+		w.createTile(result);
 	}
 
 	@Override

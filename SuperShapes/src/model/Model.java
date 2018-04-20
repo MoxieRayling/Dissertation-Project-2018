@@ -25,6 +25,7 @@ public class Model implements Subject {
 	private Boolean input = true;
 	protected FileManager fileManager;
 	private boolean endTurn = false;
+	private boolean endGame = false;
 
 	public Model(Observer v) {
 		this.v = v;
@@ -244,10 +245,44 @@ public class Model implements Subject {
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
 			fileManager.exportWorking(room.exportRoom());
 		}
-		if (!t.getEvent().equals("")) {
-			activateEvent(t.getEvent());
+		if (!t.getCommand().equals("")) {
+			command(t.getCommand());
 		}
+	}
 
+	public void command(String command) {
+		switch (command) {
+		case "enableShield":
+			enableShield();
+			break;
+		case "disableShield":
+			disableShield();
+			break;
+		case "enableRewind":
+			enableRewind();
+			break;
+		case "disableRewind":
+			disableRewind();
+			break;
+		case "enablePause":
+			enablePause();
+			break;
+		case "disablePause":
+			disablePause();
+			break;
+		case "enableFlight":
+			enableFlight();
+			break;
+		case "disableFlight":
+			disableFlight();
+			break;
+		case "endGame":
+			setEndGame(true);
+			notifyObserver();
+			break;
+		default:
+			break;
+		}
 	}
 
 	public void resetRoom() {
@@ -431,34 +466,6 @@ public class Model implements Subject {
 		room.getTile(player).setTextRead(true);
 	}
 
-	private void activateEvent(String event) {
-		List<String> commands = fileManager.parseEvent(event, roomId);
-		for (String s : commands) {
-			if (s.startsWith("room")) {
-				setRoom(fileManager.makeRoom(s.split(" ")[1], player, v));
-			} else if (s.startsWith("entities")) {
-				room.setEnemies(fileManager.parseEntities(s, 0, 0, room, v));
-			} else if (s.startsWith("tiles")) {
-				room.setTiles(fileManager.parseTiles(s));
-			} else if (s.startsWith("enable flight")) {
-				enableFlight();
-			} else if (s.startsWith("enable pause"))
-				enablePause();
-			else if (s.startsWith("enable rewind"))
-				enableRewind();
-			else if (s.startsWith("enable shield"))
-				enableShield();
-			else if (s.startsWith("disable flight"))
-				disableFlight();
-			else if (s.startsWith("disable pause"))
-				disablePause();
-			else if (s.startsWith("disable rewind"))
-				disableRewind();
-			else if (s.startsWith("disable shield"))
-				disableShield();
-		}
-	}
-
 	private void disableShield() {
 		GameRules.shield = false;
 	}
@@ -489,5 +496,12 @@ public class Model implements Subject {
 
 	private void enableFlight() {
 		GameRules.flight = true;
+	}
+
+	public boolean getEndGame() {
+		return endGame;
+	}
+	public void setEndGame(Boolean b) {
+		endGame = b;
 	}
 }

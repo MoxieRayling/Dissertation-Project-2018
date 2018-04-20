@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import model.entities.Entity;
 import model.entities.Player;
 import model.tiles.Tile;
@@ -71,7 +73,7 @@ public class EditorModel extends Model {
 			changeRoom("0,0");
 			fileManager.removeRoomWorld(x + "," + y);
 		}
-	}
+	}/*
 
 	public void exportEvent(String event) {
 		fileManager.exportEvent(room.exportRoom(), event);
@@ -83,6 +85,21 @@ public class EditorModel extends Model {
 
 	public void eventRemoveRoom(String eventName, String id) {
 		fileManager.eventRemoveRoom(eventName, id);
+	}*/	
+	public void createEntity(String entity) {
+		fileManager.createEntity(entity);
+	}
+
+	public List<String> getEntities() {
+		return fileManager.getEntities();
+	}
+
+	public void createTile(String tile) {
+		fileManager.createTile(tile);
+	}
+
+	public List<String> getTiles() {
+		return fileManager .getTiles();
 	}
 
 }

@@ -212,10 +212,7 @@ public class CreateEntityMenu extends JPanel {
 			break;
 
 		}
-		String fileName = "parts/entities.txt";
-		List<String> tiles = FileManager.readFromFile(fileName);
-		tiles.add(result);
-		FileManager.writeToFile(tiles, fileName);
+		w.createEntity(result);
 	}
 
 	@Override
