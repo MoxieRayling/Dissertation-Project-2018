@@ -12,7 +12,7 @@ public abstract class Tile {
 	private Boolean textRead = false;
 	protected String image = "";
 	protected String event = "";
-	private String command = "";
+	private String command = "none";
 
 	public Tile(int x, int y) {
 		this.x = x;

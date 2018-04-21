@@ -37,7 +37,6 @@ public class Window extends JFrame implements View {
 	private StartMenu start;
 	private Animation game;
 	private Editor editor;
-	private MapView map;
 	private PauseMenu pause;
 	private LoadMenu load;
 	private SaveMenu save;
@@ -56,16 +55,13 @@ public class Window extends JFrame implements View {
 		start = new StartMenu(this);
 		game = new Animation(this);
 		create = new CreateMenu(this);
-		pause = new PauseMenu(this);
-		load = new LoadMenu(this);
-		save = new SaveMenu(this);
-		ngMenu = new NewGameMenu(this);
 		gameOver = new GameOverMenu(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
 		this.pack();
 		this.setVisible(true);
+		this.setLocationRelativeTo(null);
 		game.addKeyListener(new KeyListener() {
 
 			@Override
@@ -80,9 +76,7 @@ public class Window extends JFrame implements View {
 				if (input) {
 					if (getContentPane().contains(game.getLocation())) {
 						if (mode.equals("game")) {
-							if (e.getKeyChar() == 'm') {
-								map();
-							} else if (e.getKeyCode() == 27) {
+							if (e.getKeyCode() == 27) {
 								pauseMenu();
 							} else {
 								c.Input(e.getKeyCode());
@@ -183,6 +177,7 @@ public class Window extends JFrame implements View {
 	public void gameOver() {
 		history.add(gameOver);
 		this.setSize(gameOver.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(gameOver);
@@ -192,8 +187,10 @@ public class Window extends JFrame implements View {
 	}
 
 	public void mainMenu() {
+		start = new StartMenu(this);
 		history.add(start);
 		this.setSize(start.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(start);
@@ -203,8 +200,8 @@ public class Window extends JFrame implements View {
 	}
 
 	public void newGameMenu() {
+		ngMenu = new NewGameMenu(this);
 		history.add(ngMenu);
-		load.updateSaves();
 		this.setSize(ngMenu.getPreferredSize());
 		this.getContentPane().removeAll();
 		this.getContentPane().add(ngMenu);
@@ -230,6 +227,7 @@ public class Window extends JFrame implements View {
 		history.add(editor);
 		c.runEditor();
 		this.setSize(editor.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(editor);
@@ -241,7 +239,6 @@ public class Window extends JFrame implements View {
 
 	public void createTileMenu() {
 		ctMenu = new CreateTileMenu(this);
-		history.add(ctMenu);
 		c.runEditor();
 		this.setSize(ctMenu.getPreferredSize());
 		this.setResizable(false);
@@ -255,7 +252,6 @@ public class Window extends JFrame implements View {
 
 	public void createEntityMenu() {
 		ceMenu = new CreateEntityMenu(this);
-		history.add(ceMenu);
 		c.runEditor();
 		this.setSize(ceMenu.getPreferredSize());
 		this.setResizable(false);
@@ -268,38 +264,25 @@ public class Window extends JFrame implements View {
 	}
 
 	public void pauseMenu() {
-		history.add(pause);
-		this.setSize(pause.getPreferredSize());
-		this.setResizable(false);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(pause);
-		this.validate();
-		this.repaint();
-		pause.requestFocusInWindow();
-	}
-
-	public void map() {
-		history.add(map);
-		this.map = new MapView(this, c.getX(), c.getY());
-		map.addKeyListener(new KeyListener() {
+		pause = new PauseMenu(this, c.getX(), c.getY());
+		pause.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (getContentPane().contains(map.getLocation())) {
-					System.out.println("yes");
+				if (getContentPane().contains(pause.getLocation())) {
 					if (e.getKeyCode() == 27 || e.getKeyCode() == 77 || e.getKeyCode() == 13) {
 						returnToGame();
 					} else if (e.getKeyCode() == 38) {
-						map.moveMap('N');
+						pause.moveMap('N');
 					} else if (e.getKeyCode() == 37) {
-						map.moveMap('W');
+						pause.moveMap('W');
 					} else if (e.getKeyCode() == 39) {
-						map.moveMap('E');
+						pause.moveMap('E');
 					} else if (e.getKeyCode() == 40) {
-						map.moveMap('S');
+						pause.moveMap('S');
 					}
 				}
 
@@ -311,20 +294,20 @@ public class Window extends JFrame implements View {
 			}
 
 		});
-		this.setSize(map.getPreferredSize());
+		history.add(pause);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
-		this.getContentPane().add(map);
+		this.getContentPane().add(pause);
 		this.validate();
 		this.repaint();
-		map.requestFocusInWindow();
+		pause.requestFocusInWindow();
 	}
 
 	public void returnToGame() {
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		history.clear();
 		history.add(game);
-		this.setResizable(true);
-		this.setSize(game.getPreferredSize());
 		this.getContentPane().removeAll();
 		this.getContentPane().add(game);
 		this.validate();
@@ -333,9 +316,11 @@ public class Window extends JFrame implements View {
 	}
 
 	public void loadMenu() {
+		load = new LoadMenu(this);
 		history.add(load);
 		load.updateSaves();
 		this.setSize(load.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(load);
 		this.validate();
@@ -344,8 +329,10 @@ public class Window extends JFrame implements View {
 	}
 
 	public void saveMenu() {
+		save = new SaveMenu(this);
 		history.add(save);
 		this.setSize(save.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(save);
 		this.validate();
@@ -361,6 +348,7 @@ public class Window extends JFrame implements View {
 		history.remove(history.size() - 1);
 		JPanel back = history.get(history.size() - 1);
 		this.setSize(back.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(back);
 		this.validate();
@@ -441,15 +429,6 @@ public class Window extends JFrame implements View {
 	public void refreshEditor() {
 		editor.refresh();
 	}
-	/*
-	 * public void exportEvent(String event) { c.exportEvent(event); }
-	 * 
-	 * public String[][] getEventMap(int mapCentreX, int mapCentreY, String
-	 * eventName) { return c.getEventMap(mapCentreX, mapCentreY, eventName); }
-	 * 
-	 * public void eventRemoveRoom(String eventName, String id) {
-	 * c.eventRemoveRoom(eventName, id); }
-	 */
 
 	public void createEntity(String entity) {
 		c.createEntity(entity);
@@ -465,5 +444,9 @@ public class Window extends JFrame implements View {
 
 	public List<String> getTiles() {
 		return c.getTiles();
+	}
+
+	public boolean gameExists(String game) {
+		return c.gameExists(game);
 	}
 }

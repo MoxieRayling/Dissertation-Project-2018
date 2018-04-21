@@ -135,7 +135,6 @@ public class Room implements Subject {
 		for (Tile t : tiles) {
 			if (t instanceof EmptyTile) {
 				if (!t.getImage().equals("empty.png") || !t.getText().equals("")) {
-					System.out.println("text is:" + t.getText() + "!");
 					result += t.toString() + ":";
 				}
 			} else
@@ -546,6 +545,7 @@ public class Room implements Subject {
 
 	public void setText(String text) {
 		this.text = text;
+		System.out.println("text is:" + text + "!");
 		notifyObserver();
 	}
 }

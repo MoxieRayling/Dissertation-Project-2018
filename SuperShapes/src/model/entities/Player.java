@@ -25,6 +25,7 @@ public class Player extends Entity {
 	private int respawnx = 0;
 	private int respawny = 0;
 	private List<String> keys = new ArrayList<String>();
+
 	private int coins = 0;
 
 	public Player(String room, int x, int y, int lives) {
@@ -331,6 +332,18 @@ public class Player extends Entity {
 
 	public int getCoins() {
 		return coins;
+	}
+
+	public List<String> getKeys() {
+		return keys;
+	}
+
+	public void setKeys(List<String> keys) {
+		this.keys = keys;
+	}
+
+	public void setCoins(int coins) {
+		this.coins = coins;
 	}
 
 }

@@ -11,6 +11,6 @@ public class Wall extends Tile {
 
 	@Override
 	public String toString() {
-		return "wall " + x + "," + y + " " + image + " \"" + getText() + " " + getTextRead().toString();
+		return "wall " + x + "," + y + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 }

@@ -53,6 +53,8 @@ public class Editor extends JPanel {
 	private int sizey = 750;
 	private int buttonSizex = 150;
 	private int buttonSizey = 40;
+	private JLabel mapTitle;
+	private JLabel roomTitle;
 	private int scale = 512 / 13;
 	private int roomScale = 512 / 13;
 	private List<Image> images = new ArrayList<Image>();
@@ -87,12 +89,8 @@ public class Editor extends JPanel {
 	private List<String> tiles = new ArrayList<String>();
 	private JComboBox<String> entityList;
 	private JComboBox<String> tileList;
-	// private JComboBox<String> eventList;
-	private JCheckBox paintEvent;
 	private MenuButton makeEntity;
 	private MenuButton makeTile;
-	// private JButton makeEvent;
-	// private JTextField eventName;
 	private JTextArea mapLines;
 	private JScrollPane scroll;
 	private List<JComponent> menu = new ArrayList<JComponent>();
@@ -113,7 +111,22 @@ public class Editor extends JPanel {
 	private void initUI() {
 		refresh();
 
+		mapTitle = new JLabel("<html><div style='text-align: center;'>Map Editor");
+		mapTitle.setFont(new Font("Arial", Font.BOLD, 40));
+		mapTitle.setForeground(Color.BLACK);
+		mapTitle.setBounds(40, -20, 400, 100);
+		mapTitle.setBackground(new Color(0x660000));
+		this.add(mapTitle);
+
+		roomTitle = new JLabel("<html><div style='text-align: center;'>Room Editor");
+		roomTitle.setFont(new Font("Arial", Font.BOLD, 40));
+		roomTitle.setForeground(Color.BLACK);
+		roomTitle.setBounds(sizex / 2 + 125, -20, 400, 100);
+		roomTitle.setBackground(new Color(0x660000));
+		this.add(roomTitle);
+
 		mapLines = new JTextArea();
+		mapLines.setEditable(false);
 		mapLines.setBounds(20, 600, 1160, 100);
 		scroll = new JScrollPane(mapLines);
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -128,13 +141,9 @@ public class Editor extends JPanel {
 		paintTile = new JCheckBox("Add Tile");
 		paintTile.setContentAreaFilled(false);
 		this.add(paintTile);
-		/*
-		 * paintEvent = new JCheckBox("Add Event");
-		 * paintEvent.setContentAreaFilled(false); paintEvent.setBounds(scale * 14,
-		 * scale * 8, scale * 3, 20); this.add(paintEvent);
-		 */
 
-		makeEntity = new MenuButton("Make Entity");
+		makeEntity = new MenuButton("Construct Entity");
+		makeEntity.setToolTipText("Opens the entity constructor menu");
 		makeEntity.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -143,7 +152,8 @@ public class Editor extends JPanel {
 		});
 		this.add(makeEntity);
 
-		makeTile = new MenuButton("Make Tile");
+		makeTile = new MenuButton("Construct Tile");
+		makeTile.setToolTipText("Opens the tile constructor menu");
 		makeTile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -152,15 +162,20 @@ public class Editor extends JPanel {
 		});
 		this.add(makeTile);
 
-		menu.add(entityList);
-		menu.add(paintEntity);
-		menu.add(makeEntity);
+		menu.add(makeTile);
 		menu.add(tileList);
 		menu.add(paintTile);
-		menu.add(makeTile);
+		menu.add(makeEntity);
+		menu.add(entityList);
+		menu.add(paintEntity);
+
 		for (JComponent b : menu) {
-			b.setBounds(sizex / 2 - buttonSizex / 2, menu.indexOf(b) * (buttonSizey + 20) + scale * 2, buttonSizex,
-					buttonSizey);
+			if (menu.indexOf(b) > 2)
+				b.setBounds(sizex / 2 - buttonSizex / 2, (menu.indexOf(b) + 1) * (buttonSizey + 20) + scale * 2,
+						buttonSizex, buttonSizey);
+			else
+				b.setBounds(sizex / 2 - buttonSizex / 2, menu.indexOf(b) * (buttonSizey + 20) + scale * 2, buttonSizex,
+						buttonSizey);
 			b.setFont(new Font("Arial", Font.PLAIN, 20));
 			b.setBackground(new Color(0x660000));
 			b.setForeground(new Color(0x000000).brighter());
@@ -170,18 +185,9 @@ public class Editor extends JPanel {
 				((MenuButton) b).setPressedBackgroundColor(new Color(0xff2222));
 			}
 		}
-		/*
-		 * eventName = new JTextField(); eventName.setBounds(scale * 14, scale * 9,
-		 * scale * 3, 20); this.add(eventName);
-		 * 
-		 * makeEvent = new JButton("Make Event"); makeEvent.setBounds(scale * 14, scale
-		 * * 10, scale * 3, 20); makeEvent.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent arg0) { if
-		 * (eventName.getText().trim().length() > 0)
-		 * w.eventEditor(eventName.getText().trim()); } }); this.add(makeEvent);
-		 */
+
 		finish = new MenuButton("Finish");
+		finish.setToolTipText("Exports game");
 		finish.setBounds(1000, 550, buttonSizex, buttonSizey);
 		finish.setFont(new Font("Arial", Font.PLAIN, 20));
 		finish.setBackground(new Color(0x660000));
@@ -242,8 +248,9 @@ public class Editor extends JPanel {
 		roomY.setFont(new Font("Arial", Font.PLAIN, 18));
 		roomY.setForeground(Color.BLACK);
 		this.add(roomY);
-		
+
 		roomXSlider = new JSlider(3, 20, 11);
+		roomXSlider.setToolTipText("Changes the width of the room");
 		roomXSlider.setOpaque(false);
 		roomXSlider.setBounds(710, 500, 100, 20);
 		roomXSlider.addChangeListener(new ChangeListener() {
@@ -254,11 +261,12 @@ public class Editor extends JPanel {
 				if (selectedX > size[0])
 					selectedX = size[0] - 1;
 				w.setRoomSize(size);
-				roomX.setText("Room width: "+ roomXSlider.getValue());
+				roomX.setText("Room width: " + roomXSlider.getValue());
 			}
 		});
 		this.add(roomXSlider);
 		roomYSlider = new JSlider(3, 20, 11);
+		roomYSlider.setToolTipText("Changes the height of the room");
 		roomYSlider.setOpaque(false);
 		roomYSlider.setBounds(950, 500, 100, 20);
 		roomYSlider.addChangeListener(new ChangeListener() {
@@ -269,13 +277,13 @@ public class Editor extends JPanel {
 				if (selectedY > size[1])
 					selectedY = size[1] - 1;
 				w.setRoomSize(size);
-				roomY.setText("Room height: "+ roomYSlider.getValue());
+				roomY.setText("Room height: " + roomYSlider.getValue());
 			}
 		});
 		this.add(roomYSlider);
 
 		mapUp = new JButton();
-		mapUp.setBounds(scale * 6, 0, scale, scale);
+		mapUp.setBounds(scale * 6, scale, scale, scale);
 		mapUp.setOpaque(false);
 		mapUp.setContentAreaFilled(false);
 		mapUp.setBorderPainted(false);
@@ -293,7 +301,7 @@ public class Editor extends JPanel {
 		this.add(mapUp);
 
 		mapLeft = new JButton();
-		mapLeft.setBounds(0, scale * 6, scale, scale);
+		mapLeft.setBounds(0, scale * 7, scale, scale);
 		mapLeft.setOpaque(false);
 		mapLeft.setContentAreaFilled(false);
 		mapLeft.setBorderPainted(false);
@@ -311,7 +319,7 @@ public class Editor extends JPanel {
 		this.add(mapLeft);
 
 		mapDown = new JButton();
-		mapDown.setBounds(scale * 6, scale * 12, scale, scale);
+		mapDown.setBounds(scale * 6, scale * 13, scale, scale);
 		mapDown.setOpaque(false);
 		mapDown.setContentAreaFilled(false);
 		mapDown.setBorderPainted(false);
@@ -329,7 +337,7 @@ public class Editor extends JPanel {
 		this.add(mapDown);
 
 		mapRight = new JButton();
-		mapRight.setBounds(scale * 12, scale * 6, scale, scale);
+		mapRight.setBounds(scale * 12, scale * 7, scale, scale);
 		mapRight.setOpaque(false);
 		mapRight.setContentAreaFilled(false);
 		mapRight.setBorderPainted(false);
@@ -354,12 +362,19 @@ public class Editor extends JPanel {
 		}
 
 		for (JButton b : tileButtons) {
+			b.setToolTipText("<html>This image represents the room selected in the map on the left.<br><br>"
+					+ "Clicking the edges of the room will create an exit in that space<br><br>"
+					+ "Clicking a tile while either \"add tile\" or \"add entity\" are <br>"
+					+ "selected will add a tile or entity respectively.<br><br>"
+					+ "The sliders at the bottom will change the size of the selected room.");
 			int x = tileButtons.indexOf(b) % 11;
 			int y = tileButtons.indexOf(b) / 11;
 			b.setBounds(scale * (x + 1) + 700, scale * (y + 1), scale, scale);
 			b.setOpaque(false);
 			b.setContentAreaFilled(false);
 			b.setBorderPainted(false);
+			b.setToolTipText("<html>");
+
 			b.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -371,6 +386,12 @@ public class Editor extends JPanel {
 			this.add(b);
 		}
 		for (JButton b : roomButtons) {
+			b.setToolTipText("<html>Use the white arrow buttons to navigate the map. <br><br>"
+					+ "Clicking on a square will change to room on the <br>"
+					+ "right hand side to the selected room on the map.<br><br>"
+					+ "Clicking while the \"add room\" checkbox is selected <br>"
+					+ "will create a new room in the selected space. <br><br>"
+					+ "Similarly the \"delete room\" checkbox will delete <br>" + "a room in the selected space.");
 			int x = roomButtons.indexOf(b) % 11;
 			int y = roomButtons.indexOf(b) / 11;
 			b.setBounds(scale * (x + 1), scale * (y + 2), scale, scale);
@@ -543,6 +564,11 @@ public class Editor extends JPanel {
 		}
 
 		for (JButton b : tileButtons) {
+			b.setToolTipText("<html>This image represents the room selected in the map on the left.<br><br>"
+					+ "Clicking the edges of the room will create an exit in that space<br><br>"
+					+ "Clicking a tile while either \"add tile\" or \"add entity\" are <br>"
+					+ "selected will add a tile or entity respectively.<br><br>"
+					+ "The sliders at the bottom will change the size of the selected room.");
 			int xTile = tileButtons.indexOf(b) % x;
 			int yTile = tileButtons.indexOf(b) / x;
 			b.setBounds(roomScale * xTile + 700 + scale, roomScale * yTile + scale * 2, roomScale, roomScale);
@@ -555,11 +581,100 @@ public class Editor extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					selectedX = xTile;
 					selectedY = yTile;
+					String[] tile = generateTile(xTile, yTile);
 					w.addToRoom(generateTile(xTile, yTile), xTile, yTile);
+					if (tile[0] != null) {
+						mapLines.append(entityToString(tile[0], xTile, yTile));
+					}
+					if (tile[1] != null) {
+						mapLines.append(tileToString(tile[1]));
+					}
 				}
 			});
 			this.add(b);
 		}
+	}
+
+	private String entityToString(String data, int x, int y) {
+		String[] entity = data.split(" ");
+		switch (entity[0]) {
+		case "remove":
+			return "Removed entity at tile: " + x + "," + y + "\n";
+		case "block":
+			return "Added Chase-entity at tile: " + x + "," + y + ", with image: " + entity[2] + "\n";
+		case "snake":
+			return "Added Chain-entity with length: " + entity[2] + ", at tile: " + x + "," + y + ", with image: "
+					+ entity[3] + "\n";
+		case "ghost":
+			return "Added Sticky-entity with power: " + entity[2] + ", at tile: " + x + "," + y + ", with image: "
+					+ entity[3] + "\n";
+		case "turret":
+			return "Added Turret-entity with fire-rate: " + entity[2] + ", delay: " + entity[4] + ", facing: "
+					+ entity[3] + ", at tile: " + x + "," + y + ", with image: " + entity[5] + "\n";
+		}
+		return "";
+	}
+
+	private String tileToString(String data) {
+		String[] tile = data.split(" ");
+		String result = "";
+		switch (tile[0]) {
+		case "empty":
+			result += "Added Empty-tile at tile: " + tile[1] + ", with image: " + tile[2] + ", with command: "
+					+ tile[5];
+			if (!tile[3].equals("\"")) {
+				result += ", with text: \"" + tile[3].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "wall":
+			result += "Added Wall-tile at tile: " + tile[1] + ", with image: " + tile[2] + ", with command: " + tile[5];
+			if (!tile[3].equals("\"")) {
+				result += ", with text: \"" + tile[3].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "hole":
+			result += "Added Hole-tile at tile: " + tile[1] + ", with image: " + tile[2] + ", with command: " + tile[5];
+			if (!tile[3].equals("\"")) {
+				result += ", with text: \"" + tile[3].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "slide":
+			result += "Added Slide-tile at tile: " + tile[1] + ", facing: " + tile[2] + ", with image: " + tile[3]
+					+ ", with command: " + tile[6];
+			if (!tile[4].equals("\"")) {
+				result += ", with text: " + tile[4].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "tele":
+			result += "Added Teleport-tile at tile: " + tile[1] + ", with destination: " + tile[2] + "with image: "
+					+ tile[3] + ", with command: " + tile[6];
+			if (!tile[4].equals("\"")) {
+				result += ", with text: \"" + tile[4].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "key":
+			result += "Added Key-tile at tile: " + tile[1] + ",with keycode: " + tile[2] + " with image: " + tile[3]
+					+ ", with command: " + tile[6];
+			if (!tile[4].equals("\"")) {
+				result += ", with text: \"" + tile[4].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "lock":
+			result += "Added lock-tile at tile: " + tile[1] + ",with keycode: " + tile[2] + " with image: " + tile[3]
+					+ ", with command: " + tile[6];
+			if (!tile[4].equals("\"")) {
+				result += ", with text: \"" + tile[4].replaceAll("_", " ") + "\"";
+			}
+			break;
+		case "coin":
+			result += "Added Coin-tile at tile: " + tile[1] + ", with image: " + tile[2] + ", with command: " + tile[5];
+			if (!tile[3].equals("\"")) {
+				result += ", with text: \"" + tile[3].replaceAll("_", " ") + "\"";
+			}
+			break;
+		}
+		result += "\n";
+		return result;
 	}
 
 	private String[] generateTile(int x, int y) {
@@ -688,6 +803,18 @@ public class Editor extends JPanel {
 				((AbstractButton) entityList.getComponent(i)).setBorderPainted(false);
 			}
 		}
+		entityList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>" 
+				+ "Chase - this preset will create an entity that chases the player <br>"
+				+ "and kills them on contact. It uses chade.png as its default image.<br><br>"
+				+ "Chain - this preset is an entity that chain of entities 5 long. <br>"
+				+ "Touching any part of this chain will kill the player. <br>"
+				+ "It uses chain.png and its default image.<br><br>"
+				+ "Sticky - this preset creates an entity the holds the player still <br>"
+				+ "for 3 turns but doesn't kill them. It uses sticky.png as its default image.<br><br>"
+				+ "Turret - this creates an entity which fires a projectile north at<br>"
+				+ "a rate of 1 every 3 turns. Touching these projectiles will kill the player<br>"
+				+ "It uses turret.png as its default image while the projectiles use shot.pg<br><br>"
+				+ "Selcting \"Remove\" will remove an entity from the remove when selected");
 		this.add(entityList);
 
 		tiles = w.getTiles();
@@ -704,14 +831,24 @@ public class Editor extends JPanel {
 				((AbstractButton) tileList.getComponent(i)).setBorderPainted(false);
 			}
 		}
+		tileList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>" 
+				+ "Empty - creates an empty tile in the selected space. It uses empty.png<br>"
+				+ "as its default image.<br><br>"
+				+ "Wall - creates an wall that the player can't move through. It uses <br>"
+				+ "wall.png as it default image.<br><br>"
+				+ "Hole - creates a tile that will kill the player on contact. It uses <br>"
+				+ "hole.png as its default image.<br><br>"
+				+ "Slide - creates a tile that moves the player one space north. It uses<br>"
+				+ "slide.png as its default image.<br><br>"
+				+ "Teleport - creates a tile that teleports the player to the space '5,5'.<br>"
+				+ "It uses tele.png as its default image.<br><br>"
+				+ "Key - creates a key that the player can collect on contact. It uses <br>"
+				+ "key.png as its default iamge.<br><br>"
+				+ "Lock - creates a wall that can only be passed if the player has the <br>"
+				+ "corresponding key. It uses lock.png as its default image.<br><br>"
+				+ "Coin - creates a coin which the player can collect on contact. It uses<br>"
+				+ "coin.png as its default image."
+				);
 		this.add(tileList);
-		/*
-		 * String[] eventNames = FileManager.getEvents(); for (int i = 0; i <
-		 * eventNames.length - 1; i++) { // eventNames[i] = eventNames[i].substring(0,
-		 * eventNames[i].length() - 5); } /*eventList = new
-		 * JComboBox<String>(eventNames); eventList.setBounds(scale * 14, scale * 7,
-		 * scale * 3, 20); add(eventList); this.add(eventList);
-		 */
 	}
-
 }

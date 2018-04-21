@@ -9,6 +9,6 @@ public class Hole  extends Tile {
 
 	@Override
 	public String toString() {
-		return "hole " + x + "," + y + " " + image + " \"" + getText() + " " + getTextRead().toString();
+		return "hole " + x + "," + y + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 }

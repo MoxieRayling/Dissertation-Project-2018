@@ -14,7 +14,7 @@ public class Teleport extends Tile {
 
 	@Override
 	public String toString() {
-		return "tele " + x + "," + y + " " + xTele + "," + yTele + " " + image + " \"" + getText() + " " + getTextRead().toString();
+		return "tele " + x + "," + y + " " + xTele + "," + yTele + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 
 	public int getXTele() {

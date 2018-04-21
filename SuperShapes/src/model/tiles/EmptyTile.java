@@ -9,7 +9,7 @@ public class EmptyTile extends Tile {
 
 	@Override
 	public String toString() {
-		return "empty " + x + "," + y + " " + image + " " + getText() + " " + getTextRead().toString();
+		return "empty " + x + "," + y + " " + image + " " + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 
 	

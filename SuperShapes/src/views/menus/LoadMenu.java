@@ -30,7 +30,6 @@ public class LoadMenu extends JPanel {
 	private int buttonSizex = 150;
 	private int buttonSizey = 40;
 	private JLabel title;
-	private String game = "";
 	private JComboBox<String> saves;
 	private MenuButton loadSave = new MenuButton("Load Save");
 	private MenuButton back = new MenuButton("Back");
@@ -72,6 +71,7 @@ public class LoadMenu extends JPanel {
 
 			this.add(b);
 		}
+		loadSave.setToolTipText("Load the select save in the list above");
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -82,7 +82,7 @@ public class LoadMenu extends JPanel {
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.back();
+				w.pauseMenu();
 			}
 		});
 	}

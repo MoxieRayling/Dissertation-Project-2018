@@ -59,7 +59,7 @@ public class CreateEntityMenu extends JPanel {
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				w.back();
+				w.editor();
 				w.refreshEditor();
 			}
 		});

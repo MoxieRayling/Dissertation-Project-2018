@@ -68,9 +68,11 @@ public class CreateTileMenu extends JPanel {
 			b.setBounds(sizex / 2 - buttonSizex / 2, emptyOptions.indexOf(b) * buttonSizey + 100, buttonSizex,
 					buttonSizey);
 			b.setFont(new Font("Arial", Font.PLAIN, 20));
-			b.setBackground(new Color(0x660000));
-			b.setForeground(new Color(0x000000).brighter());
-			b.setBorder(null);
+			if (!(b instanceof JTextField) && !(b instanceof JTextArea)) {
+				b.setBackground(new Color(0x660000));
+				b.setForeground(new Color(0x000000).brighter());
+				b.setBorder(null);
+			}
 			if (b instanceof MenuButton) {
 				((MenuButton) b).setHoverBackgroundColor(new Color(0x990000).brighter());
 				((MenuButton) b).setPressedBackgroundColor(new Color(0xff2222));
@@ -220,10 +222,6 @@ public class CreateTileMenu extends JPanel {
 		this.add(tilesBox);
 
 		name = new JTextField();
-		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
-		name.setBorder(border);
-		name.setBackground(new Color(0xffffff));
-		name.setText("tile " + (tilesBox.getItemCount() + 1));
 		create = new MenuButton("Create Tile");
 		create.addActionListener(new ActionListener() {
 			@Override
@@ -246,7 +244,6 @@ public class CreateTileMenu extends JPanel {
 		tileText = new JTextArea();
 		tileText.setWrapStyleWord(true);
 		tileText.setLineWrap(true);
-		;
 
 		emptyOptions.add(tilesBox);
 		emptyOptions.add(name);
@@ -284,8 +281,6 @@ public class CreateTileMenu extends JPanel {
 		keyOptions.add(tilesBox);
 		keyOptions.add(name);
 		key = new JTextField();
-		key.setBorder(border);
-		key.setBackground(new Color(0xffffff));
 		keyOptions.add(key);
 		keyOptions.add(tileImage);
 		keyOptions.add(tileText);
@@ -327,14 +322,17 @@ public class CreateTileMenu extends JPanel {
 				this.add(b);
 			}
 		}
+		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
 		name.setBorder(border);
 		name.setBackground(new Color(0xffffff));
 		name.setText("tile " + (tilesBox.getItemCount() + 1));
+		tileText.setBorder(border);
+		tileText.setBackground(new Color(0xffffff));
 		tileImage.setVisible(false);
+		key.setBorder(border);
+		key.setBackground(new Color(0xffffff));
 
 	}
-
-	
 
 	private String[] getImages() {
 		File file = new File(FileManager.getGameDir() + "/textures");

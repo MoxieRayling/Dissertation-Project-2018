@@ -33,8 +33,8 @@ import observers.Observer;
 
 public class FileManager {
 
-	private static String gameDir = "games/game1";
-	private static String saveDir = "save";
+	private static String gameDir = "";
+	private static String saveDir = "";
 	private static List<String> textureNames = new ArrayList<String>();
 	private static List<BufferedImage> textures = new ArrayList<BufferedImage>();
 	private int enemyCount = 0;
@@ -69,15 +69,17 @@ public class FileManager {
 		});
 		textureNames.clear();
 		textures.clear();
-		for (int i = 0; i < files.length; i++) {
-			textureNames.add(files[i]);
-			File imgSrc = new File(gameDir + "/textures/" + files[i]);
-			try {
-				textures.add(ImageIO.read(imgSrc));
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				textureNames.add(files[i]);
+				File imgSrc = new File(gameDir + "/textures/" + files[i]);
+				try {
+					textures.add(ImageIO.read(imgSrc));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		}
+		}	
 	}
 
 	private int getEnemyCount() {
@@ -456,6 +458,7 @@ public class FileManager {
 		} else {
 			h.setTextRead(false);
 		}
+		h.setCommand(params[5]);
 		return h;
 	}
 
@@ -487,6 +490,7 @@ public class FileManager {
 		} else {
 			t.setTextRead(false);
 		}
+		t.setCommand(params[6]);
 		return t;
 	}
 
@@ -512,6 +516,7 @@ public class FileManager {
 		} else {
 			s.setTextRead(false);
 		}
+		s.setCommand(params[6]);
 		return s;
 	}
 
@@ -539,6 +544,7 @@ public class FileManager {
 		} else {
 			w.setTextRead(false);
 		}
+		w.setCommand(params[5]);
 		return w;
 	}
 
@@ -558,6 +564,7 @@ public class FileManager {
 			c.setImage(params[2]);
 		}
 		if (!params[3].equals("\"")) {
+			System.out.println(params[3]);
 			c.setText(params[3].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -565,6 +572,7 @@ public class FileManager {
 		} else {
 			c.setTextRead(false);
 		}
+		c.setCommand(params[5]);
 		return c;
 	}
 
@@ -590,6 +598,7 @@ public class FileManager {
 		} else {
 			t.setTextRead(false);
 		}
+		t.setCommand(params[5]);
 		return t;
 	}
 
@@ -615,6 +624,7 @@ public class FileManager {
 		} else {
 			l.setTextRead(false);
 		}
+		l.setCommand(params[6]);
 		return l;
 	}
 
@@ -640,6 +650,7 @@ public class FileManager {
 		} else {
 			k.setTextRead(false);
 		}
+		k.setCommand(params[5]);
 		return k;
 	}
 
@@ -756,5 +767,21 @@ public class FileManager {
 
 	public List<String> getTiles() {
 		return readFromFile("parts/tiles.txt");
+	}
+
+	public static boolean gameExists(String game) {
+		File file = new File("games");
+		String[] files = file.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File current, String name) {
+				return new File(current, name).isDirectory();
+			}
+		});
+		for(int i = 0; i<files.length; i++) {
+			if(files[i].equals(game)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

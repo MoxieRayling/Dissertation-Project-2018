@@ -2,6 +2,7 @@ package model;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+
 import model.entities.Entity;
 import model.entities.Ghost;
 import model.entities.Player;
@@ -26,6 +27,8 @@ public class Model implements Subject {
 	protected FileManager fileManager;
 	private boolean endTurn = false;
 	private boolean endGame = false;
+	protected List<String> keysHistory;
+	protected int coinsHistory;
 
 	public Model(Observer v) {
 		this.v = v;
@@ -98,12 +101,12 @@ public class Model implements Subject {
 							|| player.getX() == e.getPX() && player.getY() == e.getPY() && player.getPX() == e.getX()
 									&& player.getPY() == e.getY())) {
 
-				player.die();
+				die();
+
 				break;
 			}
 		}
 		if (player.getLives() == 0) {
-			this.resetRoom();
 		}
 	}
 
@@ -150,9 +153,10 @@ public class Model implements Subject {
 		tryUnlock(direction, player.getX(), player.getY());
 		if (pMoved) {
 			room.updatePath(player.getX(), player.getY());
-			room.moveEnemies();
-			if (player.getPause() <= 0)
-				endTurn = true;
+			if (player.getPause() == 0) {
+				room.moveEnemies();
+			}
+			endTurn = true;
 			player.step();
 		}
 	}
@@ -227,15 +231,21 @@ public class Model implements Subject {
 		}
 	}
 
+	private void die() {
+		resetPlayer();
+		player.die();
+		this.resetRoom();
+	}
+
 	private void checkTile(Tile t) {
 		if (t instanceof Slide) {
 			tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
 		} else if (t instanceof Teleport) {
 			player.setTeleport(true);
-			player.setLoc(((Teleport) t).getXTele(), ((Teleport) t).getYTele());
+			player.setLoc(Math.min(((Teleport) t).getXTele(),room.getxLength()), Math.min(((Teleport) t).getYTele(),room.getyLength()));
 			player.setTeleport(false);
 		} else if (t instanceof Hole) {
-			player.die();
+			die();
 		} else if (t instanceof Key) {
 			player.addKey(((Key) t).getKey());
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
@@ -291,7 +301,12 @@ public class Model implements Subject {
 		room = this.loadRoom(room.getId());
 		notifyObserver();
 	}
-
+	
+	private void resetPlayer() {
+		player.setKeys(keysHistory);
+		player.setCoins(coinsHistory);
+	}
+	
 	public void changeRoom(String roomId, Boolean resetPos) {
 		Room temp = loadRoom(roomId);
 		int x = room.getX() - temp.getX();
@@ -501,7 +516,9 @@ public class Model implements Subject {
 	public boolean getEndGame() {
 		return endGame;
 	}
+
 	public void setEndGame(Boolean b) {
 		endGame = b;
 	}
 }
+

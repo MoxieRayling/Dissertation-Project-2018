@@ -102,4 +102,8 @@ public class EditorModel extends Model {
 		return fileManager .getTiles();
 	}
 
+	public boolean gameExists(String game) {
+		return fileManager.gameExists(game);
+	}
+
 }

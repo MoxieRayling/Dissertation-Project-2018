@@ -47,7 +47,7 @@ public class Animation extends JPanel {
 
 	public Animation(Window w) {
 		this.w = w;
-		this.setBackground(Color.BLACK);
+		this.setBackground(new Color(0x990000));
 		start();
 	}
 
@@ -281,9 +281,6 @@ public class Animation extends JPanel {
 		Graphics2D g = (Graphics2D) g1;
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		int[] columns = { scale, scale * 4, scale * 7, scale * 10 };
-		int[] rows = { 20, scale * (room.getyLength() + 2) };
-
 		super.paintComponent(g);
 		renderOrder();
 		for (Image i : images) {
@@ -291,7 +288,7 @@ public class Animation extends JPanel {
 		}
 		g.setColor(Color.BLACK);
 
-		drawHUD(g, columns, rows);
+		drawHUD(g, scale*13, 60);
 		if (displayText != "") {
 			g.setColor(new Color(0, 0, 0, 200));
 			g.fillRect(scale, scale * room.getyLength(), scale * room.getxLength(), scale);
@@ -301,56 +298,49 @@ public class Animation extends JPanel {
 		timer.start();
 	}
 
-	public void drawHUD(Graphics2D g, int[] columns, int[] rows) {
-		g.setColor(Color.WHITE);
-		g.drawString(String.valueOf("Lives: " + lives), columns[0], rows[0]);
-		g.drawString(String.valueOf("Steps: " + clock), columns[1], rows[0]);
-		g.drawString(String.valueOf("Coins: " + coins), columns[3], rows[0]);
+	public void drawHUD(Graphics2D g, int x, int y) {
+		g.setFont(new Font("Arial", Font.BOLD, 40));
+		g.setColor(Color.BLACK);
+		g.drawString(String.valueOf("Lives remaining: " + lives), x, y + 20);
+		g.drawString(String.valueOf("Steps taken: " + clock), x, y*2 + 20);
+		g.drawString(String.valueOf("Coins collected: " + coins), x, y*3 + 20);
+		g.drawString(String.valueOf("Press the arrow keys to move"), x, y*8 + 20);
+		g.drawString(String.valueOf("Press 'ESC' to pause the game"), x, y*9 + 20);
+		g.drawString(String.valueOf("Press 'M' to look at the map"), x, y*10 + 20);
 		if (GameRules.flight) {
 			if (flyCooldown > 0) {
-				g.setColor(Color.RED);
-				g.drawString(String.valueOf("Fly " + flyCooldown), columns[1], rows[1]);
+				g.drawString(String.valueOf("Flight cooldown: " + flyCooldown), x, y*4 + 20);
 			} else if (fly == 0) {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("'F' to Fly"), columns[1], rows[1]);
+				g.drawString(String.valueOf("Press 'F' to Fly"), x, y*4 + 20);
 
 			} else {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("Fly " + fly), columns[1], rows[1]);
+				g.drawString(String.valueOf("Flight activated: " + fly),x, y*4 + 20);
 			}
 		}
 		if (GameRules.pause) {
 			if (pauseCooldown > 0) {
-				g.setColor(Color.RED);
-				g.drawString(String.valueOf("Pause " + pauseCooldown), columns[0], rows[1]);
+				g.drawString(String.valueOf("Pause cooldown: " + pauseCooldown), x, y*5 + 20);
 			} else if (pause == 0) {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("'P' to Pause"), columns[0], rows[1]);
+				g.drawString(String.valueOf("Press 'P' to Pause"), x, y*5 + 20);
 
 			} else {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("Pause " + pause), columns[0], rows[1]);
+				g.drawString(String.valueOf("Pause activated: " + pause), x, y*5 + 20);
 			}
 		}
 		if (GameRules.rewind) {
 			if (rewindCooldown > 0) {
-				g.setColor(Color.RED);
-				g.drawString(String.valueOf("Rewind " + rewindCooldown), columns[2], rows[1]);
+				g.drawString(String.valueOf("Rewind cooldown: " + rewindCooldown), x, y*6 + 20);
 			} else {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("'R' to Rewind "), columns[2], rows[1]);
+				g.drawString(String.valueOf("'R' to Rewind "), x, y*6 + 20);
 			}
 		}
 		if (GameRules.shield) {
 			if (shieldCooldown > 0) {
-				g.setColor(Color.RED);
-				g.drawString(String.valueOf("Shield " + shieldCooldown), columns[3], rows[1]);
+				g.drawString(String.valueOf("Shield cooldown: " + shieldCooldown), x, y*7 + 20);
 			} else if (shield) {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("Shield is active"), columns[3], rows[1]);
+				g.drawString(String.valueOf("Shield is active"),x, y*7 + 20);
 			} else {
-				g.setColor(Color.GREEN);
-				g.drawString(String.valueOf("'S' to Shield "), columns[3], rows[1]);
+				g.drawString(String.valueOf("'S' to Shield "), x, y*7 + 20);
 			}
 		}
 	}

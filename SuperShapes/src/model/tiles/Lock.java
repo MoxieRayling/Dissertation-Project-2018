@@ -8,13 +8,14 @@ public class Lock extends Tile {
 		super(x, y);
 		this.setTrav(false);
 		this.setPath(122);
+		setImage("lock.png");
 		this.key = key;
 	}
 
 	@Override
 	public String toString() {
 
-		return "lock " + x + "," + y + " " + key + " " + image + " \"" + getText() + " " + getTextRead().toString();
+		return "lock " + x + "," + y + " " + key + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 
 	public String getKey() {

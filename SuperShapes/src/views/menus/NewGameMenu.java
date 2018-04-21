@@ -32,7 +32,6 @@ public class NewGameMenu extends JPanel {
 	private int buttonSizex = 150;
 	private int buttonSizey = 40;
 	private JLabel title;
-	private String game = "";
 	private JComboBox<String> saves;
 	private JButton loadSave = new JButton("Load Save");
 	private JButton back = new JButton("Back");
@@ -44,13 +43,12 @@ public class NewGameMenu extends JPanel {
 		this.setLayout(null);
 		this.setBackground(new Color(0x990000));
 
-		title = new JLabel("<html><div style='text-align: center;'>Super Deluxe <br>GameMaker");
+		title = new JLabel("<html><div style='text-align: center;'>Select a save");
 		title.setFont(new Font("Arial", Font.BOLD, 40));
 		title.setForeground(Color.BLACK);
 		title.setBounds(sizex / 2 - 125, 30, 400, 100);
 		title.setBackground(new Color(0x660000));
 		this.add(title);
-		saves = new JComboBox<String>(getSaves());
 		saves = new JComboBox<String>(getSaves());
 		for (int i = 0; i < saves.getComponentCount(); i++) {
 			if (saves.getComponent(i) instanceof JComponent) {
@@ -83,6 +81,7 @@ public class NewGameMenu extends JPanel {
 		newSaveText.setBorder(border);
 		newSaveText.setBackground(new Color(0xffffff));
 		newSaveText.setText("save " + (saves.getItemCount()+1));
+		loadSave.setToolTipText("Load the select save in the list above");
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -90,6 +89,7 @@ public class NewGameMenu extends JPanel {
 				w.loadGame();
 			}
 		});
+		newSave.setToolTipText("Create a new save by typing a save name in the text box above");
 		newSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

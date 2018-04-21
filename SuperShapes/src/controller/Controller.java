@@ -146,4 +146,10 @@ public class Controller {
 		return ((EditorModel) m).getTiles();
 	}
 
+
+	public boolean gameExists(String game) {
+		m = new EditorModel(v);
+		return ((EditorModel) m).gameExists(game);
+	}
+
 }
