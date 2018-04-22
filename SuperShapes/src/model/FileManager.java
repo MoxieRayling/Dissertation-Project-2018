@@ -731,7 +731,7 @@ public class FileManager {
 					if (line.contains("coin ")) {
 						map[coords[0] + 5 - x][coords[1] + 5 - y] += "C";
 					}
-					if (line.contains("lock ")) {
+					if (line.contains(":lock ") || line.contains("Tlock ")) {
 						map[coords[0] + 5 - x][coords[1] + 5 - y] += "L";
 					}
 					if (line.contains(" win") || line.contains(" lose")) {
@@ -802,7 +802,7 @@ public class FileManager {
 	public void createEntity(String entity) {
 		List<String> entities = getEntities();
 		entities.add(entity);
-		writeToFile(entity, "parts/entities.txt");
+		writeToFile(entities, "parts/entities.txt");
 	}
 
 	public List<String> getEntities() {

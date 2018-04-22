@@ -179,7 +179,8 @@ public class PauseMenu extends JPanel implements ItemListener {
 		mapHelp.setContentAreaFilled(false);
 		mapHelp.setBorderPainted(false);
 		mapHelp.setBounds(0, 0, scale * 13, scale * 13);
-		mapHelp.setToolTipText("Use the arrow keys or the white arrow buttons to navigate the map");
+		mapHelp.setToolTipText("<html>Use the arrow keys or the white arrow buttons to navigate the map.<br>"
+				+ "The map shows if a room contains a key, lock, coin, or goal, as well as were the player is.");
 		this.add(mapHelp);
 	}
 

@@ -404,10 +404,6 @@ public class Window extends JFrame implements View {
 		this.mode = mode;
 	}
 
-	public void refreshEditor() {
-		editor.refresh();
-	}
-
 	public void createEntity(String entity) {
 		c.createEntity(entity);
 	}

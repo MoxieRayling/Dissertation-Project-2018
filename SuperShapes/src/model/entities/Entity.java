@@ -176,6 +176,7 @@ public abstract class Entity implements Subject {
 
 	public void delete() {
 		setDelete(true);
+		notifyObserver();
 	}
 
 }

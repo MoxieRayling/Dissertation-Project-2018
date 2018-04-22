@@ -28,7 +28,7 @@ public class Player extends Entity {
 	private int respawnx = 0;
 	private int respawny = 0;
 	private List<String> keys = new ArrayList<String>();
-
+	private String message = "Welcome to the dungeon, we got fun and games.";
 	private int coins = 0;
 
 	public Player(String room, int x, int y, int lives) {
@@ -412,4 +412,13 @@ public class Player extends Entity {
 		shield = false;
 	}
 
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+		notifyObserver();
+	}
 }

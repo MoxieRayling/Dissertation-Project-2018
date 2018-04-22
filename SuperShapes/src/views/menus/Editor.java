@@ -147,6 +147,7 @@ public class Editor extends JPanel {
 		makeEntity.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				w.exportRoom();
 				w.createEntityMenu();
 			}
 		});
@@ -157,6 +158,7 @@ public class Editor extends JPanel {
 		makeTile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				w.exportRoom();
 				w.createTileMenu();
 			}
 		});
@@ -691,7 +693,6 @@ public class Editor extends JPanel {
 				}
 			}
 		}
-		System.out.println("entity " + result[0]);
 		for (String s : tiles) {
 			if (paintTile.isSelected() && s.startsWith(tileList.getSelectedItem().toString())) {
 				result[1] = s.substring(s.indexOf(" ") + 1);

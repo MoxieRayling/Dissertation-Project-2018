@@ -104,7 +104,6 @@ public class CreateEntityMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				w.editor();
-				w.refreshEditor();
 			}
 		});
 		back.setBounds(scale, 300, scale * 2, 20);

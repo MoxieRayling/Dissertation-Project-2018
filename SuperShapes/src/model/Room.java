@@ -134,7 +134,7 @@ public class Room implements Subject {
 		result += ";T";
 		for (Tile t : tiles) {
 			if (t instanceof EmptyTile) {
-				if (!t.getImage().equals("empty.png") || !t.getText().equals("")) {
+				if (!t.getImage().equals("empty.png") || !t.getText().equals("") || !t.getCommand().equals("none")) {
 					result += t.toString() + ":";
 				}
 			} else

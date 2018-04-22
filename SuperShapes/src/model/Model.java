@@ -111,7 +111,7 @@ public class Model implements Subject {
 					&& (player.getX() == e.getX() && player.getY() == e.getY()
 							|| player.getX() == e.getPX() && player.getY() == e.getPY()
 							|| player.getPX() == e.getX() && player.getPY() == e.getY())) {
-
+				e.delete();
 				room.removeEntity(e);
 				player.breakShield();
 			}
@@ -127,7 +127,7 @@ public class Model implements Subject {
 									&& player.getPY() == e.getY())) {
 
 				die();
-				System.out.println("it was me");
+				resetRoom();
 
 				break;
 			}
@@ -269,6 +269,7 @@ public class Model implements Subject {
 	}
 
 	private void die() {
+		player.setMessage("You have died!");
 		resetPlayer();
 		player.die();
 		this.resetRoom();
@@ -353,18 +354,17 @@ public class Model implements Subject {
 	}
 
 	public void changeRoom(String roomId, Boolean resetPos) {
+
 		if (resetPos) {
 			fileManager.exportWorking(room.exportRoom());
 		}
 		Room temp = loadRoom(roomId);
+		player.setMessage("You have enter room " + roomId);
 		int x = room.getX() - temp.getX();
 		int y = room.getY() - temp.getY();
 		keysHistory = player.getKeys();
 		coinsHistory = player.getCoins();
-		if (clockHistory == 0)
-			clockHistory = room.getClock();
-		else
-			clockHistory = room.getClock() + 1;
+		clockHistory = room.getClock();
 		setRoom(temp);
 		room.setClock(clockHistory);
 		player.setTeleport(true);
@@ -374,6 +374,7 @@ public class Model implements Subject {
 		player.setTeleport(false);
 		player.setRoomId(room.getId());
 		room.updatePath(player.getX(), player.getY());
+		endTurn = true;
 		notifyObserver();
 	}
 

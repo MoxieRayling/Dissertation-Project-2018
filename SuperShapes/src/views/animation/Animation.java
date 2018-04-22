@@ -50,6 +50,7 @@ public class Animation extends JPanel {
 	private boolean winner = false;
 	private boolean endGame = false;
 	private String keys = "";
+	private String message = "";
 
 	public Animation(Window w) {
 		this.w = w;
@@ -118,6 +119,7 @@ public class Animation extends JPanel {
 	}
 
 	public void playerUpdate(Player play) {
+		message = play.getMessage();
 		coins = play.getCoins();
 		lives = play.getLives();
 		fly = play.getFly();
@@ -159,6 +161,8 @@ public class Animation extends JPanel {
 		}
 		this.keys = keys;
 
+		System.out.println(play.getX() + " " + play.getY());
+		System.out.println("image" + player.getX() + "," + player.getY() + " " + player.getDead());
 	}
 
 	public void entityUpdate(Entity e) {
@@ -175,10 +179,10 @@ public class Animation extends JPanel {
 		if (e.getDelete()) {
 			images.remove(image);
 		}
-		if (!exists) {
+		else if (!exists) {
 			createImage(e);
 		}
-	}
+	}	
 
 	public void createImage(Entity e) {
 		if (e instanceof Block) {
@@ -211,7 +215,6 @@ public class Animation extends JPanel {
 					i.Move();
 				}
 				repaint();
-				playerCollide();
 				Boolean stationary = true;
 				for (Image i : images) {
 					if (!i.getStationary()) {
@@ -243,7 +246,7 @@ public class Animation extends JPanel {
 					w.endTurn();
 					if (player != null && player.getDead()) {
 						w.restart();
-						player.unshrink();
+						// player.unshrink();
 						player.setDead(false);
 					}
 				}
@@ -285,29 +288,17 @@ public class Animation extends JPanel {
 		}
 		images = render;
 	}
-
-	private void pauseAnimation() {
-		for (Image i : images) {
-			i.setXDest(i.getXPos());
-			i.setYDest(i.getYPos());
-		}
-	}
-
-	private void playerCollide() {
-		timer.stop();
-		for (Image i : images) {
-			if (!player.getNoCollide() && !(i instanceof PlayerImage) && !(i instanceof RoomImage)
-					&& !(i instanceof GhostImage) && i.getXPos() > player.getXPos() - 3
-					&& i.getXPos() < player.getXPos() + 3 && i.getYPos() > player.getYPos() - 3
-					&& i.getYPos() < player.getYPos() + 3) {
-				pauseAnimation();
-				player.setShrink(true);
-				player.setDead(true);
-				break;
-			}
-		}
-		timer.start();
-	}
+	/*
+	 * private void pauseAnimation() { for (Image i : images) {
+	 * i.setXDest(i.getXPos()); i.setYDest(i.getYPos()); } }
+	 * 
+	 * private void playerCollide() { timer.stop(); for (Image i : images) { if
+	 * (!player.getNoCollide() && !shield && !(i instanceof PlayerImage) && !(i
+	 * instanceof RoomImage) && !(i instanceof GhostImage) && i.getXPos() >
+	 * player.getXPos() - 3 && i.getXPos() < player.getXPos() + 3 && i.getYPos() >
+	 * player.getYPos() - 3 && i.getYPos() < player.getYPos() + 3) {
+	 * pauseAnimation(); player.setDead(true); break; } } timer.start(); }
+	 */
 
 	@Override
 	public Dimension getPreferredSize() {
@@ -393,6 +384,7 @@ public class Animation extends JPanel {
 			g.drawString(String.valueOf("Shield Locked"), x, y * 7 + 20);
 		}
 		g.drawString(String.valueOf("Keys: " + keys), x, y * 11 + 20);
+		g.drawString(String.valueOf(message), 50, y * 11 + 70);
 	}
 
 	public void nextText() {

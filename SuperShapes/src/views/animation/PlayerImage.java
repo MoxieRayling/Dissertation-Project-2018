@@ -60,40 +60,6 @@ public class PlayerImage extends Image {
 		}
 	}
 
-	public void unshrink() {
-		shrink = false;
-		setXSize(scale);
-		setXPos(xCoord * scale);
-		setYPos(yCoord * scale);
-	}
-
-	@Override
-	public void Move() {
-		double speed = 40.0;
-		if (this.getXPos() < this.getXDest() + (int) Math.ceil(scale / speed)
-				&& this.getXPos() > this.getXDest() - (int) Math.ceil(scale / speed)) {
-			this.setXPos(this.getXDest());
-		} else if (this.getXPos() > this.getXDest()) {
-			this.setXPos(this.getXPos() - (int) Math.ceil(scale / speed));
-		} else if (this.getXPos() < this.getXDest()) {
-			this.setXPos(this.getXPos() + (int) Math.ceil(scale / speed));
-		}
-
-		if (this.getYPos() < this.getYDest() + (int) Math.ceil(scale / speed)
-				&& this.getYPos() > this.getYDest() - (int) Math.ceil(scale / speed)) {
-			this.setYPos(this.getYDest());
-		} else if (this.getYPos() > this.getYDest()) {
-			this.setYPos(this.getYPos() - (int) Math.ceil(scale / speed));
-		} else if (this.getYPos() < this.getYDest()) {
-			this.setYPos(this.getYPos() + (int) Math.ceil(scale / speed));
-		}
-		if (!shrink && getXPos() == getXDest() && getYPos() == getYDest()) {
-			stationary = true;
-		} else {
-			stationary = false;
-		}
-	}
-
 	@Override
 	public void drawThis(Graphics2D g, int xCoord, int yCoord) {
 
@@ -105,8 +71,6 @@ public class PlayerImage extends Image {
 			y -= size / 3;
 		}
 
-		if (shrink)
-			shrink();
 
 		BufferedImage image = FileManager.getImage(img);
 		if (image != null) {

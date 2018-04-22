@@ -29,7 +29,6 @@ public class Controller {
 	}
 
 	public void restart() {
-		m.resetRoom();
 	}
 
 	public void loadGame() {
