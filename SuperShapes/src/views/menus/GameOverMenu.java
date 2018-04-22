@@ -12,6 +12,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import views.Window;
 
 @SuppressWarnings("serial")
@@ -27,14 +29,14 @@ public class GameOverMenu extends JPanel {
 	private MenuButton exit = new MenuButton("Exit");
 	private List<MenuButton> buttons = new ArrayList<MenuButton>();
 
-	public GameOverMenu(Window w) {
+	public GameOverMenu(Window w, String titleText, String text) {
 		this.setLayout(null);
 		this.setBackground(new Color(0x990000));
 		
-		title = new JLabel("<html><div style='text-align: center;'>Game over");
+		title = new JLabel("<html><div style='text-align: center;'>"+titleText, SwingConstants.CENTER);
 		title.setFont(new Font("Arial", Font.BOLD, 40));
 		title.setForeground(Color.BLACK);
-		title.setBounds(sizex / 2 - 105, 30, 400,
+		title.setBounds(sizex / 2 - 200, 30, 400,
 					100);
 		title.setBackground(new Color(0x660000));
 		this.add(title);

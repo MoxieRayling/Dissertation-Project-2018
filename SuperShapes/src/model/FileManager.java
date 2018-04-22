@@ -307,7 +307,7 @@ public class FileManager {
 		writeToFile(lines, saveDir + "/working.txt");
 		writeToFile(lines, saveDir + "/world.txt");
 		writeToFile(lines, gameDir + "/master.txt");
-		System.out.println("exported");
+		
 	}
 
 	public Room parseRoom(String[] params, Player player, Observer o) {
@@ -564,7 +564,6 @@ public class FileManager {
 			c.setImage(params[2]);
 		}
 		if (!params[3].equals("\"")) {
-			System.out.println(params[3]);
 			c.setText(params[3].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -754,6 +753,8 @@ public class FileManager {
 	}
 
 	public void createEntity(String entity) {
+		List<String> entities = getEntities();
+		entities.add(entity);
 		writeToFile(entity, "parts/entities.txt");
 	}
 
@@ -762,7 +763,9 @@ public class FileManager {
 	}
 
 	public void createTile(String tile) {
-		writeToFile(tile, "parts/tiles.txt");
+		List<String> tiles = getTiles();
+		tiles.add(tile);
+		writeToFile(tiles, "parts/tiles.txt");
 	}
 
 	public List<String> getTiles() {
@@ -783,5 +786,22 @@ public class FileManager {
 			}
 		}
 		return false;
+	}
+
+	public int getCoins() {
+		int coins = 0;
+		List<String> data = getMasterData();
+		for(String s : data) {
+			int index = 0;
+			while(index != -1){
+			    index = s.indexOf("coin ",index);
+
+			    if(index != -1){
+			        coins++;
+			        index += 5;
+			    }
+			}
+		}
+		return coins;
 	}
 }

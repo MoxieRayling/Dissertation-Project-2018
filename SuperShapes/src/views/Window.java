@@ -55,7 +55,6 @@ public class Window extends JFrame implements View {
 		start = new StartMenu(this);
 		game = new Animation(this);
 		create = new CreateMenu(this);
-		gameOver = new GameOverMenu(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
@@ -132,9 +131,8 @@ public class Window extends JFrame implements View {
 	public void Update(ActionEvent e) {
 		Object o = e.getSource();
 		if (o instanceof Model) {
-			if(((Model) o).getEndGame()) {
-				endGameMenu();
-			}
+			game.setEndGame(((Model)o).getEndGame());
+			game.setWinner(((Model)o).isWinner());
 			setInput(((Model) o).getInput());
 		} else if (o instanceof Room) {
 			game.roomUpdate((Room) o);
@@ -146,11 +144,6 @@ public class Window extends JFrame implements View {
 			game.entityUpdate((Entity) o);
 		}
 
-	}
-
-	private void endGameMenu() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -174,7 +167,8 @@ public class Window extends JFrame implements View {
 		returnToGame();
 	}
 
-	public void gameOver() {
+	public void gameOver(String title, String text) {
+		gameOver = new GameOverMenu(this,title,text);
 		history.add(gameOver);
 		this.setSize(gameOver.getPreferredSize());
 		this.setLocationRelativeTo(null);
@@ -208,6 +202,8 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		ngMenu.requestFocusInWindow();
+
+		System.out.println("coins " + getCoins());
 	}
 
 	public void createGame() {
@@ -241,6 +237,7 @@ public class Window extends JFrame implements View {
 		ctMenu = new CreateTileMenu(this);
 		c.runEditor();
 		this.setSize(ctMenu.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(ctMenu);
@@ -254,6 +251,7 @@ public class Window extends JFrame implements View {
 		ceMenu = new CreateEntityMenu(this);
 		c.runEditor();
 		this.setSize(ceMenu.getPreferredSize());
+		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(ceMenu);
@@ -448,5 +446,10 @@ public class Window extends JFrame implements View {
 
 	public boolean gameExists(String game) {
 		return c.gameExists(game);
+	}
+
+	
+	public int getCoins() {
+		return c.getCoins();
 	}
 }

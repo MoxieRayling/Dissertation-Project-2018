@@ -44,6 +44,8 @@ public class Animation extends JPanel {
 	private Window w;
 	private String bufferText = "";
 	private String displayText = "";
+	private boolean winner = false;
+	private boolean endGame = false;
 
 	public Animation(Window w) {
 		this.w = w;
@@ -197,9 +199,22 @@ public class Animation extends JPanel {
 					}
 				}
 				if (stationary) {
-					if (lives == 0) {
-						w.gameOver();
+					if (lives < 0) {
+						w.gameOver("Game Over", "<html>You ran out of lives and lost the game. <br>Please choose a save file to load and try again.");
+						setEndGame(false);
 					}
+					if(endGame) {
+						if(winner) {
+							w.gameOver("You win", "<html><div style='text-align: center;'>Congratulations! You completed the game in " + clock + "steps and <br>"
+									+ "collected " + coins + "/" + w.getCoins() + " coins.");
+							setEndGame(false);
+						} else {
+							w.gameOver("You Lose", "<html><div style='text-align: center;'>Unlucky! You managed to get to room " + roomId + " and <br>"
+									+ "collected " + coins + "/" + w.getCoins() + " coins.");
+							setEndGame(false);
+						}
+					}
+					
 					w.setInput(true);
 					w.endTurn();
 					if (player != null && player.getDead()) {
@@ -288,7 +303,7 @@ public class Animation extends JPanel {
 		}
 		g.setColor(Color.BLACK);
 
-		drawHUD(g, scale*13, 60);
+		drawHUD(g, scale * 13, 60);
 		if (displayText != "") {
 			g.setColor(new Color(0, 0, 0, 200));
 			g.fillRect(scale, scale * room.getyLength(), scale * room.getxLength(), scale);
@@ -302,45 +317,45 @@ public class Animation extends JPanel {
 		g.setFont(new Font("Arial", Font.BOLD, 40));
 		g.setColor(Color.BLACK);
 		g.drawString(String.valueOf("Lives remaining: " + lives), x, y + 20);
-		g.drawString(String.valueOf("Steps taken: " + clock), x, y*2 + 20);
-		g.drawString(String.valueOf("Coins collected: " + coins), x, y*3 + 20);
-		g.drawString(String.valueOf("Press the arrow keys to move"), x, y*8 + 20);
-		g.drawString(String.valueOf("Press 'ESC' to pause the game"), x, y*9 + 20);
-		g.drawString(String.valueOf("Press 'M' to look at the map"), x, y*10 + 20);
+		g.drawString(String.valueOf("Steps taken: " + clock), x, y * 2 + 20);
+		g.drawString(String.valueOf("Coins collected: " + coins), x, y * 3 + 20);
+		g.drawString(String.valueOf("Press the arrow keys to move"), x, y * 4 + 20);
+		g.drawString(String.valueOf("Press 'ESC' to pause the game"), x, y * 5 + 20);
+		g.drawString(String.valueOf("and view the map"), x, y * 6 + 20);
 		if (GameRules.flight) {
 			if (flyCooldown > 0) {
-				g.drawString(String.valueOf("Flight cooldown: " + flyCooldown), x, y*4 + 20);
+				g.drawString(String.valueOf("Flight cooldown: " + flyCooldown), x, y * 8 + 20);
 			} else if (fly == 0) {
-				g.drawString(String.valueOf("Press 'F' to Fly"), x, y*4 + 20);
+				g.drawString(String.valueOf("Press 'F' to Fly"), x, y * 8 + 20);
 
 			} else {
-				g.drawString(String.valueOf("Flight activated: " + fly),x, y*4 + 20);
+				g.drawString(String.valueOf("Flight activated: " + fly), x, y * 8 + 20);
 			}
 		}
 		if (GameRules.pause) {
 			if (pauseCooldown > 0) {
-				g.drawString(String.valueOf("Pause cooldown: " + pauseCooldown), x, y*5 + 20);
+				g.drawString(String.valueOf("Pause cooldown: " + pauseCooldown), x, y * 9 + 20);
 			} else if (pause == 0) {
-				g.drawString(String.valueOf("Press 'P' to Pause"), x, y*5 + 20);
+				g.drawString(String.valueOf("Press 'P' to Pause"), x, y * 9 + 20);
 
 			} else {
-				g.drawString(String.valueOf("Pause activated: " + pause), x, y*5 + 20);
+				g.drawString(String.valueOf("Pause activated: " + pause), x, y * 9 + 20);
 			}
 		}
 		if (GameRules.rewind) {
 			if (rewindCooldown > 0) {
-				g.drawString(String.valueOf("Rewind cooldown: " + rewindCooldown), x, y*6 + 20);
+				g.drawString(String.valueOf("Rewind cooldown: " + rewindCooldown), x, y * 10 + 20);
 			} else {
-				g.drawString(String.valueOf("'R' to Rewind "), x, y*6 + 20);
+				g.drawString(String.valueOf("Press 'R' to Rewind "), x, y * 10 + 20);
 			}
 		}
 		if (GameRules.shield) {
 			if (shieldCooldown > 0) {
-				g.drawString(String.valueOf("Shield cooldown: " + shieldCooldown), x, y*7 + 20);
+				g.drawString(String.valueOf("Shield cooldown: " + shieldCooldown), x, y * 7 + 20);
 			} else if (shield) {
-				g.drawString(String.valueOf("Shield is active"),x, y*7 + 20);
+				g.drawString(String.valueOf("Shield is active"), x, y * 7 + 20);
 			} else {
-				g.drawString(String.valueOf("'S' to Shield "), x, y*7 + 20);
+				g.drawString(String.valueOf("Press 'S' to activate Shield "), x, y * 7 + 20);
 			}
 		}
 	}
@@ -374,5 +389,13 @@ public class Animation extends JPanel {
 
 	private void setDisplayText(String text) {
 		displayText = text;
+	}
+
+	public void setEndGame(boolean endGame) {
+		this.endGame = endGame;
+	}
+
+	public void setWinner(boolean winner) {
+		this.winner = winner;
 	}
 }

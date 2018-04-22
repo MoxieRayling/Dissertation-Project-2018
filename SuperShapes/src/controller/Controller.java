@@ -152,4 +152,8 @@ public class Controller {
 		return ((EditorModel) m).gameExists(game);
 	}
 
+	public int getCoins() {
+		return m.getCoins();
+	}
+
 }

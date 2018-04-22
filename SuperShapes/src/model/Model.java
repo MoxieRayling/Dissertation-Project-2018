@@ -27,6 +27,7 @@ public class Model implements Subject {
 	protected FileManager fileManager;
 	private boolean endTurn = false;
 	private boolean endGame = false;
+	private boolean winner = false;
 	protected List<String> keysHistory;
 	protected int coinsHistory;
 
@@ -221,11 +222,11 @@ public class Model implements Subject {
 
 	public void endTurn() {
 		if (endTurn) {
+			room.setText(room.getTile(player).getText().replaceAll("_", " "));
 			checkShield();
 			checkForDeath();
 			checkTile(room.getTile(player));
 			room.incClock();
-			room.setText(room.getTile(player).getText().replaceAll("_", " "));
 			notifyObserver();
 			endTurn = false;
 		}
@@ -286,7 +287,13 @@ public class Model implements Subject {
 		case "disableFlight":
 			disableFlight();
 			break;
-		case "endGame":
+		case "win":
+			setWinner(true);
+			setEndGame(true);
+			notifyObserver();
+			break;
+		case "lose":
+			setWinner(false);
 			setEndGame(true);
 			notifyObserver();
 			break;
@@ -519,6 +526,18 @@ public class Model implements Subject {
 
 	public void setEndGame(Boolean b) {
 		endGame = b;
+	}
+
+	public boolean isWinner() {
+		return winner;
+	}
+
+	public void setWinner(boolean winner) {
+		this.winner = winner;
+	}
+
+	public int getCoins() {
+		return fileManager.getCoins();
 	}
 }
 
