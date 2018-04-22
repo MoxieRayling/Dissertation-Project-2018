@@ -47,7 +47,6 @@ public class Window extends JFrame implements View {
 	private CreateMenu create;
 	private GameOverMenu gameOver;
 	private String mode = "game";
-	private List<JPanel> history = new ArrayList<JPanel>();
 	private CreateEntityMenu ceMenu;
 	private CreateTileMenu ctMenu;
 
@@ -55,7 +54,6 @@ public class Window extends JFrame implements View {
 		frame = this;
 		start = new StartMenu(this);
 		game = new Animation(this);
-		create = new CreateMenu(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.add(start);
@@ -169,7 +167,6 @@ public class Window extends JFrame implements View {
 
 	public void gameOver(String title, String text) {
 		gameOver = new GameOverMenu(this, title, text);
-		history.add(gameOver);
 		this.setSize(gameOver.getPreferredSize());
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
@@ -183,7 +180,6 @@ public class Window extends JFrame implements View {
 
 	public void mainMenu() {
 		start = new StartMenu(this);
-		history.add(start);
 		this.setSize(start.getPreferredSize());
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
@@ -197,7 +193,6 @@ public class Window extends JFrame implements View {
 
 	public void newGameMenu() {
 		ngMenu = new NewGameMenu(this);
-		history.add(ngMenu);
 		this.setSize(ngMenu.getPreferredSize());
 		this.getContentPane().removeAll();
 		this.getContentPane().add(ngMenu);
@@ -208,7 +203,7 @@ public class Window extends JFrame implements View {
 	}
 
 	public void createGame() {
-		history.add(create);
+		create = new CreateMenu(this);
 		this.setSize(create.getPreferredSize());
 		this.setResizable(false);
 		this.getContentPane().removeAll();
@@ -222,7 +217,6 @@ public class Window extends JFrame implements View {
 	public void editor() {
 		c.editor();
 		editor = new Editor(this);
-		history.add(editor);
 		c.runEditor();
 		this.setSize(editor.getPreferredSize());
 		this.setLocationRelativeTo(null);
@@ -295,7 +289,6 @@ public class Window extends JFrame implements View {
 			}
 
 		});
-		history.add(pause);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setResizable(false);
 		this.getContentPane().removeAll();
@@ -308,8 +301,6 @@ public class Window extends JFrame implements View {
 
 	public void returnToGame() {
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		history.clear();
-		history.add(game);
 		this.getContentPane().removeAll();
 		this.getContentPane().add(game);
 		this.validate();
@@ -320,7 +311,6 @@ public class Window extends JFrame implements View {
 
 	public void loadMenu() {
 		load = new LoadMenu(this);
-		history.add(load);
 		load.updateSaves();
 		this.setSize(load.getPreferredSize());
 		this.setLocationRelativeTo(null);
@@ -334,7 +324,6 @@ public class Window extends JFrame implements View {
 
 	public void saveMenu() {
 		save = new SaveMenu(this);
-		history.add(save);
 		this.setSize(save.getPreferredSize());
 		this.setLocationRelativeTo(null);
 		this.getContentPane().removeAll();

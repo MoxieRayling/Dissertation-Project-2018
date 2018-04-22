@@ -84,8 +84,10 @@ public class NewGameMenu extends JPanel {
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + (String) saves.getSelectedItem());
-				w.loadGame();
+				if (saves.getSelectedItem() != null) {
+					FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + (String) saves.getSelectedItem());
+					w.loadGame();
+				}
 			}
 		});
 		newSave.setToolTipText("Create a new save by typing a save name in the text box above");
@@ -98,7 +100,6 @@ public class NewGameMenu extends JPanel {
 				} else if (!newSaveText.getText().isEmpty()) {
 					FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + save);
 					w.makeNewSave();
-					updateSaves();
 					w.loadGame();
 				}
 			}
@@ -119,16 +120,9 @@ public class NewGameMenu extends JPanel {
 				return new File(current, name).isDirectory();
 			}
 		});
-
+		if(directories == null)
+			System.out.println(FileManager.getGameDir() + "/saves");
 		return directories;
-	}
-
-	public void updateSaves() {
-		saves.removeAllItems();
-		String[] saveNames = getSaves();
-		for (int i = 0; i < saveNames.length; i++) {
-			saves.addItem(saveNames[i]);
-		}
 	}
 
 	@Override

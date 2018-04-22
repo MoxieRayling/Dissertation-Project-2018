@@ -40,12 +40,11 @@ public class StartMenu extends JPanel {
 	public StartMenu(Window w) {
 		this.setLayout(null);
 		this.setBackground(new Color(0x990000));
-		
+
 		title = new JLabel("<html><div style='text-align: center;'>Super Deluxe <br>GameMaker");
 		title.setFont(new Font("Arial", Font.BOLD, 40));
 		title.setForeground(Color.BLACK);
-		title.setBounds(sizex / 2 - 125, 30, 400,
-					100);
+		title.setBounds(sizex / 2 - 125, 30, 400, 100);
 		title.setBackground(new Color(0x660000));
 		this.add(title);
 		games = new JComboBox<String>(getDirectories());
@@ -81,8 +80,11 @@ public class StartMenu extends JPanel {
 		selectGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FileManager.setGameDir((String) games.getSelectedItem());
-				w.newGameMenu();
+
+				if (games.getSelectedItem() != null) {
+					FileManager.setGameDir((String) games.getSelectedItem());
+					w.newGameMenu();
+				}
 			}
 		});
 
@@ -90,10 +92,11 @@ public class StartMenu extends JPanel {
 		editGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FileManager.setGameDir((String) games.getSelectedItem());
-				FileManager.setSaveDir((String) games.getSelectedItem() + "/saves/save1");
-				// w.gameRules();
-				w.editor();
+				if (games.getSelectedItem() != null) {
+					FileManager.setGameDir((String) games.getSelectedItem());
+					FileManager.setSaveDir("games/" + (String) games.getSelectedItem() + "/saves/save1");
+					w.editor();
+				}
 			}
 		});
 		createGame.setToolTipText("Create a new game");

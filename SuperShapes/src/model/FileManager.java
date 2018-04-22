@@ -128,10 +128,12 @@ public class FileManager {
 	}
 
 	public void saveGame(String save, Room r, String playerData, int clock) {
-		String fileName = getSaveDir() + "/" + save + ".txt";
+		String fileName = getSaveDir() + "/save.txt";
 		String saveData = r.getId() + ":" + playerData + ":" + clock;
 		System.out.println(fileName);
 		writeToFile(saveData, fileName);
+		exportWorking(r.exportRoom());
+		exportWorld(r.exportRoom());
 	}
 
 	public static void newSaveData() {
@@ -201,6 +203,7 @@ public class FileManager {
 		enemyCount = 0;
 		String room = getRoomData(x, y);
 		String[] params = room.split(";");
+		System.out.println(room);
 		Room r = parseRoom(params[0].split(" "), player, o);
 		if (params[1].length() > 1)
 			r.setEnemies(parseEntities(params[1].substring(1), x, y, r, o));
