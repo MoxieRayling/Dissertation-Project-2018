@@ -103,8 +103,8 @@ public class Controller {
 		m.makeNewDir();
 	}
 
-	public void saveGame() {
-		m.saveGame();
+	public void saveGame(String save) {
+		m.saveGame(save);
 	}
 
 	public void makeNewSave() {
@@ -117,18 +117,7 @@ public class Controller {
 
 	public void setTextRead() {
 		m.setTextRead();
-	}/*
-		 * 
-		 * public void exportEvent(String event) { ((EditorModel) m).exportEvent(event);
-		 * }
-		 * 
-		 * public String[][] getEventMap(int mapCentreX, int mapCentreY, String
-		 * eventName) { return ((EditorModel) m).getEventMap(mapCentreX, mapCentreY,
-		 * eventName); }
-		 * 
-		 * public void eventRemoveRoom(String eventName, String id) { ((EditorModel)
-		 * m).eventRemoveRoom(eventName, id); }
-		 */
+	}
 
 	public void createEntity(String entity) {
 		((EditorModel) m).createEntity(entity);

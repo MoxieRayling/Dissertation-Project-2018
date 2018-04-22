@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.entities.Entity;
@@ -30,6 +31,7 @@ public class Model implements Subject {
 	private boolean winner = false;
 	protected List<String> keysHistory;
 	protected int coinsHistory;
+	private int clockHistory;
 
 	public Model(Observer v) {
 		this.v = v;
@@ -46,9 +48,9 @@ public class Model implements Subject {
 	}
 
 	public void loadGame() {
-		fileManager.overWriteWorking();
+		fileManager.exportWorld(room.exportRoom());
 		String[] saveData = fileManager.getSaveData().split(":");
-		changeRoom(saveData[0], false);
+		setRoom(fileManager.makeRoomFromWorld(saveData[0], player, v));
 		int x = 0;
 		int y = 0;
 		try {
@@ -56,18 +58,39 @@ public class Model implements Subject {
 			y = Integer.parseInt(saveData[1].split(",")[1]);
 			player.setRespawnx(Integer.parseInt(saveData[2].split(",")[0]));
 			player.setRespawny(Integer.parseInt(saveData[2].split(",")[1]));
-			room.setClock(Integer.parseInt(saveData[3]));
+			player.setCoins(Integer.parseInt(saveData[3]));
+			player.setLives(Integer.parseInt(saveData[4]));
+			player.setFlyCooldown(Integer.parseInt(saveData[10]));
+			player.setPauseCooldown(Integer.parseInt(saveData[11]));
+			player.setRewindCooldown(Integer.parseInt(saveData[12]));
+			player.setShieldCooldown(Integer.parseInt(saveData[13]));
+			room.setClock(Integer.parseInt(saveData[14]));
 		} catch (NumberFormatException e) {
 			System.out.println("rip ints");
 		}
+		List<String> keyList = new ArrayList<String>();
+		if (!saveData[5].equals("")) {
+			String[] keys = saveData[5].substring(1).split(",");
+			for (int i = 0; i < keys.length; i++)
+				keyList.add(keys[i]);
+			player.setKeys(keyList);
+		}
+		if (saveData[6].equals("1"))
+			player.setCanFly(true);
+		if (saveData[7].equals("1"))
+			player.setCanPause(true);
+		if (saveData[8].equals("1"))
+			player.setCanRewind(true);
+		if (saveData[9].equals("1"))
+			player.setCanShield(true);
 		player.setTeleport(true);
 		player.setLoc(x, y);
 		player.setTeleport(false);
-		player.setLives(5);
 	}
 
 	protected Room loadRoom(String roomId) {
 		int[] coords = fileManager.idToCoords(roomId);
+		System.out.println(coords[0]);
 		Room result = fileManager.makeRoom(coords[0], coords[1], player, v);
 		return result;
 	}
@@ -86,10 +109,11 @@ public class Model implements Subject {
 		for (Entity e : room.getEnemies()) {
 			if (player.getShield() && (e instanceof Ghost || e instanceof Shot)
 					&& (player.getX() == e.getX() && player.getY() == e.getY()
-							|| player.getX() == e.getPX() && player.getY() == e.getPY() && player.getPX() == e.getX()
-									&& player.getPY() == e.getY())) {
-				player.breakShield();
+							|| player.getX() == e.getPX() && player.getY() == e.getPY()
+							|| player.getPX() == e.getX() && player.getPY() == e.getY())) {
+
 				room.removeEntity(e);
+				player.breakShield();
 			}
 		}
 		room.emptyTrash();
@@ -103,6 +127,7 @@ public class Model implements Subject {
 									&& player.getPY() == e.getY())) {
 
 				die();
+				System.out.println("it was me");
 
 				break;
 			}
@@ -203,29 +228,40 @@ public class Model implements Subject {
 	private void tryUnlock(char direction, int x, int y) {
 		if (direction == 'N' && y - 1 >= 0 && room.getTile(x, y - 1) instanceof Lock) {
 			if (player.hasKey(((Lock) room.getTile(x, y - 1)).getKey())) {
-				room.swapTile(new EmptyTile(x, y - 1));
+				room.unlock(x, y - 1);
+			} else {
+				room.setText("This lock requires the key \"" + ((Lock) room.getTile(x, y - 1)).getKey() + "\".");
 			}
 		} else if (direction == 'E' && x + 1 <= room.getxLength() - 1 && room.getTile(x + 1, y) instanceof Lock) {
 			if (player.hasKey(((Lock) room.getTile(x + 1, y)).getKey())) {
-				room.swapTile(new EmptyTile(x + 1, y));
+				room.unlock(x + 1, y);
+			} else {
+				room.setText("This lock requires the key \"" + ((Lock) room.getTile(x + 1, y)).getKey() + "\".");
 			}
 		} else if (direction == 'S' && y + 1 <= room.getyLength() - 1 && room.getTile(x, y + 1) instanceof Lock) {
 			if (player.hasKey(((Lock) room.getTile(x, y + 1)).getKey())) {
-				room.swapTile(new EmptyTile(x, y + 1));
+				room.unlock(x, y + 1);
+			} else {
+				room.setText("This lock requires the key \"" + ((Lock) room.getTile(x, y + 1)).getKey() + "\".");
 			}
 		} else if (direction == 'W' && x - 1 >= 0 && room.getTile(x - 1, y) instanceof Lock) {
 			if (player.hasKey(((Lock) room.getTile(x - 1, y)).getKey())) {
-				room.swapTile(new EmptyTile(x - 1, y));
+				room.unlock(x - 1, y);
+			} else {
+				room.setText("This lock requires the key \"" + ((Lock) room.getTile(x - 1, y)).getKey() + "\".");
 			}
 		}
 	}
 
 	public void endTurn() {
 		if (endTurn) {
-			room.setText(room.getTile(player).getText().replaceAll("_", " "));
+			Tile t = room.getTile(player);
+			if (!t.getTextRead())
+				room.setText(t.getText().replaceAll("_", " "));
+			t.setTextRead(true);
 			checkShield();
 			checkForDeath();
-			checkTile(room.getTile(player));
+			checkTile(t);
 			room.incClock();
 			notifyObserver();
 			endTurn = false;
@@ -243,14 +279,14 @@ public class Model implements Subject {
 			tryMove(((Slide) t).getDirection(), player.getX(), player.getY());
 		} else if (t instanceof Teleport) {
 			player.setTeleport(true);
-			player.setLoc(Math.min(((Teleport) t).getXTele(),room.getxLength()), Math.min(((Teleport) t).getYTele(),room.getyLength()));
+			player.setLoc(Math.min(((Teleport) t).getXTele(), room.getxLength()),
+					Math.min(((Teleport) t).getYTele(), room.getyLength()));
 			player.setTeleport(false);
 		} else if (t instanceof Hole) {
 			die();
 		} else if (t instanceof Key) {
 			player.addKey(((Key) t).getKey());
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
-			fileManager.exportWorking(room.exportRoom());
 		} else if (t instanceof Coin) {
 			player.addCoin();
 			room.swapTile(new EmptyTile(player.getX(), player.getY()));
@@ -259,6 +295,7 @@ public class Model implements Subject {
 		if (!t.getCommand().equals("")) {
 			command(t.getCommand());
 		}
+		t.setTextRead(true);
 	}
 
 	public void command(String command) {
@@ -308,17 +345,28 @@ public class Model implements Subject {
 		room = this.loadRoom(room.getId());
 		notifyObserver();
 	}
-	
+
 	private void resetPlayer() {
+		player.deactivateShield();
 		player.setKeys(keysHistory);
 		player.setCoins(coinsHistory);
 	}
-	
+
 	public void changeRoom(String roomId, Boolean resetPos) {
+		if (resetPos) {
+			fileManager.exportWorking(room.exportRoom());
+		}
 		Room temp = loadRoom(roomId);
 		int x = room.getX() - temp.getX();
 		int y = room.getY() - temp.getY();
+		keysHistory = player.getKeys();
+		coinsHistory = player.getCoins();
+		if (clockHistory == 0)
+			clockHistory = room.getClock();
+		else
+			clockHistory = room.getClock() + 1;
 		setRoom(temp);
+		room.setClock(clockHistory);
 		player.setTeleport(true);
 		if (resetPos) {
 			resetPos(x, y);
@@ -460,7 +508,7 @@ public class Model implements Subject {
 	}
 
 	public String[][] getMap(int x, int y) {
-		return fileManager.getMap(x, y);
+		return fileManager.getMap(x, y, player.getRoomId());
 	}
 
 	public int getX() {
@@ -475,8 +523,8 @@ public class Model implements Subject {
 		fileManager.makeNewDir();
 	}
 
-	public void saveGame() {
-		fileManager.saveGame(room, player.toString(), room.getClock());
+	public void saveGame(String save) {
+		fileManager.saveGame(save, room, player.toString(), room.getClock());
 	}
 
 	public void makeNewSave() {
@@ -489,35 +537,35 @@ public class Model implements Subject {
 	}
 
 	private void disableShield() {
-		GameRules.shield = false;
+		player.setCanShield(false);
 	}
 
 	private void disableRewind() {
-		GameRules.rewind = false;
+		player.setCanRewind(false);
 	}
 
 	private void disablePause() {
-		GameRules.pause = false;
+		player.setCanPause(false);
 	}
 
 	private void enableShield() {
-		GameRules.shield = true;
+		player.setCanShield(true);
 	}
 
 	private void enableRewind() {
-		GameRules.rewind = true;
+		player.setCanRewind(true);
 	}
 
 	private void enablePause() {
-		GameRules.pause = true;
+		player.setCanPause(true);
 	}
 
 	private void disableFlight() {
-		GameRules.flight = false;
+		player.setCanFly(false);
 	}
 
 	private void enableFlight() {
-		GameRules.flight = true;
+		player.setCanFly(true);
 	}
 
 	public boolean getEndGame() {
@@ -540,4 +588,3 @@ public class Model implements Subject {
 		return fileManager.getCoins();
 	}
 }
-

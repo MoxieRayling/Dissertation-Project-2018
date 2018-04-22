@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import controller.Controller;
+import model.FileManager;
 import model.Model;
 import model.Room;
 import model.entities.Entity;
@@ -101,7 +102,6 @@ public class Window extends JFrame implements View {
 
 			@Override
 			public void componentMoved(ComponentEvent arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -131,8 +131,8 @@ public class Window extends JFrame implements View {
 	public void Update(ActionEvent e) {
 		Object o = e.getSource();
 		if (o instanceof Model) {
-			game.setEndGame(((Model)o).getEndGame());
-			game.setWinner(((Model)o).isWinner());
+			game.setEndGame(((Model) o).getEndGame());
+			game.setWinner(((Model) o).isWinner());
 			setInput(((Model) o).getInput());
 		} else if (o instanceof Room) {
 			game.roomUpdate((Room) o);
@@ -168,7 +168,7 @@ public class Window extends JFrame implements View {
 	}
 
 	public void gameOver(String title, String text) {
-		gameOver = new GameOverMenu(this,title,text);
+		gameOver = new GameOverMenu(this, title, text);
 		history.add(gameOver);
 		this.setSize(gameOver.getPreferredSize());
 		this.setLocationRelativeTo(null);
@@ -178,6 +178,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		gameOver.requestFocusInWindow();
+		setTitle("Game over - " + title);
 	}
 
 	public void mainMenu() {
@@ -191,6 +192,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		start.requestFocusInWindow();
+		setTitle("Main Menu");
 	}
 
 	public void newGameMenu() {
@@ -202,8 +204,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		ngMenu.requestFocusInWindow();
-
-		System.out.println("coins " + getCoins());
+		setTitle("New Game Menu - Game \"" + FileManager.getGameDir().substring(6) + "\"");
 	}
 
 	public void createGame() {
@@ -215,6 +216,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		create.requestFocusInWindow();
+		setTitle("Create Game Menu");
 	}
 
 	public void editor() {
@@ -231,6 +233,7 @@ public class Window extends JFrame implements View {
 		this.repaint();
 		editor.setMap();
 		editor.requestFocusInWindow();
+		setTitle("Editor - Editing \"" + FileManager.getGameDir().substring(6) + "\"");
 	}
 
 	public void createTileMenu() {
@@ -244,7 +247,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		ctMenu.requestFocusInWindow();
-
+		setTitle("Editor - Tile Constructor");
 	}
 
 	public void createEntityMenu() {
@@ -258,7 +261,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		ceMenu.requestFocusInWindow();
-
+		setTitle("Editor - Entity Constructor");
 	}
 
 	public void pauseMenu() {
@@ -300,6 +303,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		pause.requestFocusInWindow();
+		setTitle("\"" + FileManager.getGameDir().substring(6) + "\" - Game Paused");
 	}
 
 	public void returnToGame() {
@@ -311,6 +315,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		game.requestFocusInWindow();
+		setTitle("Game - Playing \"" + FileManager.getGameDir().substring(6) + "\"");
 	}
 
 	public void loadMenu() {
@@ -324,6 +329,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		load.requestFocusInWindow();
+		setTitle("Load Menu - Game \"" + FileManager.getGameDir().substring(6) + "\"");
 	}
 
 	public void saveMenu() {
@@ -336,22 +342,7 @@ public class Window extends JFrame implements View {
 		this.validate();
 		this.repaint();
 		save.requestFocusInWindow();
-	}
-
-	public void controls() {
-
-	}
-
-	public void back() {
-		history.remove(history.size() - 1);
-		JPanel back = history.get(history.size() - 1);
-		this.setSize(back.getPreferredSize());
-		this.setLocationRelativeTo(null);
-		this.getContentPane().removeAll();
-		this.getContentPane().add(back);
-		this.validate();
-		this.repaint();
-		back.requestFocusInWindow();
+		setTitle("Save Menu - Game \"" + FileManager.getGameDir().substring(6) + "\"");
 	}
 
 	public void addToRoom(String[] lines, int x, int y) {
@@ -395,7 +386,7 @@ public class Window extends JFrame implements View {
 	}
 
 	public void saveGame(String save) {
-		c.saveGame();
+		c.saveGame(save);
 	}
 
 	public void makeNewDir() {
@@ -448,7 +439,6 @@ public class Window extends JFrame implements View {
 		return c.gameExists(game);
 	}
 
-	
 	public int getCoins() {
 		return c.getCoins();
 	}

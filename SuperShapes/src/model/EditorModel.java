@@ -44,7 +44,7 @@ public class EditorModel extends Model {
 	}
 
 	public void changeRoom(String roomId) {
-		System.out.println("no");
+		System.out.println(roomId);
 		setRoom(loadRoom(roomId));
 		room.addObserver(v);
 		room.notifyObserver();

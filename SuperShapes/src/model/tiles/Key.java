@@ -12,7 +12,7 @@ public class Key extends Tile {
 
 	@Override
 	public String toString() {
-		return "key " + x + "," + y + " " + key + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
+		return "key " + x + "," + y + " " + key + " " + image + " " + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 
 	public String getKey() {

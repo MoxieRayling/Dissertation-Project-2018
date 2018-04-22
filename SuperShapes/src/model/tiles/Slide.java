@@ -16,6 +16,6 @@ public class Slide extends Tile {
 
 	@Override
 	public String toString() {
-		return "slide " + x + "," + y + " " + direction + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
+		return "slide " + x + "," + y + " " + direction + " " + image + " " + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 }

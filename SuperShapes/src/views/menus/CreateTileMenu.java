@@ -518,46 +518,46 @@ public class CreateTileMenu extends JPanel {
 		String result = "";
 		switch (tilesBox.getSelectedItem().toString()) {
 		case "Empty":
-			result = name.getText().replaceAll(" ", "_") + " empty " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " empty " + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Wall":
-			result = name.getText().replaceAll(" ", "_") + " wall " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " wall " + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Slide":
 			result = name.getText().replaceAll(" ", "_") + " slide " + " "
-					+ slideDirectionBox.getSelectedItem().toString() + " " + tileImage.getSelectedItem() + " \""
+					+ slideDirectionBox.getSelectedItem().toString() + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Teleport":
 			result = name.getText().replaceAll(" ", "_") + " tele " + " " + teleportX.getValue() + ","
-					+ teleportY.getValue() + " " + tileImage.getSelectedItem() + " \""
+					+ teleportY.getValue() + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Hole":
-			result = name.getText().replaceAll(" ", "_") + " hole " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " hole " + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Key":
 			result = name.getText().replaceAll(" ", "_") + " key " + " " + key.getText() + " "
-					+ tileImage.getSelectedItem() + " \""
+					+ tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Lock":
 			result = name.getText().replaceAll(" ", "_") + " lock " + " " + key.getText() + " "
-					+ tileImage.getSelectedItem() + " \""
+					+ tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;
 		case "Coin":
-			result = name.getText().replaceAll(" ", "_") + " coin " + " " + tileImage.getSelectedItem() + " \""
+			result = name.getText().replaceAll(" ", "_") + " coin " + " " + tileImage.getSelectedItem() + " "
 					+ tileText.getText().replaceAll(" ", "_").replaceAll(";", "").replaceAll(":", "") + " "
 					+ String.valueOf(tileText.getText().isEmpty() + " " + tileCommand.getSelectedItem().toString());
 			break;

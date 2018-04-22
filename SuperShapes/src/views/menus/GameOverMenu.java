@@ -32,20 +32,24 @@ public class GameOverMenu extends JPanel {
 	public GameOverMenu(Window w, String titleText, String text) {
 		this.setLayout(null);
 		this.setBackground(new Color(0x990000));
-		
-		title = new JLabel("<html><div style='text-align: center;'>"+titleText, SwingConstants.CENTER);
+
+		title = new JLabel("<html><div style='text-align: center;'>" + titleText, SwingConstants.CENTER);
 		title.setFont(new Font("Arial", Font.BOLD, 40));
 		title.setForeground(Color.BLACK);
-		title.setBounds(sizex / 2 - 200, 30, 400,
-					100);
+		title.setBounds(sizex / 2 - 200, 10, 400, 100);
+		title.setBackground(new Color(0x660000));
+		this.add(title);
+		title = new JLabel("<html><div style='text-align: center;'>" + text, SwingConstants.CENTER);
+		title.setFont(new Font("Arial", Font.PLAIN, 20));
+		title.setForeground(Color.BLACK);
+		title.setBounds(sizex / 2 - 175, 100, 350, 100);
 		title.setBackground(new Color(0x660000));
 		this.add(title);
 		buttons.add(load);
 		buttons.add(menu);
 		buttons.add(exit);
 		for (MenuButton b : buttons) {
-			b.setBounds(sizex / 2 - buttonSizex / 2, buttons.indexOf(b) * buttonSizey + 150, buttonSizex,
-					buttonSizey);
+			b.setBounds(sizex / 2 - buttonSizex / 2, buttons.indexOf(b) * buttonSizey + 200, buttonSizex, buttonSizey);
 			b.setFont(new Font("Arial", Font.PLAIN, 20));
 			b.setBackground(new Color(0x660000));
 			b.setForeground(new Color(0x000000).brighter());

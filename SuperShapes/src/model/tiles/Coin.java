@@ -10,7 +10,7 @@ public class Coin extends Tile {
 
 	@Override
 	public String toString() {
-		return "coin " + x + "," + y + " " + image + " \"" + getText() + " " + getText().isEmpty() + " " + getCommand();
+		return "coin " + x + "," + y + " " + image + " " + getText() + " " + getText().isEmpty() + " " + getCommand();
 	}
 
 }

@@ -64,8 +64,7 @@ public class NewGameMenu extends JPanel {
 		loadMenu.add(newSave);
 		loadMenu.add(back);
 		for (JComponent b : loadMenu) {
-			b.setBounds(sizex / 2 - buttonSizex / 2, loadMenu.indexOf(b) * buttonSizey + 150, buttonSizex,
-					buttonSizey);
+			b.setBounds(sizex / 2 - buttonSizex / 2, loadMenu.indexOf(b) * buttonSizey + 150, buttonSizex, buttonSizey);
 			b.setFont(new Font("Arial", Font.PLAIN, 20));
 			b.setBackground(new Color(0x660000));
 			b.setForeground(new Color(0x000000).brighter());
@@ -80,12 +79,12 @@ public class NewGameMenu extends JPanel {
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
 		newSaveText.setBorder(border);
 		newSaveText.setBackground(new Color(0xffffff));
-		newSaveText.setText("save " + (saves.getItemCount()+1));
+		newSaveText.setText("save " + (saves.getItemCount() + 1));
 		loadSave.setToolTipText("Load the select save in the list above");
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FileManager.setSaveDir((String) saves.getSelectedItem());
+				FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + (String) saves.getSelectedItem());
 				w.loadGame();
 			}
 		});
@@ -97,7 +96,7 @@ public class NewGameMenu extends JPanel {
 				File file = new File(FileManager.getGameDir() + "/saves/" + save);
 				if (file.exists()) {
 				} else if (!newSaveText.getText().isEmpty()) {
-					FileManager.setSaveDir(save);
+					FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + save);
 					w.makeNewSave();
 					updateSaves();
 					w.loadGame();
@@ -107,7 +106,7 @@ public class NewGameMenu extends JPanel {
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.back();
+				w.mainMenu();
 			}
 		});
 	}

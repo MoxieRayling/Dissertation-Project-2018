@@ -38,12 +38,11 @@ public class LoadMenu extends JPanel {
 	public LoadMenu(Window w) {
 		this.setLayout(null);
 		this.setBackground(new Color(0x990000));
-		
+
 		title = new JLabel("<html><div style='text-align: center;'>Load Game");
 		title.setFont(new Font("Arial", Font.BOLD, 40));
 		title.setForeground(Color.BLACK);
-		title.setBounds(sizex / 2 - 100, 30, 400,
-					100);
+		title.setBounds(sizex / 2 - 100, 30, 400, 100);
 		title.setBackground(new Color(0x660000));
 		this.add(title);
 		saves = new JComboBox<String>(getSaves());
@@ -75,7 +74,7 @@ public class LoadMenu extends JPanel {
 		loadSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FileManager.setSaveDir((String) saves.getSelectedItem());
+				FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + (String) saves.getSelectedItem());
 				w.loadGame();
 			}
 		});

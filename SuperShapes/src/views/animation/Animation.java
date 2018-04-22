@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import model.GameRules;
 import model.Model;
 import model.Room;
 import model.entities.Block;
@@ -37,6 +36,10 @@ public class Animation extends JPanel {
 	private int pauseCooldown = 0;
 	private int shieldCooldown = 0;
 	private int rewindCooldown = 0;
+	public Boolean canFly = false;
+	public Boolean canPause = false;
+	public Boolean canRewind = false;
+	public Boolean canShield = false;
 	private int fly = 0;
 	private int pause = 0;
 	private int coins = 0;
@@ -46,6 +49,7 @@ public class Animation extends JPanel {
 	private String displayText = "";
 	private boolean winner = false;
 	private boolean endGame = false;
+	private String keys = "";
 
 	public Animation(Window w) {
 		this.w = w;
@@ -88,6 +92,7 @@ public class Animation extends JPanel {
 	}
 
 	public void roomUpdate(Room r) {
+		clock = r.getClock();
 		if (!r.getText().equals("")) {
 			setBufferText(r.getText());
 			w.setMode("text");
@@ -134,11 +139,26 @@ public class Animation extends JPanel {
 			player.setFlying(true);
 		} else
 			player.setFlying(false);
+
+		canFly = play.getCanFly();
+		canPause = play.getCanPause();
+		canRewind = play.getCanRewind();
+		canShield = play.getCanShield();
 		player.setShield(play.getShield());
 		player.setNoCollide(play.getFly() > 0);
 		player.next(play.getX(), play.getY(), play.getTeleport());
 		player.setDead(play.getDead());
 		player.setDirection(play.getDirection());
+		String keys = "";
+		List<String> keyList = play.getKeys();
+		for (String s : keyList) {
+			keys += s;
+			if (keyList.indexOf(s) < keyList.size() - 1 && !(keyList.indexOf(s) == 0)) {
+				keys += ", ";
+			}
+		}
+		this.keys = keys;
+
 	}
 
 	public void entityUpdate(Entity e) {
@@ -200,21 +220,25 @@ public class Animation extends JPanel {
 				}
 				if (stationary) {
 					if (lives < 0) {
-						w.gameOver("Game Over", "<html>You ran out of lives and lost the game. <br>Please choose a save file to load and try again.");
-						setEndGame(false);
+						w.gameOver("Game Over",
+								"<html>You ran out of lives and lost the game. Please choose a save file to load and try again.");
+						lives = 5;
 					}
-					if(endGame) {
-						if(winner) {
-							w.gameOver("You win", "<html><div style='text-align: center;'>Congratulations! You completed the game in " + clock + "steps and <br>"
-									+ "collected " + coins + "/" + w.getCoins() + " coins.");
+					if (endGame) {
+						if (winner) {
+							w.gameOver("You win",
+									"<html><div style='text-align: center;'>Congratulations! You completed the game in "
+											+ clock + " steps and " + "collected " + coins + "/" + w.getCoins()
+											+ " coins.");
 							setEndGame(false);
 						} else {
-							w.gameOver("You Lose", "<html><div style='text-align: center;'>Unlucky! You managed to get to room " + roomId + " and <br>"
-									+ "collected " + coins + "/" + w.getCoins() + " coins.");
+							w.gameOver("You Lose",
+									"<html><div style='text-align: center;'>Unlucky! You managed to get to room "
+											+ roomId + " and " + "collected " + coins + "/" + w.getCoins() + " coins.");
 							setEndGame(false);
 						}
 					}
-					
+
 					w.setInput(true);
 					w.endTurn();
 					if (player != null && player.getDead()) {
@@ -287,7 +311,7 @@ public class Animation extends JPanel {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(512, 512);
+		return Toolkit.getDefaultToolkit().getScreenSize();
 	}
 
 	@Override
@@ -308,13 +332,15 @@ public class Animation extends JPanel {
 			g.setColor(new Color(0, 0, 0, 200));
 			g.fillRect(scale, scale * room.getyLength(), scale * room.getxLength(), scale);
 			g.setColor(Color.WHITE);
-			g.drawString(displayText, scale + 20, scale * 11 + 20);
+
+			g.setFont(new Font("Arial", Font.BOLD, 26));
+			g.drawString(displayText, scale + 20, scale * 11 + 40);
 		}
 		timer.start();
 	}
 
 	public void drawHUD(Graphics2D g, int x, int y) {
-		g.setFont(new Font("Arial", Font.BOLD, 40));
+		g.setFont(new Font("Arial", Font.PLAIN, 30));
 		g.setColor(Color.BLACK);
 		g.drawString(String.valueOf("Lives remaining: " + lives), x, y + 20);
 		g.drawString(String.valueOf("Steps taken: " + clock), x, y * 2 + 20);
@@ -322,7 +348,7 @@ public class Animation extends JPanel {
 		g.drawString(String.valueOf("Press the arrow keys to move"), x, y * 4 + 20);
 		g.drawString(String.valueOf("Press 'ESC' to pause the game"), x, y * 5 + 20);
 		g.drawString(String.valueOf("and view the map"), x, y * 6 + 20);
-		if (GameRules.flight) {
+		if (canFly) {
 			if (flyCooldown > 0) {
 				g.drawString(String.valueOf("Flight cooldown: " + flyCooldown), x, y * 8 + 20);
 			} else if (fly == 0) {
@@ -331,8 +357,10 @@ public class Animation extends JPanel {
 			} else {
 				g.drawString(String.valueOf("Flight activated: " + fly), x, y * 8 + 20);
 			}
+		} else {
+			g.drawString(String.valueOf("Flight Locked"), x, y * 8 + 20);
 		}
-		if (GameRules.pause) {
+		if (canPause) {
 			if (pauseCooldown > 0) {
 				g.drawString(String.valueOf("Pause cooldown: " + pauseCooldown), x, y * 9 + 20);
 			} else if (pause == 0) {
@@ -341,15 +369,19 @@ public class Animation extends JPanel {
 			} else {
 				g.drawString(String.valueOf("Pause activated: " + pause), x, y * 9 + 20);
 			}
+		} else {
+			g.drawString(String.valueOf("Pause Locked"), x, y * 9 + 20);
 		}
-		if (GameRules.rewind) {
+		if (canRewind) {
 			if (rewindCooldown > 0) {
 				g.drawString(String.valueOf("Rewind cooldown: " + rewindCooldown), x, y * 10 + 20);
 			} else {
 				g.drawString(String.valueOf("Press 'R' to Rewind "), x, y * 10 + 20);
 			}
+		} else {
+			g.drawString(String.valueOf("Rewind Locked"), x, y * 10 + 20);
 		}
-		if (GameRules.shield) {
+		if (canShield) {
 			if (shieldCooldown > 0) {
 				g.drawString(String.valueOf("Shield cooldown: " + shieldCooldown), x, y * 7 + 20);
 			} else if (shield) {
@@ -357,7 +389,10 @@ public class Animation extends JPanel {
 			} else {
 				g.drawString(String.valueOf("Press 'S' to activate Shield "), x, y * 7 + 20);
 			}
+		} else {
+			g.drawString(String.valueOf("Shield Locked"), x, y * 7 + 20);
 		}
+		g.drawString(String.valueOf("Keys: " + keys), x, y * 11 + 20);
 	}
 
 	public void nextText() {

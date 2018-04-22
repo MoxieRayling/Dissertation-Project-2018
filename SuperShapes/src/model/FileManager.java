@@ -53,10 +53,11 @@ public class FileManager {
 	public static void setGameDir(String gameFile) {
 		gameDir = "games/" + gameFile;
 		setImages();
+		setSaveDir(gameDir + "/saves/save1");
 	}
 
 	public static void setSaveDir(String save) {
-		saveDir = gameDir + "/saves/" + save;
+		saveDir = save;
 	}
 
 	public static void setImages() {
@@ -79,7 +80,7 @@ public class FileManager {
 					e.printStackTrace();
 				}
 			}
-		}	
+		}
 	}
 
 	private int getEnemyCount() {
@@ -107,34 +108,35 @@ public class FileManager {
 	}
 
 	public String getSaveData() {
-		String fileName = saveDir + "/save.txt";
+		String fileName = getSaveDir() + "/save.txt";
 		return readFromFile(fileName).get(0);
 	}
 
 	public List<String> getWorldData() {
-		String fileName = saveDir + "/world.txt";
+		String fileName = getSaveDir()  + "/world.txt";
 		return readFromFile(fileName);
 	}
 
 	public List<String> getWorkingData() {
-		String fileName = saveDir + "/working.txt";
+		String fileName = getSaveDir()  + "/working.txt";
 		return readFromFile(fileName);
 	}
 
 	public List<String> getMasterData() {
-		String fileName = gameDir + "/master.txt";
+		String fileName = getGameDir()  + "/master.txt";
 		return readFromFile(fileName);
 	}
 
-	public void saveGame(Room r, String playerData, int clock) {
-		String fileName = saveDir + "/save.txt";
+	public void saveGame(String save, Room r, String playerData, int clock) {
+		String fileName = getSaveDir() + "/" + save + ".txt";
 		String saveData = r.getId() + ":" + playerData + ":" + clock;
+		System.out.println(fileName);
 		writeToFile(saveData, fileName);
 	}
 
 	public static void newSaveData() {
-		String fileName = saveDir + "/save.txt";
-		String saveData = "0,0:0,0:0,0:0";
+		String fileName = getSaveDir()  + "/save.txt";
+		String saveData = "0,0:0,0:0,0:0:5:,:0:0:0:0:0:0:0:0:0";
 		writeToFile(saveData, fileName);
 	}
 
@@ -143,7 +145,7 @@ public class FileManager {
 		String roomId = x + "," + y;
 		String result = "";
 		for (String s : world) {
-			if (s.substring(0, 10).contains(roomId)) {
+			if (s.split(" ")[1].equals(roomId)) {
 				result = s;
 			}
 		}
@@ -162,6 +164,34 @@ public class FileManager {
 				result[3] = 5;
 			} else if (l.startsWith("room " + (x + 1) + "," + y)) {
 				result[1] = 5;
+			}
+		}
+		return result;
+	}
+
+	public Room makeRoomFromWorld(String id, Player player, Observer o) {
+		int[] coords = this.idToCoords(id);
+		enemyCount = 0;
+		String room = getWorldRoomData(coords[0], coords[1]);
+		String[] params = room.split(";");
+		Room r = parseRoom(params[0].split(" "), player, o);
+		if (params[1].length() > 1)
+			r.setEnemies(parseEntities(params[1].substring(1), coords[0], coords[1], r, o));
+		if (params[2].length() > 1)
+			for (Tile t : parseTiles(params[2].substring(1))) {
+				r.swapTile(t);
+			}
+
+		return r;
+	}
+
+	private String getWorldRoomData(int x, int y) {
+		List<String> world = getWorldData();
+		String roomId = x + "," + y;
+		String result = "";
+		for (String s : world) {
+			if (s.split(" ")[1].equals(roomId)) {
+				result = s;
 			}
 		}
 		return result;
@@ -270,7 +300,7 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, saveDir + "/working.txt");
+		writeToFile(world, getSaveDir()  + "/working.txt");
 	}
 
 	public void removeRoomWorld(String id) {
@@ -281,33 +311,33 @@ public class FileManager {
 			}
 		}
 		world.remove("xxx");
-		writeToFile(world, saveDir + "/working.txt");
-		writeToFile(world, saveDir + "/world.txt");
+		writeToFile(world, getSaveDir()  + "/working.txt");
+		writeToFile(world, getSaveDir()  + "/world.txt");
 	}
 
 	public void exportWorking(String room) {
 		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, saveDir + "/working.txt");
+		writeToFile(lines, getSaveDir()  + "/working.txt");
 	}
 
 	public void exportWorld(String room) {
 		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, saveDir + "/working.txt");
-		writeToFile(lines, saveDir + "/world.txt");
+		writeToFile(lines, getSaveDir()  + "/working.txt");
+		writeToFile(lines, getSaveDir()  + "/world.txt");
 	}
 
 	public void exportMaster(String room) {
 		removeRoomWorking(room.split(" ")[1]);
 		List<String> lines = getWorkingData();
 		lines.add(room);
-		writeToFile(lines, saveDir + "/working.txt");
-		writeToFile(lines, saveDir + "/world.txt");
+		writeToFile(lines, getSaveDir()  + "/working.txt");
+		writeToFile(lines, getSaveDir()  + "/world.txt");
 		writeToFile(lines, gameDir + "/master.txt");
-		
+
 	}
 
 	public Room parseRoom(String[] params, Player player, Observer o) {
@@ -450,7 +480,7 @@ public class FileManager {
 		if (!params[2].equals("none")) {
 			h.setImage(params[2]);
 		}
-		if (!params[3].equals("\"")) {
+		if (!params[3].equals("")) {
 			h.setText(params[3].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -482,7 +512,7 @@ public class FileManager {
 		if (!params[3].equals("none")) {
 			t.setImage(params[3]);
 		}
-		if (!params[4].equals("\"")) {
+		if (!params[4].equals("")) {
 			t.setText(params[4].substring(1));
 		}
 		if (params[5].equals("true")) {
@@ -508,7 +538,7 @@ public class FileManager {
 		if (!params[3].equals("none")) {
 			s.setImage(params[3]);
 		}
-		if (!params[4].equals("\"")) {
+		if (!params[4].equals("")) {
 			s.setText(params[4].substring(1));
 		}
 		if (params[5].equals("true")) {
@@ -535,7 +565,7 @@ public class FileManager {
 		if (!params[2].equals("none")) {
 			w.setImage(params[2]);
 		}
-		if (!params[3].equals("\"")) {
+		if (!params[3].equals("")) {
 			System.out.println(params[3]);
 			w.setText(params[3].substring(1));
 		}
@@ -563,7 +593,7 @@ public class FileManager {
 		if (!params[2].equals("none")) {
 			c.setImage(params[2]);
 		}
-		if (!params[3].equals("\"")) {
+		if (!params[3].equals("")) {
 			c.setText(params[3].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -589,9 +619,10 @@ public class FileManager {
 		if (!params[2].equals("none")) {
 			t.setImage(params[2]);
 		}
-		if (!params[3].equals("") && !params[3].equals("\"")) {
+		if (!params[3].equals("")) {
 			t.setText(params[3]);
 		}
+		System.out.println(params[1] + " " + params[4]);
 		if (params[4].equals("true")) {
 			t.setTextRead(true);
 		} else {
@@ -615,7 +646,7 @@ public class FileManager {
 		if (!params[3].equals("none")) {
 			l.setImage(params[3]);
 		}
-		if (!params[4].equals("\"")) {
+		if (!params[4].equals("")) {
 			l.setText(params[4].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -641,7 +672,7 @@ public class FileManager {
 		if (!params[3].equals("none")) {
 			k.setImage(params[3]);
 		}
-		if (!params[4].equals("\"")) {
+		if (!params[4].equals("")) {
 			k.setText(params[4].substring(1));
 		}
 		if (params[4].equals("true")) {
@@ -682,8 +713,9 @@ public class FileManager {
 		return result;
 	}
 
-	public String[][] getMap(int x, int y) {
+	public String[][] getMap(int x, int y, String id) {
 		List<String> rooms = this.getWorkingData();
+		int[] pCoords = idToCoords(id);
 		String[][] map = new String[11][11];
 		for (String line : rooms) {
 			if (!map.equals(new String[11][11])) {
@@ -696,8 +728,19 @@ public class FileManager {
 					if (line.contains("coin ")) {
 						map[coords[0] + 5 - x][coords[1] + 5 - y] += "C";
 					}
+					if (line.contains("lock ")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "L";
+					}
+					if (line.contains(" win") || line.contains(" lose")) {
+						map[coords[0] + 5 - x][coords[1] + 5 - y] += "G";
+					}
 				}
+				if (pCoords[0] >= x - 5 && pCoords[0] <= x + 5 && pCoords[1] >= y - 5 && pCoords[1] <= y + 5) {
+					map[pCoords[0] + 5 - x][pCoords[1] + 5 - y] += "P";
+				}
+
 			}
+
 		}
 		return map;
 	}
@@ -709,7 +752,7 @@ public class FileManager {
 		dir.mkdir();
 		dir = new File(gameDir + "/saves");
 		dir.mkdir();
-		setSaveDir("save");
+		setSaveDir(gameDir + "/saves/save1");
 		dir = new File(saveDir);
 		dir.mkdir();
 		dir = new File(gameDir + "/textures");
@@ -733,7 +776,8 @@ public class FileManager {
 		dir.mkdir();
 		dir = new File(saveDir);
 		dir.mkdir();
-		List<String> world = this.getMasterData();
+		List<String> world = getMasterData();
+		System.out.println(gameDir + " " + saveDir);
 		writeToFile(world, saveDir + "/working.txt");
 		writeToFile(world, saveDir + "/world.txt");
 		newSaveData();
@@ -780,8 +824,8 @@ public class FileManager {
 				return new File(current, name).isDirectory();
 			}
 		});
-		for(int i = 0; i<files.length; i++) {
-			if(files[i].equals(game)) {
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].equals(game)) {
 				return true;
 			}
 		}
@@ -791,15 +835,15 @@ public class FileManager {
 	public int getCoins() {
 		int coins = 0;
 		List<String> data = getMasterData();
-		for(String s : data) {
+		for (String s : data) {
 			int index = 0;
-			while(index != -1){
-			    index = s.indexOf("coin ",index);
+			while (index != -1) {
+				index = s.indexOf("coin ", index);
 
-			    if(index != -1){
-			        coins++;
-			        index += 5;
-			    }
+				if (index != -1) {
+					coins++;
+					index += 5;
+				}
 			}
 		}
 		return coins;

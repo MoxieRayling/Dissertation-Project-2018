@@ -214,7 +214,7 @@ public class Editor extends JPanel {
 		back.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				w.back();
+				w.mainMenu();
 			}
 		});
 		this.add(back);
@@ -381,6 +381,7 @@ public class Editor extends JPanel {
 					selectedX = x;
 					selectedY = y;
 					w.addToRoom(generateTile(x, y), x, y);
+					map.setMap(w.getMap(mapCentreX, mapCentreY));
 				}
 			});
 			this.add(b);
@@ -405,17 +406,17 @@ public class Editor extends JPanel {
 					w.exportWorld();
 					selectedRoomX = x;
 					selectedRoomY = y;
+					System.out.println(x - 5 + mapCentreX);
 					if (newRoom.isSelected()) {
 						w.addRoom(selectedRoomX - 5, selectedRoomY - 5);
-						map.setMap(w.getMap(mapCentreX, mapCentreY));
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					} else if (deleteRoom.isSelected()) {
 						w.deleteRoom(selectedRoomX - 5, selectedRoomY - 5);
-						map.setMap(w.getMap(mapCentreX, mapCentreY));
 					} else {
 						w.changeRoom(x - 5 + mapCentreX, y - 5 + mapCentreY);
 					}
 					w.exportWorld();
+					map.setMap(w.getMap(mapCentreX, mapCentreY));
 				}
 			});
 			this.add(b);
@@ -803,7 +804,7 @@ public class Editor extends JPanel {
 				((AbstractButton) entityList.getComponent(i)).setBorderPainted(false);
 			}
 		}
-		entityList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>" 
+		entityList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>"
 				+ "Chase - this preset will create an entity that chases the player <br>"
 				+ "and kills them on contact. It uses chade.png as its default image.<br><br>"
 				+ "Chain - this preset is an entity that chain of entities 5 long. <br>"
@@ -831,7 +832,7 @@ public class Editor extends JPanel {
 				((AbstractButton) tileList.getComponent(i)).setBorderPainted(false);
 			}
 		}
-		tileList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>" 
+		tileList.setToolTipText("<html>This list contains preset tiles, some have been made for you:<br><br>"
 				+ "Empty - creates an empty tile in the selected space. It uses empty.png<br>"
 				+ "as its default image.<br><br>"
 				+ "Wall - creates an wall that the player can't move through. It uses <br>"
@@ -847,8 +848,7 @@ public class Editor extends JPanel {
 				+ "Lock - creates a wall that can only be passed if the player has the <br>"
 				+ "corresponding key. It uses lock.png as its default image.<br><br>"
 				+ "Coin - creates a coin which the player can collect on contact. It uses<br>"
-				+ "coin.png as its default image."
-				);
+				+ "coin.png as its default image.");
 		this.add(tileList);
 	}
 }

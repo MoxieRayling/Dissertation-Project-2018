@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.GameRules;
 import observers.Observer;
 
 public class Player extends Entity {
@@ -17,6 +16,10 @@ public class Player extends Entity {
 	private int pause = 0;
 	private int flyCooldown = 0;
 	private int rewindCooldown = 0;
+	public Boolean canFly = false;
+	public Boolean canPause = false;
+	public Boolean canRewind = false;
+	public Boolean canShield = false;
 	private int[] xCoords = new int[5];
 	private int[] yCoords = new int[5];
 	private int pauseCooldown = 0;
@@ -63,18 +66,38 @@ public class Player extends Entity {
 				setLastEntrance('S');
 		}
 		this.roomId = room;
-		if (GameRules.PauseRoomCooldown) {
-			this.pauseCooldown = 0;
-		}
-		if (GameRules.flightRoomCooldown) {
-			this.flyCooldown = 0;
-		}
-		if (GameRules.rewindRoomCooldown) {
-			this.rewindCooldown = 0;
-		}
-		if (GameRules.shieldRoomCooldown) {
-			this.shieldCooldown = 0;
-		}
+	}
+
+	public Boolean getCanFly() {
+		return canFly;
+	}
+
+	public void setCanFly(Boolean canFly) {
+		this.canFly = canFly;
+	}
+
+	public Boolean getCanPause() {
+		return canPause;
+	}
+
+	public void setCanPause(Boolean canPause) {
+		this.canPause = canPause;
+	}
+
+	public Boolean getCanRewind() {
+		return canRewind;
+	}
+
+	public void setCanRewind(Boolean canRewind) {
+		this.canRewind = canRewind;
+	}
+
+	public Boolean getCanShield() {
+		return canShield;
+	}
+
+	public void setCanShield(Boolean canShield) {
+		this.canShield = canShield;
 	}
 
 	public int getRespawnx() {
@@ -156,14 +179,14 @@ public class Player extends Entity {
 	}
 
 	public void fly() {
-		if (flyCooldown <= 0 && GameRules.flight) {
+		if (flyCooldown <= 0 && canFly) {
 			fly = 3;
 			notifyObserver();
 		}
 	}
 
 	public void pauseTime() {
-		if (pauseCooldown <= 0 && GameRules.pause) {
+		if (pauseCooldown <= 0 && canPause) {
 			pause = 3;
 			notifyObserver();
 		}
@@ -248,13 +271,13 @@ public class Player extends Entity {
 	}
 
 	public void rewind() {
-		if (rewindCooldown <= 0 && GameRules.rewind) {
+		if (rewindCooldown <= 0 && canRewind) {
 			setTeleport(true);
 			setLoc(xCoords[4], yCoords[4]);
 
 			resetHistory();
 			setTeleport(false);
-			rewindCooldown = GameRules.rewindCooldown;
+			rewindCooldown = 10;
 			notifyObserver();
 		}
 	}
@@ -268,14 +291,14 @@ public class Player extends Entity {
 	}
 
 	public void shield() {
-		if (shieldCooldown <= 0 && GameRules.shield)
+		if (shieldCooldown <= 0 && canShield)
 			this.shield = true;
 		notifyObserver();
 	}
 
 	public void breakShield() {
 		this.shield = false;
-		shieldCooldown = GameRules.shieldCooldown;
+		shieldCooldown = 10;
 		notifyObserver();
 	}
 
@@ -284,36 +307,59 @@ public class Player extends Entity {
 	}
 
 	private void flyDec() {
-		if (flyCooldown <= 0 && fly > 0 && !GameRules.infFlight) {
+		if (flyCooldown <= 0 && fly > 0) {
 			fly--;
-			if (fly == 0 && !GameRules.infFlight)
-				flyCooldown = GameRules.flightCooldown;
+			if (fly == 0)
+				flyCooldown = 10;
 		} else if (flyCooldown > 0)
 			flyCooldown--;
 		notifyObserver();
 	}
 
 	private void pauseDec() {
-		if (pauseCooldown <= 0 && pause > 0 && !GameRules.infPause) {
+		if (pauseCooldown <= 0 && pause > 0) {
 			pause--;
 			if (pause == 0)
-				pauseCooldown = GameRules.pauseCooldown;
-		} else if (pauseCooldown > 0 && !GameRules.infPause)
+				pauseCooldown = 10;
+		} else if (pauseCooldown > 0)
 			pauseCooldown--;
 		notifyObserver();
 	}
 
 	@Override
 	public String toString() {
-		String result = getX() + "," + getY() + ":" + getRespawnx() + "," + getRespawny();
+		String result = getX() + "," + getY() + ":" + getRespawnx() + "," + getRespawny() + ":" + coins + ":" + lives;
+		result += ":";
 		for (String s : keys) {
-			result += ":" + s;
+			result += "," + s;
 		}
+		result += ":";
+		if (canFly)
+			result += 1;
+		else
+			result += 0;
+		result += ":";
+		if (canPause)
+			result += 1;
+		else
+			result += 0;
+		result += ":";
+		if (canRewind)
+			result += 1;
+		else
+			result += 0;
+		result += ":";
+		if (canShield)
+			result += 1;
+		else
+			result += 0;
+		result += ":" + flyCooldown + ":" + pauseCooldown + ":" + rewindCooldown + ":" + shieldCooldown;
 		return result;
 	}
 
 	public void addKey(String key) {
 		keys.add(key);
+		notifyObserver();
 	}
 
 	public boolean hasKey(String key) {
@@ -344,6 +390,26 @@ public class Player extends Entity {
 
 	public void setCoins(int coins) {
 		this.coins = coins;
+	}
+
+	public void setFlyCooldown(int val) {
+		flyCooldown = val;
+	}
+
+	public void setPauseCooldown(int val) {
+		pauseCooldown = val;
+	}
+
+	public void setRewindCooldown(int val) {
+		rewindCooldown = val;
+	}
+
+	public void setShieldCooldown(int val) {
+		shieldCooldown = val;
+	}
+
+	public void deactivateShield() {
+		shield = false;
 	}
 
 }

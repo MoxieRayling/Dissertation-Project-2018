@@ -15,7 +15,7 @@ public class Lock extends Tile {
 	@Override
 	public String toString() {
 
-		return "lock " + x + "," + y + " " + key + " " + image + " \"" + getText() + " " + getTextRead().toString() + " " + getCommand();
+		return "lock " + x + "," + y + " " + key + " " + image + " " + getText() + " " + getTextRead().toString() + " " + getCommand();
 	}
 
 	public String getKey() {

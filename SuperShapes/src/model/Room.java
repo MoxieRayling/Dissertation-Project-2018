@@ -548,4 +548,11 @@ public class Room implements Subject {
 		System.out.println("text is:" + text + "!");
 		notifyObserver();
 	}
+
+	public void unlock(int x, int y) {
+		EmptyTile t = new EmptyTile(x,y);
+		t.setText(getTile(x,y).getText());
+		t.setTextRead(false);
+		swapTile(t);
+	}
 }

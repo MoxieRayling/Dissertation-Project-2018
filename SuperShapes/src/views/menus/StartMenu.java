@@ -91,7 +91,7 @@ public class StartMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				FileManager.setGameDir((String) games.getSelectedItem());
-				FileManager.setSaveDir("save");
+				FileManager.setSaveDir((String) games.getSelectedItem() + "/saves/save1");
 				// w.gameRules();
 				w.editor();
 			}

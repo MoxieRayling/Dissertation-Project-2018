@@ -81,7 +81,7 @@ public class SaveMenu extends JPanel {
 		newSaveText.setBorder(border);
 		newSaveText.setBackground(new Color(0xffffff));
 		newSaveText.setText("save " + (saves.getItemCount() + 1));
-		
+
 		overwrite.setToolTipText("Overwrites the save file selected in the list above");
 		overwrite.addActionListener(new ActionListener() {
 			@Override
@@ -91,17 +91,16 @@ public class SaveMenu extends JPanel {
 				w.pauseMenu();
 			}
 		});
-		
+
 		newSave.setToolTipText("Creates a new save file with the name typed in the above text field");
 		newSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String save = newSaveText.getText();
-				FileManager.setSaveDir(save);
+				FileManager.setSaveDir(FileManager.getGameDir() + "/saves/" + save);
 				File file = new File(FileManager.getSaveDir() + "/save.txt");
 				if (file.exists()) {
 				} else if (!newSaveText.getText().isEmpty()) {
-					FileManager.setSaveDir(save);
 					w.saveGame(save);
 					w.pauseMenu();
 				}

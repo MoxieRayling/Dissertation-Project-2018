@@ -52,9 +52,9 @@ public class CreateMenu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!newGame.getText().isEmpty() && !FileManager.gameExists(newGame.getText())) {
-					FileManager.setGameDir(newGame.getText());
+					FileManager.setGameDir(newGame.getText().trim());
 					FileManager.makeNewDir();
-					FileManager.setSaveDir("save");
+					FileManager.setSaveDir(newGame.getText().trim() + "/saves/save1");
 					w.makeNewDir();
 					w.editor();
 				}
